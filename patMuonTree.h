@@ -69,8 +69,8 @@ class patMuonTree : public baseTree {
   std::vector<Float_t> patMuonPtErrx_;
   std::vector<Float_t> patMuondxy_;
   std::vector<Float_t> patMuondz_;
-  std::vector<Float_t> patMuonTrkLayers_;
-  std::vector<Float_t> patMuonPixelHits_;
+  std::vector<Int_t> patMuonTrkLayers_;
+  std::vector<Int_t> patMuonPixelHits_;
   std::vector<Int_t>   patMuonMatches_;
 
 };
