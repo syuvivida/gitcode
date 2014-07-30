@@ -80,9 +80,11 @@ patMuonTree::Fill(const edm::Event& iEvent){
     //--------------------------------------------------------//
     // new added variables
 
-    patMuonPtErrx_.push_back(mu->pterr());
-    patMuondxy_.push_back(cktTrack->dxy(myPv()));
-    patMuondz_.push_back(cktTrack->dz(myPv()));
+    reco::TrackRef cktTrack = globalMuonID_.GetBestTrack(*mu);
+
+    patMuonPtErrx_.push_back(cktTrack->ptError()/cktTrack->pt());
+    patMuondxy_.push_back(cktTrack->dxy(myPv.position()));
+    patMuondz_.push_back(cktTrack->dz(myPv.position()));
     patMuonTrkLayers_.push_back(mu->innerTrack()->hitPattern().trackerLayersWithMeasurement());
     patMuonPixelHits_.push_back(mu->innerTrack()->hitPattern().numberOfValidPixelHits());
     patMuonMatches_.push_back(mu->numberOfMatchedStations());
@@ -97,7 +99,6 @@ patMuonTree::Fill(const edm::Event& iEvent){
     iso1  =  mu->pfIsolationR04().sumChargedHadronPt;
     iso2  =  mu->pfIsolationR04().sumNeutralHadronEt;
     iso3  =  mu->pfIsolationR04().sumPhotonEt;
-
     isoPU =  mu->pfIsolationR04().sumPUPt;    
 
     patMuonChHadIso_.push_back(iso1);
@@ -171,7 +172,7 @@ patMuonTree::SetBranches(){
   AddBranch(&patMuonTauCorrPfIso_, "muTauCorrPfIso");
 
   // new added
-  AddBranch(&patMuonPtErrx__, "muPtErrx");
+  AddBranch(&patMuonPtErrx_, "muPtErrx");
   AddBranch(&patMuondxy_, "mudxy");
   AddBranch(&patMuondz_, "mudz");
   AddBranch(&patMuonTrkLayers_, "muTrkLayers");
