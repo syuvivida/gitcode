@@ -81,6 +81,7 @@ void overlay_histo(){
       h[j]->SetLineWidth(2);
       h[j]->SetLineColor(j+3);
       h[j]->SetMaximum(temp+temp*0.05); 
+      h[j]->Fit("pol0");
 
       if(j == 0) h[j]->Draw();
       else h[j]->Draw("same");
