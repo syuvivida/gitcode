@@ -29,12 +29,12 @@ const Double_t crossSection3 = 25.8*1000;
 
 void combineBKG(){
 
-  TFile *f = TFile::Open("backg_IsoPt.root");
+  TFile *f = TFile::Open("backgMwindowMu.root");
 
-  TH1D* h_bk1 = (TH1D*)(f->Get("IsoPt_cut2000_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_bk2 = (TH1D*)(f->Get("IsoPt_cut2000_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_bk3 = (TH1D*)(f->Get("IsoPt_cut2000_TTTo2L2Nu2B.root"));
-  TH1D* h_sgn = (TH1D*)(f->Get("IsoPt_ZPrime_hZ_qqll_LHC8_M2000.root"));
+  TH1D* h_bk1 = (TH1D*)(f->Get("MwindowTrk_cut2000_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_bk2 = (TH1D*)(f->Get("MwindowTrk_cut2000_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_bk3 = (TH1D*)(f->Get("MwindowTrk_cut2000_TTTo2L2Nu2B.root"));
+  TH1D* h_sgn = (TH1D*)(f->Get("MwindowTrk_cut0_ZPrime_hZ_qqll_LHC8_M2000.root"));
 
   h_sgn->SetTitle("Iso/Pt of Total Background");
   h_sgn->GetYaxis()->SetTitle("Normalized distribution");
@@ -69,7 +69,7 @@ void combineBKG(){
   vector<Double_t> SEffOverOneplusSqrtB;
   vector<Double_t> upperThreshold;
 
-  for(Int_t bin = 0; bin <= 15; bin++){
+  for(Int_t bin = 0; bin <= 20; bin++){
 
     upperThreshold.push_back(bin*(0.2/40));
 

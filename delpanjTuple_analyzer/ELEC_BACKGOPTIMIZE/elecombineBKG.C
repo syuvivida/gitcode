@@ -27,16 +27,21 @@ const Double_t crossSection1 = 63.5*1000;
 const Double_t crossSection2 = 39.4*1000;
 const Double_t crossSection3 = 25.8*1000;
 
-void combineBKG(){
+void elecombineBKG(){
 
-  TFile *f = TFile::Open("backg_IsoPt.root");
+  TFile *f = TFile::Open("backgMwindowEle.root");
+  /*
+  TH1D* h_bk1 = (TH1D*)(f->Get("MwindowTrk_cut2000_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_bk2 = (TH1D*)(f->Get("MwindowTrk_cut2000_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_bk3 = (TH1D*)(f->Get("MwindowTrk_cut2000_TTTo2L2Nu2B.root"));
+  TH1D* h_sgn = (TH1D*)(f->Get("MwindowTrk_cut0_ZPrime_hZ_qqll_LHC8_M2000.root"));
+  */
+  TH1D* h_bk1 = (TH1D*)(f->Get("MwindowCal_cut1500_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_bk2 = (TH1D*)(f->Get("MwindowCal_cut1500_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_bk3 = (TH1D*)(f->Get("MwindowCal_cut1500_TTTo2L2Nu2B.root"));
+  TH1D* h_sgn = (TH1D*)(f->Get("MwindowCal_cut0_ZPrime_hZ_qqll_LHC8_M1500.root"));
 
-  TH1D* h_bk1 = (TH1D*)(f->Get("IsoPt_cut2000_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_bk2 = (TH1D*)(f->Get("IsoPt_cut2000_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_bk3 = (TH1D*)(f->Get("IsoPt_cut2000_TTTo2L2Nu2B.root"));
-  TH1D* h_sgn = (TH1D*)(f->Get("IsoPt_ZPrime_hZ_qqll_LHC8_M2000.root"));
-
-  h_sgn->SetTitle("Iso/Pt of Total Background");
+  h_sgn->SetTitle("Iso of Total Background");
   h_sgn->GetYaxis()->SetTitle("Normalized distribution");
 
   // scale = 20fb^-1 / luminosity
@@ -44,8 +49,8 @@ void combineBKG(){
   Double_t scale2 = 20 / (totalNEvent2 / crossSection2); // DYJetsToLL_PtZ100
   Double_t scale3 = 20 / (totalNEvent3 / crossSection3); // TTTo2L2Nu2B
 
-  TH1D* h_combineBKG = new TH1D("h_combineBKG", "Iso/Pt of Total Background", 40, 0, 0.2);
-  h_combineBKG->GetXaxis()->SetTitle("Iso/Pt");
+  TH1D* h_combineBKG = new TH1D("h_combineBKG", "Iso of Total Background", 100, 0, 0.5);
+  h_combineBKG->GetXaxis()->SetTitle("Iso");
   h_combineBKG->GetYaxis()->SetTitle("Normalized distribution");
 
   h_combineBKG->Add(h_bk1, scale1);
@@ -69,9 +74,9 @@ void combineBKG(){
   vector<Double_t> SEffOverOneplusSqrtB;
   vector<Double_t> upperThreshold;
 
-  for(Int_t bin = 0; bin <= 15; bin++){
+  for(Int_t bin = 0; bin <= 50; bin++){
 
-    upperThreshold.push_back(bin*(0.2/40));
+    upperThreshold.push_back(bin*(0.5/100));
 
     B.push_back(h_combineBKG->Integral(0,bin));
     S.push_back(h_sgn->Integral(0,bin));
@@ -110,9 +115,9 @@ void combineBKG(){
 
 
   TGraph* h_SgnOverBkg = new TGraph(upperThreshold.size(), upperThreshold.data(), SgnOverBkg.data());
-  h_SgnOverBkg->SetTitle("S/B over Iso/Pt upper threshold");
+  h_SgnOverBkg->SetTitle("S/B over Iso upper threshold");
   h_SgnOverBkg->GetYaxis()->SetTitle("S/B");
-  h_SgnOverBkg->GetXaxis()->SetTitle("Iso/Pt upper threshold");
+  h_SgnOverBkg->GetXaxis()->SetTitle("Iso upper threshold");
   h_SgnOverBkg->SetLineColor(lineColor);
   h_SgnOverBkg->SetLineWidth(lineWidth);
   h_SgnOverBkg->SetMarkerStyle(markStyle);
@@ -120,9 +125,9 @@ void combineBKG(){
 
 
   TGraph* h_SOverSqrtSplusB = new TGraph(upperThreshold.size(), upperThreshold.data(), SOverSqrtSplusB.data());
-  h_SOverSqrtSplusB->SetTitle("S/sqrt(S+B) over Iso/Pt upper threshold");
+  h_SOverSqrtSplusB->SetTitle("S/sqrt(S+B) over Iso upper threshold");
   h_SOverSqrtSplusB->GetYaxis()->SetTitle("S/sqrt(S+B)");
-  h_SOverSqrtSplusB->GetXaxis()->SetTitle("Iso/Pt upper threshold");
+  h_SOverSqrtSplusB->GetXaxis()->SetTitle("Iso upper threshold");
   h_SOverSqrtSplusB->SetLineColor(lineColor);
   h_SOverSqrtSplusB->SetLineWidth(lineWidth);
   h_SOverSqrtSplusB->SetMarkerStyle(markStyle);
@@ -130,9 +135,9 @@ void combineBKG(){
 
 
   TGraph* h_SEffOverOneplusSqrtB = new TGraph(upperThreshold.size(), upperThreshold.data(), SEffOverOneplusSqrtB.data());
-  h_SEffOverOneplusSqrtB->SetTitle("SIG Eff/(1+sqrt(B)) over Iso/Pt upper threshold");
+  h_SEffOverOneplusSqrtB->SetTitle("SIG Eff/(1+sqrt(B)) over Iso upper threshold");
   h_SEffOverOneplusSqrtB->GetYaxis()->SetTitle("effs/(1+sqrt(B))");
-  h_SEffOverOneplusSqrtB->GetXaxis()->SetTitle("Iso/Pt upper threshold");
+  h_SEffOverOneplusSqrtB->GetXaxis()->SetTitle("Iso upper threshold");
   h_SEffOverOneplusSqrtB->SetLineColor(lineColor);
   h_SEffOverOneplusSqrtB->SetLineWidth(lineWidth);
   h_SEffOverOneplusSqrtB->SetMarkerStyle(markStyle);
@@ -140,18 +145,18 @@ void combineBKG(){
 
 
   TGraph* h_bkgtotalIsoEff = new TGraph(upperThreshold.size(), upperThreshold.data(), bkgisolationEff.data());
-  h_bkgtotalIsoEff->SetTitle("Efficiency over Iso/Pt upper threshold");
+  h_bkgtotalIsoEff->SetTitle("Efficiency over Iso upper threshold");
   h_bkgtotalIsoEff->GetYaxis()->SetTitle("Efficiency");
-  h_bkgtotalIsoEff->GetXaxis()->SetTitle("Iso/Pt upper threshold");
+  h_bkgtotalIsoEff->GetXaxis()->SetTitle("Iso upper threshold");
   h_bkgtotalIsoEff->SetLineColor(2);
   h_bkgtotalIsoEff->SetLineWidth(lineWidth);
   h_bkgtotalIsoEff->SetMarkerStyle(markStyle);
   h_bkgtotalIsoEff->SetMarkerSize(markSize);
 
   TGraph* h_sigtotalIsoEff = new TGraph(upperThreshold.size(), upperThreshold.data(), sigisolationEff.data());
-  h_sigtotalIsoEff->SetTitle("Efficiency over Iso/Pt upper threshold");
+  h_sigtotalIsoEff->SetTitle("Efficiency over Iso upper threshold");
   h_sigtotalIsoEff->GetYaxis()->SetTitle("Efficiency");
-  h_sigtotalIsoEff->GetXaxis()->SetTitle("Iso/Pt upper threshold");
+  h_sigtotalIsoEff->GetXaxis()->SetTitle("Iso upper threshold");
   h_sigtotalIsoEff->SetLineColor(lineColor);
   h_sigtotalIsoEff->SetLineWidth(lineWidth);
   h_sigtotalIsoEff->SetMarkerStyle(markStyle);
@@ -193,6 +198,6 @@ void combineBKG(){
   c_allPlots->cd(6);
   h_SEffOverOneplusSqrtB->Draw();
 
-  c_allPlots->Print("backgroundOptimize_cut2000.gif");
+  c_allPlots->Print("backgroundOptimizeCal_cut1500.gif");
 
 }

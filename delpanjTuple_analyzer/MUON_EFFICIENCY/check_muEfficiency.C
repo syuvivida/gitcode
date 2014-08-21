@@ -31,8 +31,6 @@ void check_muEfficiency(string inputFile){
   TH1D* h_st_muPt_denom    = (TH1D*)h_Pt->Clone("h_st_muPt_denom");
   TH1D* h_st_gblmuPt_numer = (TH1D*)h_Pt->Clone("h_st_gblmuPt_numer");
   TH1D* h_manual_st_gblmuPt_numer = (TH1D*)h_Pt->Clone("h_manual_st_gblmuPt_numer");
-  TH1D* h_nd_muPt_denom    = (TH1D*)h_Pt->Clone("h_nd_muPt_denom");
-  TH1D* h_nd_gblmuPt_numer = (TH1D*)h_Pt->Clone("h_nd_gblmuPt_numer");
 
   TH1D* h_Eff_Pt = new TH1D("h_Eff_Pt", "Efficiency", 100, 0, 800); h_Eff_Pt->Sumw2();
   h_Eff_Pt->GetXaxis()->SetTitle("Pt");
@@ -42,12 +40,15 @@ void check_muEfficiency(string inputFile){
 
   TH1D* h_IDeff_st_gblmuPt = (TH1D*)h_Eff_Pt->Clone("h_IDeff_st_gblmuPt");
   TH1D* h_IDeff_manual_st_gblmuPt = (TH1D*)h_Eff_Pt->Clone("h_IDeff_manual_st_gblmuPt");
-  TH1D* h_IDeff_nd_gblmuPt = (TH1D*)h_Eff_Pt->Clone("h_IDeff_nd_gblmuPt");
 
-  //________________________________________________________________________________________//
-  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){ // begin of event loop
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 600);
+  c->Divide(3,1);
 
-    // print progress
+
+  // begin of event loop
+
+  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
+
     if ( ev % 50000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
     data.GetEntry(ev);
@@ -65,7 +66,7 @@ void check_muEfficiency(string inputFile){
     recoGenMuonMatching(data, &this_firstRecoIndex, &this_secondRecoIndex, 
 			&this_firstGenIndex, &this_secondGenIndex);
 
-    //__________________________________________________________
+
     // highest muon pt
 
     Int_t*   isGlobalMuon = data.GetPtrInt("isGlobalMuon");
@@ -77,56 +78,51 @@ void check_muEfficiency(string inputFile){
     Float_t* mudxy        = data.GetPtrFloat("mudxy");
     Float_t* mudz         = data.GetPtrFloat("mudz");
 
-    if( isGlobalMuon[this_firstRecoIndex] )
+    // global selection
+    if( isGlobalMuon[this_firstRecoIndex] ){
+
       h_st_muPt_denom->Fill(muPt[this_firstRecoIndex]);
 
-    // global muon (manual pass loop)
-    if( muHits[this_firstRecoIndex] <= 0 ) continue;
-    if( muMatches[this_firstRecoIndex] <= 1 ) continue;
-    if( fabs(mudxy[this_firstRecoIndex]) >= 0.2 ) continue;
-    if( fabs(mudz[this_firstRecoIndex]) >= 0.5 ) continue;
-    if( muPixelHits[this_firstRecoIndex] <= 0 ) continue;
-    if( muTrkLayers[this_firstRecoIndex] <= 5 ) continue;
-    if( muPt[this_firstRecoIndex] <= 10 ) continue;
-    if( muPtErrx[this_firstRecoIndex] >= 0.3 ) continue;
-    if( muEta[this_firstRecoIndex] >= 2.4 ) continue;
-    if( muPhi[this_firstRecoIndex] >= 3.2 )  continue;
+      // global muon (auto pass function)
+      if( muPassID[this_firstRecoIndex] & 2 )
+	h_st_gblmuPt_numer->Fill(muPt[this_firstRecoIndex]);
 
-    h_manual_st_gblmuPt_numer->Fill(muPt[this_firstRecoIndex]);
-    /*
-    // global muon (auto pass function)
-    if( muPassID[this_firstRecoIndex] & 2 )
-      h_st_gblmuPt_numer->Fill(muPt[this_firstRecoIndex]);
+      c->cd(1);
+      h_IDeff_st_gblmuPt->Divide(h_st_gblmuPt_numer, h_st_muPt_denom, 1, 1, "B");
+      h_IDeff_st_gblmuPt->Draw();
 
-    h_IDeff_manual_st_gblmuPt->Divide(h_manual_st_gblmuPt_numer, h_st_muPt_denom, 1, 1, "B");
-    h_IDeff_st_gblmuPt->Divide(h_st_gblmuPt_numer, h_st_muPt_denom, 1, 1, "B");
-    */
-    //__________________________________________________________
-    // second highest muon pt
+      // global muon (manual pass loop)
+      if( muHits[this_firstRecoIndex] <= 0 ) continue;
+      if( muMatches[this_firstRecoIndex] <= 1 ) continue;
+      if( fabs(mudxy[this_firstRecoIndex]) >= 0.2 ) continue;
+      if( fabs(mudz[this_firstRecoIndex]) >= 0.5 ) continue;
+      if( muPixelHits[this_firstRecoIndex] <= 0 ) continue;
+      if( muTrkLayers[this_firstRecoIndex] <= 5 ) continue;
+      if( muPt[this_firstRecoIndex] <= 10 ) continue;
+      if( muPtErrx[this_firstRecoIndex] >= 0.3 ) continue;
+      if( muEta[this_firstRecoIndex] >= 2.4 ) continue;
+      if( muPhi[this_firstRecoIndex] >= 3.2 )  continue;
 
-    if( isGlobalMuon[this_secondRecoIndex] )
-      h_nd_muPt_denom->Fill(muPt[this_secondRecoIndex]);
+      h_manual_st_gblmuPt_numer->Fill(muPt[this_firstRecoIndex]);
 
-    //global muon
-    if( muPassID[this_secondRecoIndex] & 2 )
-      h_nd_gblmuPt_numer->Fill(muPt[this_secondRecoIndex]);
+      c->cd(2);
+      h_IDeff_manual_st_gblmuPt->Divide(h_manual_st_gblmuPt_numer, h_st_muPt_denom, 1, 1, "B");
+      h_IDeff_manual_st_gblmuPt->Draw();
 
-    h_IDeff_nd_gblmuPt->Divide(h_nd_gblmuPt_numer, h_nd_muPt_denom, 1, 1, "B");
-    
-    //__________________________________________________________
+    }
 
-  } // end of event loop
+    c->cd(3);
+    h_IDeff_st_gblmuPt->Draw(); 
+    h_IDeff_manual_st_gblmuPt->SetLineColor(2);
+    h_IDeff_manual_st_gblmuPt->Draw("same");
 
+
+  } 
+
+  // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
-  std::string outName = "checkMuonIDeff_" + inputFile;
-  TFile* outFile = new TFile(outName.data(), "recreate");
-
-  h_IDeff_manual_st_gblmuPt->Write();
-  h_IDeff_st_gblmuPt->Write();
-  h_IDeff_nd_gblmuPt->Write();
-
-  outFile->Write();
+  c->Print("checkMuIDEff.gif");
 
 }

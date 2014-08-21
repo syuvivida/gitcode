@@ -54,7 +54,7 @@ Bool_t passMuonID(TreeReader &data,
 
     if( !(muPassID[sortMuIndex] & 4) ) continue;
     if( muPt[sortMuIndex] <= 20 ) continue; 
-    //if( (muCorrTrkIso[sortMuIndex] / muPt[sortMuIndex]) >= 0.1 ) continue;
+    if( (muCorrTrkIso[sortMuIndex] / muPt[sortMuIndex]) >= 0.1 ) continue;
 
     howManyMu.push_back(sortMuIndex);
 

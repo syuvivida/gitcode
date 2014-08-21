@@ -31,10 +31,8 @@ void check_eleEfficiency(string inputFile){
   TH1D* h_st_elePt_denom = (TH1D*)h_Pt->Clone("h_st_elePt_denom");
   TH1D* h_st_elePt_numer = (TH1D*)h_Pt->Clone("h_st_elePt_numer");
   TH1D* h_manual_st_elePt_numer = (TH1D*)h_Pt->Clone("h_manual_st_elePt_numer");
-  TH1D* h_nd_elePt_denom = (TH1D*)h_Pt->Clone("h_nd_elePt_denom");
-  TH1D* h_nd_elePt_numer = (TH1D*)h_Pt->Clone("h_nd_elePt_numer");
 
-  TH1D* h_Eff_Pt = new TH1D("h_Eff_Pt", "Efficiency", 100, 0, 800); h_Eff_Pt->Sumw2();
+  TH1D* h_Eff_Pt = new TH1D("h_Eff_Pt", "Electron ID Efficiency", 100, 0, 800); h_Eff_Pt->Sumw2();
   h_Eff_Pt->GetXaxis()->SetTitle("Pt");
   h_Eff_Pt->GetYaxis()->SetTitle("Efficiency");
 
@@ -42,12 +40,15 @@ void check_eleEfficiency(string inputFile){
 
   TH1D* h_IDeff_st_elePt = (TH1D*)h_Eff_Pt->Clone("h_IDeff_st_elePt");
   TH1D* h_IDeff_manual_st_elePt = (TH1D*)h_Eff_Pt->Clone("h_IDeff_manual_st_elePt");
-  TH1D* h_IDeff_nd_elePt = (TH1D*)h_Eff_Pt->Clone("h_IDeff_nd_elePt");
 
-  //________________________________________________________________________________________//
-  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){ // begin of event loop
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 600);
+  c->Divide(3,1);
 
-    // print progress
+
+  // begin of event loop
+
+  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
+
     if ( ev % 50000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
     data.GetEntry(ev);
@@ -65,7 +66,7 @@ void check_eleEfficiency(string inputFile){
     recoGenEleMatching(data, &this_firstRecoIndex, &this_secondRecoIndex, 
 		       &this_firstGenIndex, &this_secondGenIndex);
 
-    //__________________________________________________________
+
     // highest electron pt
 
     Int_t*   elePassConv = data.GetPtrInt("elePassConv");
@@ -84,11 +85,19 @@ void check_eleEfficiency(string inputFile){
 
       h_st_elePt_denom->Fill(elePt[this_firstRecoIndex]);
 
+      // electron (auto pass function)
+      if( elePassID[this_firstRecoIndex] > 0 )
+	h_st_elePt_numer->Fill(elePt[this_firstRecoIndex]);
+
+      c->cd(1);
+      h_IDeff_st_elePt->Divide(h_st_elePt_numer, h_st_elePt_denom, 1, 1, "B");
+      h_IDeff_st_elePt->Draw();
+
       // electron (manual pass function) // barrel cut
-      //if( eleDelEtaIn[this_firstRecoIndex] >= 0.004 ) continue;
-      //if( eleDelPhiIn[this_firstRecoIndex] >= 0.03 ) continue;
-      //if( eleSigIhIh[this_firstRecoIndex] >= 0.01 ) continue;
-      //if( eleHoE[this_firstRecoIndex] >= 0.12 ) continue;
+      if( eleDelEtaIn[this_firstRecoIndex] >= 0.004 ) continue;
+      if( eleDelPhiIn[this_firstRecoIndex] >= 0.03) continue;
+      if( eleSigIhIh[this_firstRecoIndex] >= 0.01 ) continue;
+      if( eleHoE[this_firstRecoIndex] >= 0.12 ) continue;
       if( eleDxy[this_firstRecoIndex] >= 0.02 ) continue;
       if( eleDz[this_firstRecoIndex] >= 0.1 ) continue;
       if( eleEoverP[this_firstRecoIndex] >= 0.05 ) continue;
@@ -99,43 +108,24 @@ void check_eleEfficiency(string inputFile){
 
       h_manual_st_elePt_numer->Fill(elePt[this_firstRecoIndex]);
 
+      c->cd(2);
+      h_IDeff_manual_st_elePt->Divide(h_manual_st_elePt_numer, h_st_elePt_denom, 1, 1, "B");
+      h_IDeff_manual_st_elePt->Draw();
+
     }
 
+    c->cd(3);
+    h_IDeff_st_elePt->Draw(); 
+    h_IDeff_manual_st_elePt->SetLineColor(2);
+    h_IDeff_manual_st_elePt->Draw("same");
 
 
-    /*
-    // electron (auto pass function)
-    if( elePassID[this_firstRecoIndex] > 0 )
-      h_st_elePt_numer->Fill(elePt[this_firstRecoIndex]);
-    */
-    h_IDeff_manual_st_elePt->Divide(h_manual_st_elePt_numer, h_st_elePt_denom, 1, 1, "B");
-    h_IDeff_manual_st_elePt->Draw();
+  } 
 
-    //h_IDeff_st_elePt->Divide(h_st_elePt_numer, h_st_elePt_denom, 1, 1, "B");
-
-    //__________________________________________________________
-    // second highest electron pt
-    /*
-    h_nd_elePt_denom->Fill(elePt[this_secondRecoIndex]);
-
-    if( elePassID[this_secondRecoIndex] > 0 )
-      h_nd_elePt_numer->Fill(elePt[this_secondRecoIndex]);
-
-    h_IDeff_nd_elePt->Divide(h_nd_elePt_numer, h_nd_elePt_denom, 1, 1, "B");
-    */
-    //__________________________________________________________
-
-  } // end of event loop
+  // end of event loop
 
   fprintf(stderr, "Processed all events\n");
-  /*
-  std::string outName = "checkEleIDeff_" + inputFile;
-  TFile* outFile = new TFile(outName.data(), "recreate");
 
-  h_IDeff_manual_st_elePt->Write();
-  h_IDeff_st_elePt->Write();
-  h_IDeff_nd_elePt->Write();
+  c->Print("checkEleIDEff.gif");
 
-  outFile->Write();
-  */
 }

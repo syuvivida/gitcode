@@ -54,8 +54,8 @@ Bool_t passElectronID(TreeReader &data,
 
     if( elePassID[sortEleIndex] <= 0 ) continue;
     if( elePt[sortEleIndex] <= 40 ) continue; 
-    //if( eleUserTrkIso[sortEleIndex] >= isoCutValue ) continue;
-    //if( (eleUserCalIso[sortEleIndex]-(0.06205*eleRho)) >= isoCutValue ) continue;
+    if( eleUserTrkIso[sortEleIndex] >= isoCutValue ) continue;
+    if( (eleUserCalIso[sortEleIndex]-(0.06205*eleRho)) >= isoCutValue ) continue;
 
     tightEleIndex.push_back(sortEleIndex);
 

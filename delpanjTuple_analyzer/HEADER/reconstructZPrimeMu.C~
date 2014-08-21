@@ -18,10 +18,10 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 #include "specificLeptonPt.C"
-#include "passElectronID.C"
+#include "passMuonID.C"
 
 void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
-Bool_t passElectronID(TreeReader&, Int_t*, Int_t*);
+Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
 void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 
@@ -32,18 +32,18 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
   Float_t* CA8jetPhi  = data.GetPtrFloat("CA8jetPhi");
   Float_t* CA8jetMass = data.GetPtrFloat("CA8jetMass");
 
-  Int_t    nEle   = data.GetInt("nEle");
-  Int_t*   elePassID = data.GetPtrInt("elePassID");
-  Float_t* elePt  = data.GetPtrFloat("elePt");
-  Float_t* eleEta = data.GetPtrFloat("eleEta");
-  Float_t* elePhi = data.GetPtrFloat("elePhi");
-  Float_t* eleM   = data.GetPtrFloat("eleM");
-
+  Int_t    nMu   = data.GetInt("nMu");
+  Int_t*   muPassID = data.GetPtrInt("muPassID");
   Float_t* muPt  = data.GetPtrFloat("muPt");
+  Float_t* muEta = data.GetPtrFloat("muEta");
+  Float_t* muPhi = data.GetPtrFloat("muPhi");
+  Float_t* muM   = data.GetPtrFloat("muM");
+
+  Float_t* elePt  = data.GetPtrFloat("elePt");
 
 
   //-----------------------------------------------------------------------------------//
-  // choose the primary electron
+  // choose the primary muon
 
   Int_t stMuPtIndex  = -1;
   Int_t ndMuPtIndex  = -1;
@@ -58,63 +58,63 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
   
   if( stMuPtIndex > 0 && stElePtIndex > 0 ){
     
-    if( (elePt[stElePtIndex] - muPt[stMuPtIndex]) < 1e-6 ) 
+    if( (muPt[stMuPtIndex] - elePt[stElePtIndex]) < 1e-6 ) 
       return;
 
   }
     
   //-----------------------------------------------------------------------------------//
-  // sorting electron and pass the electron ID
+  // sorting muon and pass the muon ID
 
-  vector<Int_t> howManyEle;
+  vector<Int_t> howManyMu;
 
-  typedef map<double, int, std::greater<double> > eleMap;
-  eleMap sortElePt;
-  typedef eleMap::iterator mapEleIter;
+  typedef map<double, int, std::greater<double> > muMap;
+  muMap sortMuPt;
+  typedef muMap::iterator mapMuIter;
 
-  for(Int_t i = 0; i < nEle; i++){
+  for(Int_t i = 0; i < nMu; i++){
 
-    sortElePt.insert(std::pair<Float_t, Int_t>(elePt[i], i));
-
-  }
-
-  for(mapEleIter it_part = sortElePt.begin(); it_part != sortElePt.end(); ++it_part){
-
-    Int_t sortEleIndex = it_part->second;
-
-    if( elePassID[sortEleIndex] <= 0 ) continue;
-    if( elePt[sortEleIndex] <= 40 ) continue; 
-
-    howManyEle.push_back(sortEleIndex);
+    sortMuPt.insert(std::pair<Float_t, Int_t>(muPt[i], i));
 
   }
 
-  Int_t stRecoEleIndex, ndRecoEleIndex;
+  for(mapMuIter it_part = sortMuPt.begin(); it_part != sortMuPt.end(); ++it_part){
 
-  if( !passElectronID(data, &stRecoEleIndex, &ndRecoEleIndex) )
-    return;
+    Int_t sortMuIndex = it_part->second;
+
+    if( !(muPassID[sortMuIndex] & 4) ) continue;
+    if( muPt[sortMuIndex] <= 20 ) continue; 
+
+    howManyMu.push_back(sortMuIndex);
+
+  }
+
+  Int_t stRecoMuIndex, ndRecoMuIndex;
+
+  if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
+    continue;
 
 
   //-----------------------------------------------------------------------------------//   
   // reconstruct Z mass
 
-  TLorentzVector stRecoEle, ndRecoEle;  
+  TLorentzVector stRecoMu, ndRecoMu;  
  
-  stRecoEle.SetPtEtaPhiM(elePt[stRecoEleIndex], 
-			eleEta[stRecoEleIndex], 
-			elePhi[stRecoEleIndex],
-			eleM[stRecoEleIndex]);  
+  stRecoMu.SetPtEtaPhiM(muPt[stRecoMuIndex], 
+			muEta[stRecoMuIndex], 
+			muPhi[stRecoMuIndex],
+			muM[stRecoMuIndex]);  
   
-  ndRecoEle.SetPtEtaPhiM(elePt[ndRecoEleIndex], 
-			eleEta[ndRecoEleIndex],
-			elePhi[ndRecoEleIndex], 
-			eleM[ndRecoEleIndex]); 
+  ndRecoMu.SetPtEtaPhiM(muPt[ndRecoMuIndex], 
+			muEta[ndRecoMuIndex],
+			muPhi[ndRecoMuIndex], 
+			muM[ndRecoMuIndex]); 
     
-  TLorentzVector Z = stRecoEle + ndRecoEle;
+  TLorentzVector Z = stRecoMu + ndRecoMu;
 
 
   //-----------------------------------------------------------------------------------//
-  // pass boosted-jet ID, removing overlap electrons
+  // pass boosted-jet ID, removing overlap muons
 
   typedef map<double, int, std::greater<double> > jetMap;
   jetMap sortJetPt;
@@ -127,7 +127,7 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
   }
 
   vector<Int_t> maxJetIndex;
-  TLorentzVector boostedJet, basicElectron;
+  TLorentzVector boostedJet, basicMuon;
 
   for(mapJetIter it_part = sortJetPt.begin(); it_part != sortJetPt.end(); ++it_part){
 
@@ -145,20 +145,20 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 
       Bool_t isolatedStats = true; 
 
-      for(size_t j = 0; j < howManyEle.size(); j++){
+      for(size_t j = 0; j < howManyMu.size(); j++){
 
-	basicElectron.SetPtEtaPhiM(elePt[howManyEle[j]], 
-			       eleEta[howManyEle[j]], 
-			       elePhi[howManyEle[j]],
-			       eleM[howManyEle[j]]);
+	basicMuon.SetPtEtaPhiM(muPt[howManyMu[j]], 
+			       muEta[howManyMu[j]], 
+			       muPhi[howManyMu[j]],
+			       muM[howManyMu[j]]);
 
-	if( basicElectron.DeltaR(boostedJet) < 0.8 ){
+	if( basicMuon.DeltaR(boostedJet) < 0.8 ){
 	  isolatedStats = false;
 	  break;
 
 	}
 
-      } // end of howManyEle for loop
+      } // end of howManyMu for loop
 
       if( isolatedStats ) 
 	maxJetIndex.push_back(sortJetIndex);

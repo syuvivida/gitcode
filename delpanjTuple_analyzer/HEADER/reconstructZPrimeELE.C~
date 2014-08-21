@@ -92,7 +92,7 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
   Int_t stRecoEleIndex, ndRecoEleIndex;
 
   if( !passElectronID(data, &stRecoEleIndex, &ndRecoEleIndex) )
-    return;
+    continue;
 
 
   //-----------------------------------------------------------------------------------//   

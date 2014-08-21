@@ -18,27 +18,27 @@
 #include "../HEADER/untuplizer.h"
 #include "../HEADER/passMuonID.C"
 
-void passMuonID(TreeReader&, Int_t*, Int_t*);
+Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
-void muIsolation(std::string inputFile, const Double_t cutValue){
+void muIsolation(std::string inputFile){
 
   TreeReader data(inputFile.data());
 
   // Declare the histogram of Delta R
 
   TH1D* h_DeltaR = new TH1D("h_DeltaR", "Delta R", 100, 0, 2);
-  h_DeltaR->GetXaxis()->SetTitle("DeltaR");
-  h_DeltaR->GetYaxis()->SetTitle("Event number");
-
   TH1D* h_DeltaR_beforeIsoCut = (TH1D*)h_DeltaR->Clone("h_DeltaR_beforeIsoCut");
   TH1D* h_DeltaR_TrkIsoCut    = (TH1D*)h_DeltaR->Clone("h_DeltaR_TrkIsoCut");
-  TH1D* h_DeltaR_PfIsoCut     = (TH1D*)h_DeltaR->Clone("h_DeltaR_PfIsoCut");
-  TH1D* h_DeltaR_TauIsoCut    = (TH1D*)h_DeltaR->Clone("h_DeltaR_TauIsoCut");
+
+  TH1D* h_Vtx = new TH1D("h_Vtx", "info_nVtx", 100, 0, 50);
+  TH1D* h_Vtx_beforeIsoCut = (TH1D*)h_Vtx->Clone("h_Vtx_beforeIsoCut");
+  TH1D* h_Vtx_TrkIsoCut = (TH1D*)h_Vtx->Clone("h_Vtx_TrkIsoCut");
+
 
   // Declare the histogram of efficiency
 
-  TCanvas* c_allMuEff = new TCanvas("c_allMuEff", "", 0, 0, 1280, 720);
-  c_allMuEff->Divide(2,2);
+  TCanvas* c_allMuEff = new TCanvas("c_allMuEff", "", 0, 0, 1280, 600);
+  c_allMuEff->Divide(2,1);
 
   TGraphAsymmErrors* h_EffIsoCut = new TGraphAsymmErrors();
   h_EffIsoCut->SetMarkerColor(4);
@@ -46,31 +46,29 @@ void muIsolation(std::string inputFile, const Double_t cutValue){
   h_EffIsoCut->SetMarkerSize(0.5);
 
   TGraphAsymmErrors* h_Eff_TrkIsoCut = (TGraphAsymmErrors*)h_EffIsoCut->Clone("h_Eff_TrkIsoCut");
-  TGraphAsymmErrors* h_Eff_PfIsoCut  = (TGraphAsymmErrors*)h_EffIsoCut->Clone("h_Eff_PfIsoCut");
-  TGraphAsymmErrors* h_Eff_TauIsoCut = (TGraphAsymmErrors*)h_EffIsoCut->Clone("h_Eff_TauIsoCut");
+  TGraphAsymmErrors* h_Eff_VtxTrkIsoCut = (TGraphAsymmErrors*)h_EffIsoCut->Clone("h_Eff_VtxTrkIsoCut");
 
-  //________________________________________________________________________________________//
-  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){ // begin of event loop
 
-    // print progress
+  // begin of event loop
+
+  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
+
     if ( ev % 50000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
     data.GetEntry(ev);
     
+    Int_t info_nVtx = data.GetInt("info_nVtx");
     Float_t* muPt  = data.GetPtrFloat("muPt");
     Float_t* muEta = data.GetPtrFloat("muEta");
     Float_t* muPhi = data.GetPtrFloat("muPhi");
     Float_t* muM   = data.GetPtrFloat("muM");
     Float_t* muCorrTrkIso = data.GetPtrFloat("muCorrTrkIso");
-    Float_t* muCorrPfIso = data.GetPtrFloat("muCorrPfIso");
-    Float_t* muTauCorrPfIso = data.GetPtrFloat("muTauCorrPfIso");
 
-    Int_t stRecoMuIndex = -1;
-    Int_t ndRecoMuIndex = -1;
+    Int_t stRecoMuIndex, ndRecoMuIndex;
 
-    passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex);
-
-    if( stRecoMuIndex < 0 || ndRecoMuIndex < 0 ) continue;
+    // please check if the isolation cut in this function has been comment or not
+    if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
+      continue;
 
     TLorentzVector stRecoMu, ndRecoMu;   
     stRecoMu.SetPtEtaPhiM(muPt[stRecoMuIndex], muEta[stRecoMuIndex], muPhi[stRecoMuIndex], muM[stRecoMuIndex]);    
@@ -78,30 +76,23 @@ void muIsolation(std::string inputFile, const Double_t cutValue){
     
     h_DeltaR_beforeIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
     h_DeltaR_beforeIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
+
+    h_Vtx_beforeIsoCut->Fill(info_nVtx);
+    h_Vtx_beforeIsoCut->Fill(info_nVtx);
    
     // if pass muCorrTrkIso cut
 
-    if( ( muCorrTrkIso[stRecoMuIndex] / muPt[stRecoMuIndex] ) < cutValue ) 
+    Double_t cutValue = 0.1;
+
+    if( ( muCorrTrkIso[stRecoMuIndex] / muPt[stRecoMuIndex] ) < cutValue ){ 
       h_DeltaR_TrkIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
+      h_Vtx_TrkIsoCut->Fill(info_nVtx);
+    }
 
-    if( ( muCorrTrkIso[ndRecoMuIndex] / muPt[ndRecoMuIndex] ) < cutValue )
+    if( ( muCorrTrkIso[ndRecoMuIndex] / muPt[ndRecoMuIndex] ) < cutValue ){
       h_DeltaR_TrkIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
-
-    // if pass muCorrPfIso cut
-
-    if( ( muCorrPfIso[stRecoMuIndex] / muPt[stRecoMuIndex] ) < cutValue ) 
-      h_DeltaR_PfIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
-
-    if( ( muCorrPfIso[ndRecoMuIndex] / muPt[ndRecoMuIndex] ) < cutValue )
-      h_DeltaR_PfIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
-
-    // if pass muTauCorrPfIso cut
-
-    if( ( muTauCorrPfIso[stRecoMuIndex] / muPt[stRecoMuIndex] ) < cutValue ) 
-      h_DeltaR_TauIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
-
-    if( ( muTauCorrPfIso[ndRecoMuIndex] / muPt[ndRecoMuIndex] ) < cutValue )
-      h_DeltaR_TauIsoCut->Fill(stRecoMu.DeltaR(ndRecoMu));
+      h_Vtx_TrkIsoCut->Fill(info_nVtx);
+    }
 
 
     // Isolation cut efficiency
@@ -109,31 +100,25 @@ void muIsolation(std::string inputFile, const Double_t cutValue){
     c_allMuEff->cd(1);
     h_Eff_TrkIsoCut->Divide(h_DeltaR_TrkIsoCut, h_DeltaR_beforeIsoCut);
     h_Eff_TrkIsoCut->SetTitle("muCorrTrkIso");
-    h_Eff_TrkIsoCut->GetXaxis()->SetTitle("Iso/Pt");
-    h_Eff_TrkIsoCut->GetYaxis()->SetTitle("Efficiency");
+    h_Eff_TrkIsoCut->GetXaxis()->SetTitle("Delta R");
+    h_Eff_TrkIsoCut->GetYaxis()->SetTitle("Iso/Pt cut Efficiency");
     h_Eff_TrkIsoCut->Draw();
 
     c_allMuEff->cd(2);
-    h_Eff_PfIsoCut->Divide(h_DeltaR_PfIsoCut, h_DeltaR_beforeIsoCut);
-    h_Eff_PfIsoCut->SetTitle("muCorrPfIso");
-    h_Eff_PfIsoCut->GetXaxis()->SetTitle("Iso/Pt");
-    h_Eff_PfIsoCut->GetYaxis()->SetTitle("Efficiency");
-    h_Eff_PfIsoCut->Draw();
+    h_Eff_VtxTrkIsoCut->Divide(h_Vtx_TrkIsoCut, h_Vtx_beforeIsoCut);
+    h_Eff_VtxTrkIsoCut->SetTitle("muCorrVtxTrkIso");
+    h_Eff_VtxTrkIsoCut->GetXaxis()->SetTitle("nVtx");
+    h_Eff_VtxTrkIsoCut->GetYaxis()->SetTitle("Iso/Pt cut Efficiency");
+    h_Eff_VtxTrkIsoCut->Draw();
 
-    c_allMuEff->cd(3);
-    h_Eff_TauIsoCut->Divide(h_DeltaR_TauIsoCut, h_DeltaR_beforeIsoCut);
-    h_Eff_TauIsoCut->SetTitle("muTauCorrPfIso");
-    h_Eff_TauIsoCut->GetXaxis()->SetTitle("Iso/Pt");
-    h_Eff_TauIsoCut->GetYaxis()->SetTitle("Efficiency");
-    h_Eff_TauIsoCut->Draw();
-
-
-    //__________________________________________________________
     
-  } // end of event loop
+  }
+
+    // end of event loop
 
   fprintf(stderr, "Processed all events\n");
   
-  c_allMuEff->Print("muIsoCutEff_M2000.gif");
+  c_allMuEff->Print("muIsoCutEff_qqllM2000.gif");
   
+
 }

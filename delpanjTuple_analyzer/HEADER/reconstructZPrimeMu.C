@@ -21,7 +21,7 @@
 #include "passMuonID.C"
 
 void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
-void passMuonID(TreeReader&, Int_t*, Int_t*);
+Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
 void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 
@@ -89,12 +89,11 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 
   }
 
-  Int_t stRecoMuIndex = -1;
-  Int_t ndRecoMuIndex = -1;
+  Int_t stRecoMuIndex, ndRecoMuIndex;
 
-  passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex);
+  if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
+    return;
 
-  if( stRecoMuIndex < 0 || ndRecoMuIndex < 0 ) return;
 
   //-----------------------------------------------------------------------------------//   
   // reconstruct Z mass
