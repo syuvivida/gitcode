@@ -24,7 +24,6 @@ Bool_t passElectronID(TreeReader &data,
   Int_t    nEle   = data.GetInt("nEle"); 
   Int_t*   elePassID = data.GetPtrInt("elePassID");
   Float_t  eleRho = data.GetFloat("eleRho");
-  Float_t* elePt  = data.GetPtrFloat("elePt");
   Float_t* eleEt  = data.GetPtrFloat("eleEt");
   Float_t* eleScEta = data.GetPtrFloat("eleScEta");
   Float_t* eleUserTrkIso = data.GetPtrFloat("eleUserTrkIso");
@@ -35,16 +34,16 @@ Bool_t passElectronID(TreeReader &data,
   vector<Int_t> tightEleIndex;
 
   typedef map<double, int, std::greater<double> > eleMap;
-  eleMap sortElePt;
+  eleMap sortEleEt;
   typedef eleMap::iterator mapEleIter;
 
   for(Int_t i = 0; i < nEle; i++){
 
-    sortElePt.insert(std::pair<Float_t, Int_t>(elePt[i], i));
+    sortEleEt.insert(std::pair<Float_t, Int_t>(eleEt[i], i));
 
   }
 
-  for(mapEleIter it_part = sortElePt.begin(); it_part != sortElePt.end(); ++it_part){
+  for(mapEleIter it_part = sortEleEt.begin(); it_part != sortEleEt.end(); ++it_part){
 
     // at least two electrons
     // pt of these electrons must greater than 40
@@ -54,7 +53,7 @@ Bool_t passElectronID(TreeReader &data,
     Double_t isoCutValue = 2+(0.03*eleEt[sortEleIndex]);
 
     if( elePassID[sortEleIndex] <= 0 ) continue;
-    if( elePt[sortEleIndex] <= 40 ) continue;
+    if( eleEt[sortEleIndex] <= 40 ) continue;
     if( eleUserTrkIso[sortEleIndex] >= 5 ) continue;
 
     // barrel selection

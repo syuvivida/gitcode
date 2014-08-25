@@ -97,21 +97,17 @@ Bool_t passMuonID(TreeReader &data,
 
     *stRecoMuIndex = globalTightPtIndex[0];
 
-    if( onlyGlobalIndex.size() > 1 )
+    if( globalTightPtIndex.size() > 1 )
+      *ndRecoMuIndex = globalTightPtIndex[1];
+
+    else if( onlyGlobalIndex.size() > 1 )
       *ndRecoMuIndex = onlyGlobalIndex[0];
 
-    else if( onlyTightPtIdex.size() > 1 )  
+    else if( onlyTightPtIdex.size() > 1 )
       *ndRecoMuIndex = onlyTightPtIdex[0];
-      
-    if( *ndRecoMuIndex < 0 ){
 
-      if( globalTightPtIndex.size() > 1 )
-	*ndRecoMuIndex = globalTightPtIndex[1];
-
-      else if( basicMuIndex.size() > 0 )
-	*ndRecoMuIndex = basicMuIndex[0];
-
-    }
+    else if( basicMuIndex.size() > 0 )
+      *ndRecoMuIndex = basicMuIndex[0];
 
   }   
 
