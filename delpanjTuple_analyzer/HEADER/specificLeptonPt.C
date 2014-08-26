@@ -26,7 +26,7 @@ void specificLeptonPt(TreeReader &data, Int_t *stMuPtIndex, Int_t *ndMuPtIndex,
   Float_t* muPt  = data.GetPtrFloat("muPt");
   Float_t* muEta = data.GetPtrFloat("muEta");
 
-  typedef map<double, int, std::greater<double> > muonMap;
+  typedef map<Float_t, Int_t, std::greater<Float_t> > muonMap;
   muonMap sortMuonPt;
   typedef muonMap::iterator mapMuIter;
   
@@ -43,8 +43,8 @@ void specificLeptonPt(TreeReader &data, Int_t *stMuPtIndex, Int_t *ndMuPtIndex,
 
     Int_t sortMuIndex = it_part->second;
 
-    if( fabs(muEta[sortMuIndex]) > 2.4 ) continue;
-    if( muPt[sortMuIndex] < 20 ) continue;
+    if( fabs(muEta[sortMuIndex]) >= 2.4 ) continue;
+    if( muPt[sortMuIndex] <= 20 ) continue;
 
     if( *stMuPtIndex == -1 )
       *stMuPtIndex = sortMuIndex;
@@ -65,7 +65,7 @@ void specificLeptonPt(TreeReader &data, Int_t *stMuPtIndex, Int_t *ndMuPtIndex,
   Float_t* elePt  = data.GetPtrFloat("elePt");
   Float_t* eleEta = data.GetPtrFloat("eleEta");
 
-  typedef map<double, int, std::greater<double> > eleMap;
+  typedef map<Float_t, Int_t, std::greater<Float_t> > eleMap;
   eleMap sortElePt;
   typedef eleMap::iterator mapEleIter;
   
@@ -82,8 +82,8 @@ void specificLeptonPt(TreeReader &data, Int_t *stMuPtIndex, Int_t *ndMuPtIndex,
 
     Int_t sortEleIndex = it_part->second;
 
-    if( fabs(eleEta[sortEleIndex]) > 2.5 ) continue;
-    if( elePt[sortEleIndex] < 35 ) continue;
+    if( fabs(eleEta[sortEleIndex]) >= 2.5 ) continue;
+    if( elePt[sortEleIndex] <= 35 ) continue;
       
     if( *stElePtIndex == -1 )
       *stElePtIndex = sortEleIndex;

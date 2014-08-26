@@ -23,7 +23,7 @@
 void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
-void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
+void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass, Double_t *PrunedjetMass){
 
   Int_t    CA8nJet    = data.GetInt("CA8nJet"); 
   Int_t*   CA8jetPassID = data.GetPtrInt("CA8jetPassID");
@@ -31,6 +31,7 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
   Float_t* CA8jetEta  = data.GetPtrFloat("CA8jetEta");
   Float_t* CA8jetPhi  = data.GetPtrFloat("CA8jetPhi");
   Float_t* CA8jetMass = data.GetPtrFloat("CA8jetMass");
+  Float_t* CA8jetPrunedMass = data.GetPtrFloat("CA8jetPrunedMass");
 
   Int_t    nMu   = data.GetInt("nMu");
   Int_t*   muPassID = data.GetPtrInt("muPassID");
@@ -62,7 +63,8 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
       return;
 
   }
-    
+
+
   //-----------------------------------------------------------------------------------//
   // sorting muon and pass the muon ID
 
@@ -87,13 +89,14 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 
     howManyMu.push_back(sortMuIndex);
 
+
   }
 
   Int_t stRecoMuIndex, ndRecoMuIndex;
-
+  
   if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
     return;
-
+  
 
   //-----------------------------------------------------------------------------------//   
   // reconstruct Z mass
@@ -116,7 +119,7 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
   //-----------------------------------------------------------------------------------//
   // pass boosted-jet ID, removing overlap muons
 
-  typedef map<double, int, std::greater<double> > jetMap;
+  typedef map<Float_t, Int_t, std::greater<Float_t> > jetMap;
   jetMap sortJetPt;
   typedef jetMap::iterator mapJetIter;
 
@@ -142,6 +145,7 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 			      CA8jetEta[sortJetIndex], 
 			      CA8jetPhi[sortJetIndex], 
 			      CA8jetMass[sortJetIndex]);
+
 
       Bool_t isolatedStats = true; 
 
@@ -186,9 +190,13 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 
   if( Z.E() <= 1e-6 || newBoostedJet.E() <= 1e-6 ) return;
 
+  // signal region
+  //if( CA8jetPrunedMass[maxJetIndex[0]] <= 110 || CA8jetPrunedMass[maxJetIndex[0]] >= 140 )
+  //  return;
+
   TLorentzVector Zprime = Z + newBoostedJet;
 
-  *ZprimeMass = Zprime.M();  
-
-  
+  *ZprimeMass = Zprime.M();
+  *PrunedjetMass = CA8jetPrunedMass[maxJetIndex[0]];  
+ 
 }

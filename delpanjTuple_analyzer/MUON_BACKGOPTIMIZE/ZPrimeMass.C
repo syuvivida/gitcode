@@ -20,9 +20,9 @@
 #include "../HEADER/reconstructZPrimeMu.C"
 
 Double_t fitFunc(Double_t*, Double_t*);
-void reconstructZPrime(TreeReader&, Double_t*);
+void reconstructZPrime(TreeReader&, Double_t*, Double_t*);
 
-void ZPrimeMass(std::string inputFile, std::string outName){
+void ZPrimeMass(std::string inputFile){
 
   TreeReader data(inputFile.data());
 
@@ -31,6 +31,8 @@ void ZPrimeMass(std::string inputFile, std::string outName){
   TH1D* h_Zprime_Mass = new TH1D("h_Zprime_Mass", "Reconstructed Zprime mass", 100, 0, 2500);
   h_Zprime_Mass->GetXaxis()->SetTitle("Mass");
   h_Zprime_Mass->GetYaxis()->SetTitle("Event number");
+
+  TH1D* h_PrunedjetMass = new TH1D("h_PrunedjetMass","",100,0,300);
 
   TH1D* h_genZprime_Mass = new TH1D("h_genZprime_Mass", "Generator Zprime mass", 100, 900, 2100);
   h_genZprime_Mass->GetXaxis()->SetTitle("Mass");
@@ -41,21 +43,16 @@ void ZPrimeMass(std::string inputFile, std::string outName){
   h_ratioZprime_Mass->GetYaxis()->SetTitle("Event number");
 
 
-  //________________________________________________________________________________________//
+  // begin of event loop
+  
+  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
 
-  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){ // begin of event loop
-
-
-    // print progress
     if ( ev % 50000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
 
     data.GetEntry(ev);
     
-
-    //-----------------------------------------------------------------------------------//
-
 
     Int_t    nGenPar   = data.GetInt("nGenPar"); 
     Int_t*   genParId  = data.GetPtrInt("genParId");
@@ -67,8 +64,6 @@ void ZPrimeMass(std::string inputFile, std::string outName){
 
 
     //-----------------------------------------------------------------------------------//
-
-
     // choose generator level Z prime and draw its mass  
 
     TLorentzVector genZprime;
@@ -87,45 +82,52 @@ void ZPrimeMass(std::string inputFile, std::string outName){
 
     //-----------------------------------------------------------------------------------//
 
-    Double_t ZprimeMass = 0;
+    Double_t ZprimeMass = -1;
+    Double_t PrunedjetMass = -1;
 
-    reconstructZPrime(data, &ZprimeMass);
+    reconstructZPrime(data, &ZprimeMass, &PrunedjetMass);
+
+    if( ZprimeMass < 1e-6 || PrunedjetMass < 1e-6 ) continue;
 
     h_Zprime_Mass->Fill(ZprimeMass);  
-
+    h_PrunedjetMass->Fill(PrunedjetMass);
 
     //-----------------------------------------------------------------------------------//
-
-
     // to check the width of Zprime mass at reconstructed level 
 
     h_ratioZprime_Mass->Fill(ZprimeMass/genZprime.M());
 
-
-    //__________________________________________________________
     
-  } // end of event loop
+  } 
+
+  // end of event loop
 
 
   // Fitting the mass ratio
-
-  TF1* fitRatio = new TF1("fitRatio", fitFunc, 0.6, 1.4, 3);
+  
+  TF1* fitRatio = new TF1("fitRatio", fitFunc, 0.8, 1.2, 3);
   fitRatio->SetParameters(100, 0.9, 0.2);
   fitRatio->SetParNames("Amplitude", "Mean", "Sigma");
 
-  h_ratioZprime_Mass->Fit("fitRatio", "","", 0.6, 1.4);
-
-
+  h_ratioZprime_Mass->Fit("fitRatio", "","", 0.8, 1.2);
+ 
   fprintf(stderr, "Processed all events\n");
-  
-  std::string fileName = "optbkg_" + outName.substr(18);
-  TFile* outFile = new TFile(fileName.data(), "recreate");
 
-  h_genZprime_Mass->Write();
-  h_Zprime_Mass->Write();
-  h_ratioZprime_Mass->Write();
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 760);
+  c->Divide(2,2);
 
-  outFile->Write();
+  c->cd(1);
+  h_genZprime_Mass->Draw();
+
+  c->cd(2);
+  h_Zprime_Mass->Draw();
+
+  c->cd(3);
+  h_ratioZprime_Mass->Draw();
+
+  c->cd(4);
+  h_PrunedjetMass->Draw();
+
   
 }
 

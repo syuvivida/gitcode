@@ -68,7 +68,7 @@ void reconstructZPrime(TreeReader &data, Double_t *ZprimeMass){
 
   vector<Int_t> howManyEle;
 
-  typedef map<double, int, std::greater<double> > eleMap;
+  typedef map<Float_t, Int_t, std::greater<Float_t> > eleMap;
   eleMap sortElePt;
   typedef eleMap::iterator mapEleIter;
 

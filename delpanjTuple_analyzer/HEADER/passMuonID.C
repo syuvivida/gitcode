@@ -34,7 +34,7 @@ Bool_t passMuonID(TreeReader &data,
   vector<Int_t> onlyTightPtIdex;
   vector<Int_t> globalTightPtIndex;
 
-  typedef map<double, int, std::greater<double> > muMap;
+  typedef map<Float_t, Int_t, std::greater<Float_t> > muMap;
   muMap sortMuPt;
   typedef muMap::iterator mapMuIter;
 

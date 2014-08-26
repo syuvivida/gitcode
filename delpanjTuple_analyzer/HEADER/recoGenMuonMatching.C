@@ -50,8 +50,6 @@ void recoGenMuonMatching(TreeReader &data,
 
 
   //-----------------------------------------------------------------------------------//
-
-
   // to pass the generator muons
 
   Int_t    nGenPar     = data.GetInt("nGenPar"); 
@@ -83,8 +81,6 @@ void recoGenMuonMatching(TreeReader &data,
 
 
   //-----------------------------------------------------------------------------------//
-
-
   // to check if reconstructed muon match generator muon
     
   TLorentzVector reco_stMuon, reco_ndMuon;
