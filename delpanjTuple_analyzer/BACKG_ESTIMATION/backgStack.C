@@ -28,44 +28,17 @@
 void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
-void backgEstimate(std::string inputFile, std::string outName){
+void backgStack(std::string inputFile, std::string outName){
 
   TreeReader data(inputFile.data());
 
-  const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
-			      1250,1400,1600,1800,2000,2400};
 
-  Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
+  // Declare the histogram
 
+  TH1D* h_prunedJetMass = new TH1D("h_prunedJetMass", "Pruned Jet Mass", 100, 40, 240);
+  h_prunedJetMass->GetXaxis()->SetTitle("Pruned jet mass");
+  h_prunedJetMass->GetYaxis()->SetTitle("Event number");
 
-  TH1D* h_ZMass = new TH1D("h_ZMass", "Z Mass", 100, 70, 110);
-
-  // Declare the side band region histogram
-
-  TH1D* h_sidePrunedjetMass = new TH1D("h_sidePrunedjetMass", "Side-band region Pruned Jet Mass", 100, 50, 110);
-  h_sidePrunedjetMass->GetXaxis()->SetTitle("Pruned jet mass");
-  h_sidePrunedjetMass->GetYaxis()->SetTitle("Event number");
-
-  TH1D* h_sideZprimeMass = new TH1D("h_sideZprimeMass", "Side-band region Zprime Mass", nvarBins, varBins);
-  h_sideZprimeMass->GetXaxis()->SetTitle("Zprime mass");
-  h_sideZprimeMass->GetYaxis()->SetTitle("Event number");
-
-  // Declare the signal region histogram
-
-  TH1D* h_signPrunedjetMass = new TH1D("h_signPrunedjetMass", "Signal region Pruned Jet Mass", 100, 110, 140);
-  h_signPrunedjetMass->GetXaxis()->SetTitle("Pruned jet mass");
-  h_signPrunedjetMass->GetYaxis()->SetTitle("Event number");
-
-  TH1D* h_signZprimeMass = new TH1D("h_signZprimeMass", "Signal region Zprime Mass", nvarBins, varBins);
-  h_signZprimeMass->GetXaxis()->SetTitle("Zprime mass");
-  h_signZprimeMass->GetYaxis()->SetTitle("Event number");
-
-  // Declare the alpha ratio histogram
-
-  TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
-  h_alpha->Sumw2();
-  h_alpha->GetXaxis()->SetTitle("Zprime mass");
-  h_alpha->GetYaxis()->SetTitle("Alpha Ratio");
 
   // begin of event loop
 
@@ -77,14 +50,11 @@ void backgEstimate(std::string inputFile, std::string outName){
 
 
     Int_t    CA8nJet    = data.GetInt("CA8nJet"); 
-    Int_t*   CA8jetPassID = data.GetPtrInt("CA8jetPassID");
     Float_t* CA8jetPt   = data.GetPtrFloat("CA8jetPt");
     Float_t* CA8jetEta  = data.GetPtrFloat("CA8jetEta");
     Float_t* CA8jetPhi  = data.GetPtrFloat("CA8jetPhi");
     Float_t* CA8jetMass = data.GetPtrFloat("CA8jetMass");
     Float_t* CA8jetPrunedMass = data.GetPtrFloat("CA8jetPrunedMass");
-    Float_t* CA8jetTau1 = data.GetPtrFloat("CA8jetTau1");
-    Float_t* CA8jetTau2 = data.GetPtrFloat("CA8jetTau2");
 
     Int_t    nMu   = data.GetInt("nMu");
     Int_t*   muPassID = data.GetPtrInt("muPassID");
@@ -94,7 +64,7 @@ void backgEstimate(std::string inputFile, std::string outName){
     Float_t* muM   = data.GetPtrFloat("muM");
 
     Float_t* elePt  = data.GetPtrFloat("elePt");
-
+    
 
     //-----------------------------------------------------------------------------------//
     // data trigger cut
@@ -135,7 +105,7 @@ void backgEstimate(std::string inputFile, std::string outName){
       if( !passTrigger ) continue;
 
     }
-    
+
 
     //-----------------------------------------------------------------------------------//
     // choose the primary muon
@@ -188,26 +158,7 @@ void backgEstimate(std::string inputFile, std::string outName){
     Int_t stRecoMuIndex, ndRecoMuIndex;
 
     if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
-    continue;
-
-
-    //-----------------------------------------------------------------------------------//   
-    // reconstruct Z mass
-    
-    TLorentzVector stRecoMu, ndRecoMu;  
- 
-    stRecoMu.SetPtEtaPhiM(muPt[stRecoMuIndex], 
-			  muEta[stRecoMuIndex], 
-			  muPhi[stRecoMuIndex],
-			  muM[stRecoMuIndex]);  
-  
-    ndRecoMu.SetPtEtaPhiM(muPt[ndRecoMuIndex], 
-			  muEta[ndRecoMuIndex],
-			  muPhi[ndRecoMuIndex], 
-			  muM[ndRecoMuIndex]); 
-    
-    TLorentzVector Z = stRecoMu + ndRecoMu;
-    h_ZMass->Fill(Z.M());
+      continue;
     
 
     //-----------------------------------------------------------------------------------//
@@ -232,85 +183,43 @@ void backgEstimate(std::string inputFile, std::string outName){
 
       if( CA8jetPt[sortJetIndex] <= 30 ) continue;
       if( fabs(CA8jetEta[sortJetIndex]) >= 2.4 ) continue;
-      if( CA8jetTau2[sortJetIndex]/CA8jetTau1[sortJetIndex] >= 0.5 ) continue;
-
-      if( CA8jetPassID[sortJetIndex] > 0 ){
-
-	boostedJet.SetPtEtaPhiM(CA8jetPt[sortJetIndex], 
-				CA8jetEta[sortJetIndex], 
-				CA8jetPhi[sortJetIndex], 
-				CA8jetMass[sortJetIndex]);
 
 
-	Bool_t isolatedStats = true; 
+      boostedJet.SetPtEtaPhiM(CA8jetPt[sortJetIndex], 
+			      CA8jetEta[sortJetIndex], 
+			      CA8jetPhi[sortJetIndex], 
+			      CA8jetMass[sortJetIndex]);
+
+
+      Bool_t isolatedStats = true; 
 	
-	for(size_t j = 0; j < howManyMu.size(); j++){
+      for(size_t j = 0; j < howManyMu.size(); j++){
 
-	  basicMuon.SetPtEtaPhiM(muPt[howManyMu[j]], 
-				 muEta[howManyMu[j]], 
-				 muPhi[howManyMu[j]],
-				 muM[howManyMu[j]]);
+	basicMuon.SetPtEtaPhiM(muPt[howManyMu[j]], 
+			       muEta[howManyMu[j]], 
+			       muPhi[howManyMu[j]],
+			       muM[howManyMu[j]]);
 
-	  if( basicMuon.DeltaR(boostedJet) < 0.5 ){
-	    isolatedStats = false;
-	    break;
+	if( basicMuon.DeltaR(boostedJet) < 0.5 ){
+	  isolatedStats = false;
+	  break;
 
-	  }
+	}
 
-	} // end of howManyMu for loop
+      } // end of howManyMu for loop
 	
-	if( isolatedStats ) 
-	  maxJetIndex.push_back(sortJetIndex);
+      if( isolatedStats ) 
+	maxJetIndex.push_back(sortJetIndex);
 	
-      } // end of CA8jetPassID if loop
 
     } // end of CA8nJet for loop
   
 
-    //-----------------------------------------------------------------------------------//
-    // choose the highest jet pt
-    
     if( maxJetIndex.size() < 1 ) continue;
 
-    TLorentzVector newBoostedJet;
+    if( CA8jetPrunedMass[maxJetIndex[0]] > 40 && CA8jetPrunedMass[maxJetIndex[0]] < 240 )
+      h_prunedJetMass->Fill(CA8jetPrunedMass[maxJetIndex[0]]);
 
-    newBoostedJet.SetPtEtaPhiM(CA8jetPt[maxJetIndex[0]],
-			       CA8jetEta[maxJetIndex[0]],
-			       CA8jetPhi[maxJetIndex[0]],
-			       CA8jetMass[maxJetIndex[0]]);
-
-    
-    //-----------------------------------------------------------------------------------//
-    // reconstruct Z prime
-
-    if( Z.E() <= 1e-6 || newBoostedJet.E() <= 1e-6 ) continue;
-
-    //TLorentzVector Zprime = Z + newBoostedJet;  
-
-    if(Z.M() <= 70 || Z.M() >=110 ) continue;
-    if(Z.Pt() <= 80) continue;
-    if(newBoostedJet.M() <= 40 ) continue;
-    if(newBoostedJet.Pt() <= 80 ) continue;
-
-    // side band region
-    if( CA8jetPrunedMass[maxJetIndex[0]] > 50 && CA8jetPrunedMass[maxJetIndex[0]] < 110 ){
-
-
-      TLorentzVector Zprime = Z + newBoostedJet; 
-      h_sidePrunedjetMass->Fill(CA8jetPrunedMass[maxJetIndex[0]]);
-      h_sideZprimeMass->Fill(Zprime.M());
-
-    }
-    
-    // signal region
-    if( CA8jetPrunedMass[maxJetIndex[0]] > 110 && CA8jetPrunedMass[maxJetIndex[0]] < 140 ){
-
-    TLorentzVector Zprime = Z + newBoostedJet; 
-      h_signPrunedjetMass->Fill(CA8jetPrunedMass[maxJetIndex[0]]);
-      h_signZprimeMass->Fill(Zprime.M());
-    
-    }
-    
   }
    
   // end of event loop
@@ -320,37 +229,17 @@ void backgEstimate(std::string inputFile, std::string outName){
   // draw results
 
   TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 760);
-  c->Divide(3,2);
+  c->Divide(2,2);
 
   c->cd(1)->SetLogy();
-  h_sidePrunedjetMass->Draw();
-
-  c->cd(2);
-  h_sideZprimeMass->Draw();
-
-  c->cd(4)->SetLogy();
-  h_signPrunedjetMass->Draw();
-
-  c->cd(5);
-  h_signZprimeMass->Draw();
-
-  c->cd(6);
-  h_alpha->Divide(h_signZprimeMass, h_sideZprimeMass);
-  h_alpha->Draw();
+  h_prunedJetMass->Draw();
 
 
   // output file
-
-  std::string sideName = "sideZpMass_" + outName.substr(11);
-  std::string signName = "signZpMass_" + outName.substr(11);
-  std::string ZMassName = "ZMass_" + outName.substr(11);
-
-  TFile* outFile = new TFile("backgEstimate.root", "update");
-
-  h_sideZprimeMass->Write(sideName.data());
-  h_signZprimeMass->Write(signName.data());
-  h_ZMass->Write(ZMassName.data());
-
+  
+  std::string sideName = "prunedJetMass_" + outName.substr(11);
+  TFile* outFile = new TFile("backgStack.root", "update");
+  h_prunedJetMass->Write(sideName.data());
   outFile->Write();
   
 }
