@@ -35,6 +35,10 @@ void combineBKG(){
   TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
   TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
   TH1D* h_dataside  = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_A.root"));
+  TH1D* h_datasign  = (TH1D*)(f->Get("signZpMass_data_DoubleMu_A.root"));
+
+  h_dataside->Sumw2();
+  h_datasign->Sumw2();
 
   const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
 			      1250,1400,1600,1800,2000,2400};
@@ -46,10 +50,12 @@ void combineBKG(){
   Double_t scale2 = 0.876 / (totalNEvent2 / crossSection2); // DYJetsToLL_PtZ100
 
   TH1D* h_combineSide = new TH1D("h_combineSide", "Side-band Zprime Mass", nvarBins, varBins);
+  h_combineSide->Sumw2();
   h_combineSide->GetXaxis()->SetTitle("Mass");
   h_combineSide->GetYaxis()->SetTitle("Event Number");
 
   TH1D* h_combineSign = new TH1D("h_combineSign", "Signal region Zprime Mass", nvarBins, varBins);
+  h_combineSign->Sumw2();
   h_combineSign->GetXaxis()->SetTitle("Mass");
   h_combineSign->GetYaxis()->SetTitle("Event Number");
 
@@ -65,28 +71,41 @@ void combineBKG(){
   h_combineSign->Add(h_dy70sign, scale1);
   h_combineSign->Add(h_dy100sign, scale2);
 
-  cout << "Total event of side band region: " << h_combineSide->Integral(50,110) << endl;
-  cout << "Total event of signal region: " << h_combineSide->Integral(110,140) << endl;
+  cout << "Total event of bkg side band region: " << h_combineSide->Integral() << endl;
+  cout << "Total event of bkg signal region: " << h_combineSign->Integral() << endl;
+  cout << "Total event of data side band region: " << h_dataside->Integral() << endl;
+  cout << "Total event of data signal region: " << h_datasign->Integral() << endl;
 
   gStyle->SetOptStat(1111);
 
   TCanvas* c = new TCanvas("c", "", 0, 0, 1920, 1080);
-  c->Divide(2,2);
+  c->Divide(3,2);
 
   c->cd(1);
   h_combineSide->SetLineColor(1);
-  h_combineSide->SetFillColor(kMagenta-3);
-  h_combineSide->Draw();
+  h_combineSide->SetFillColor(kMagenta-4);
+  h_combineSide->SetFillStyle(3001);
+  h_combineSide->Draw("histe");
 
   c->cd(2);
   h_combineSign->SetLineColor(1);
   h_combineSign->SetFillColor(kRed-4);
-  h_combineSign->Draw();
-
-  c->cd(3);
-  h_dataside->Draw();
+  h_combineSign->SetFillStyle(3001);
+  h_combineSign->Draw("histe");
 
   c->cd(4);
+  h_dataside->SetLineColor(1);
+  h_dataside->SetFillColor(kGreen-4);
+  h_dataside->SetFillStyle(3001);
+  h_dataside->Draw("histe");
+
+  c->cd(5);
+  h_datasign->SetLineColor(1);
+  h_datasign->SetFillColor(kBlue-4);
+  h_datasign->SetFillStyle(3001);
+  h_datasign->Draw("histe");
+
+  c->cd(6);
   h_alpha->Divide(h_combineSign, h_combineSide);
   h_alpha->Draw();
 
