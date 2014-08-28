@@ -54,7 +54,7 @@ Bool_t passElectronID(TreeReader &data,
 
     if( elePassID[sortEleIndex] <= 0 ) continue;
     if( eleEt[sortEleIndex] <= 40 ) continue;
-    //if( eleUserTrkIso[sortEleIndex] >= 5 ) continue;
+    if( eleUserTrkIso[sortEleIndex] >= 5 ) continue;
     
     // barrel selection
     if( fabs(eleScEta[sortEleIndex]) > 0 && fabs(eleScEta[sortEleIndex]) < 1.4442 ){

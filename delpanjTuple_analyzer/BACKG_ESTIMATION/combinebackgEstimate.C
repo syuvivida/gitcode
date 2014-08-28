@@ -79,6 +79,9 @@ void combineBkgEst(){
   h_combineZMass->Add(h_dy70zmass, scale1);
   h_combineZMass->Add(h_dy100zmass, scale2);
 
+  cout << "Total event of background: " << h_combineZMass->Integral() << endl;
+  cout << "Total event of data: " << h_datazmass->Integral() << endl;
+
   TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
   h_alpha->Sumw2();
   h_alpha->GetXaxis()->SetTitle("Zprime mass");
@@ -123,7 +126,7 @@ void combineBkgEst(){
   h_combineZMass->SetFillColor(kBlue-4);
   h_combineZMass->SetFillStyle(3001);
   h_combineZMass->Draw("histesame");
-
+  
   TLegend *leg3 = new TLegend(0.65, 0.75, 0.9, 0.9);
   leg3->SetFillStyle(1001);
   leg3->SetFillColor(10);

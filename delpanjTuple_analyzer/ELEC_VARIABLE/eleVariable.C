@@ -1,0 +1,176 @@
+#include <vector>
+#include <string>
+#include <iostream>
+#include <TH1D.h>
+#include <TH1F.h>
+#include <TMath.h>
+#include <TFile.h>
+#include <TList.h>
+#include <TChain.h>
+#include <TCanvas.h>
+#include <TBranch.h>
+#include <TRandom.h>
+#include <TProfile.h>
+#include <TLorentzVector.h>
+#include <TSystemDirectory.h>
+#include "../HEADER/untuplizer.h"
+#include "../HEADER/specificLeptonPt.C"
+
+void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
+
+void eleVariable(std::string inputFile, std::string outName){
+
+  TreeReader data(inputFile.data());
+
+  // Declare the histogram
+
+  TH1D* h_eleDelEtaIn = new TH1D("h_eleDelEtaIn", "eleDelEtaIn", 100, -0.2, 0.2);
+  TH1D* h_eleDelPhiIn = new TH1D("h_eleDelPhiIn", "eleDelPhiIn", 100, -0.2, 0.2);
+  TH1D* h_eleSigIhIh  = new TH1D("h_eleSigIhIh", "eleSigIhIh", 100, 0, 0.1);
+  TH1D* h_eleHoE      = new TH1D("h_eleHoE", "eleHoE", 100, 0, 10); 
+  TH1D* h_eleDxy      = new TH1D("h_eleDxy", "eleDx", 100, -1, 1);  
+  TH1D* h_eleDz       = new TH1D("h_eleDz", "eleDz", 100, -10, 10);   
+  TH1D* h_eleEoverP   = new TH1D("h_eleEoverP", "eleEoverP", 100, 0, 1);
+  TH1D* h_elePassConv = new TH1D("h_elePassConv", "elePassConv", 100, 0, 2);
+  TH1D* h_eleMissingHits = new TH1D("h_eleMissingHits", "eleMissingHits", 100, 0, 5);
+  TH1D* h_elePt       = new TH1D("h_elePt", "elePt", 100, 0, 100);
+  TH1D* h_eleEta      = new TH1D("h_eleEta", "eleEta", 100, -3, 3);
+
+
+  // begin of event loop
+
+  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
+
+    if ( ev % 50000 == 0 )
+      fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
+
+    data.GetEntry(ev);
+
+    
+    Int_t*   elePassConv = data.GetPtrInt("elePassConv");
+    Float_t* eleDelEtaIn = data.GetPtrFloat("eleDelEtaIn");
+    Float_t* eleDelPhiIn = data.GetPtrFloat("eleDelPhiIn");
+    Float_t* eleSigIhIh  = data.GetPtrFloat("eleSigIhIh");
+    Float_t* eleHoE      = data.GetPtrFloat("eleHoE");
+    Float_t* eleDxy      = data.GetPtrFloat("eleDxy");
+    Float_t* eleDz       = data.GetPtrFloat("eleDz");
+    Float_t* eleEoverP   = data.GetPtrFloat("eleEoverP");
+    Float_t* eleMissingHits = data.GetPtrFloat("eleMissingHits");
+    Float_t* elePt       = data.GetPtrFloat("elePt");
+    Float_t* eleEta      = data.GetPtrFloat("eleEta");
+    Float_t* eleScEta    = data.GetPtrFloat("eleScEta");
+    Float_t* eleUserTrkIso = data.GetPtrFloat("eleUserTrkIso");
+    Float_t* eleUserCalIso = data.GetPtrFloat("eleUserCalIso");
+    Float_t* muPt        = data.GetPtrFloat("muPt");
+
+
+    // choosing the primary reconstructed muon
+
+    Int_t stMuPtIndex  = -1;
+    Int_t ndMuPtIndex  = -1;
+    Int_t stElePtIndex = -1;
+    Int_t ndElePtIndex = -1;
+
+    specificLeptonPt(data, &stMuPtIndex, &ndMuPtIndex, 
+		     &stElePtIndex, &ndElePtIndex);
+
+    if( (stMuPtIndex  < 0 || ndMuPtIndex  < 0 ) && 
+	(stElePtIndex < 0 || ndElePtIndex < 0 )  ) continue; 
+  
+    if( stMuPtIndex > 0 && stElePtIndex > 0 ){
+    
+      if( (elePt[stMuPtIndex] - muPt[stElePtIndex]) < 1e-6 ) 
+	continue;
+
+    }
+
+
+    // barrel selections and barrel cuts
+    if( fabs(eleScEta[stElePtIndex]) > 0 && fabs(eleScEta[stElePtIndex]) < 1.4442 ){
+
+      for(Int_t flag = 0; flag <= 10; flag++){
+
+	if( eleDelEtaIn[stElePtIndex] >= 0.004 && flag != 0 ) continue;
+	if( eleDelPhiIn[stElePtIndex] >= 0.03  && flag != 1 ) continue;
+	if( eleSigIhIh[stElePtIndex]  >= 0.01  && flag != 2 ) continue;
+	if( eleHoE[stElePtIndex]      >= 0.12  && flag != 3 ) continue;
+	if( eleDxy[stElePtIndex]      >= 0.02  && flag != 4 ) continue;
+	if( eleDz[stElePtIndex]       >= 0.1   && flag != 5 ) continue;
+	if( eleEoverP[stElePtIndex]   >= 0.05  && flag != 6 ) continue;
+	if( elePassConv[stElePtIndex] < 1e-6   && flag != 7 ) continue;
+	if( eleMissingHits[stElePtIndex] > 0   && flag != 8 ) continue;
+	if( elePt[stElePtIndex]        <= 10   && flag != 9 ) continue;
+	if( fabs(eleEta[stElePtIndex]) >= 2.5  && flag != 10) continue;
+
+	switch(flag){
+
+	case 0:  h_eleDelEtaIn->Fill(eleDelEtaIn[stElePtIndex]);
+	case 1:  h_eleDelPhiIn->Fill(eleDelPhiIn[stElePtIndex]);
+	case 2:  h_eleSigIhIh ->Fill(eleSigIhIh[stElePtIndex]);
+	case 3:  h_eleHoE     ->Fill(eleHoE[stElePtIndex]);
+	case 4:  h_eleDxy     ->Fill(eleDxy[stElePtIndex]);
+	case 5:  h_eleDz      ->Fill(eleDz[stElePtIndex]);
+	case 6:  h_eleEoverP  ->Fill(eleEoverP[stElePtIndex]);
+	case 7:  h_elePassConv->Fill(elePassConv[stElePtIndex]);
+	case 8:  h_eleMissingHits->Fill(eleMissingHits[stElePtIndex]);
+	case 9:  h_elePt      ->Fill(elePt[stElePtIndex]);
+	case 10: h_eleEta     ->Fill(fabs(eleEta[stElePtIndex]));
+
+	} // end of switch
+
+      } // end of flag loop
+
+    } // end of barrel
+
+
+    // endcap selections and barrel cuts
+    if( fabs(eleScEta[stElePtIndex]) > 1.566 && fabs(eleScEta[stElePtIndex]) < 2.5 ){
+
+      for(Int_t flag = 0; flag <= 10; flag++){
+
+	if( eleDelEtaIn[stElePtIndex] >= 0.005 && flag != 0 ) continue;
+	if( eleDelPhiIn[stElePtIndex] >= 0.02  && flag != 1 ) continue;
+	if( eleSigIhIh[stElePtIndex]  >= 0.03  && flag != 2 ) continue;
+	if( eleHoE[stElePtIndex]      >= 0.1   && flag != 3 ) continue;
+	if( eleDxy[stElePtIndex]      >= 0.02  && flag != 4 ) continue;
+	if( eleDz[stElePtIndex]       >= 0.1   && flag != 5 ) continue;
+	if( eleEoverP[stElePtIndex]   >= 0.05  && flag != 6 ) continue;
+	if( elePassConv[stElePtIndex] < 1e-6   && flag != 7 ) continue;
+	if( eleMissingHits[stElePtIndex] > 0   && flag != 8 ) continue;
+	if( elePt[stElePtIndex]        <= 10   && flag != 9 ) continue;
+	if( fabs(eleEta[stElePtIndex]) >= 2.5  && flag != 10) continue;
+
+	switch(flag){
+
+	case 0:  h_eleDelEtaIn->Fill(eleDelEtaIn[stElePtIndex]);
+	case 1:  h_eleDelPhiIn->Fill(eleDelPhiIn[stElePtIndex]);
+	case 2:  h_eleSigIhIh ->Fill(eleSigIhIh[stElePtIndex]);
+	case 3:  h_eleHoE     ->Fill(eleHoE[stElePtIndex]);
+	case 4:  h_eleDxy     ->Fill(eleDxy[stElePtIndex]);
+	case 5:  h_eleDz      ->Fill(eleDz[stElePtIndex]);
+	case 6:  h_eleEoverP  ->Fill(eleEoverP[stElePtIndex]);
+	case 7:  h_elePassConv->Fill(elePassConv[stElePtIndex]);
+	case 8:  h_eleMissingHits->Fill(eleMissingHits[stElePtIndex]);
+	case 9:  h_elePt      ->Fill(elePt[stElePtIndex]);
+	case 10: h_eleEta     ->Fill(fabs(eleEta[stElePtIndex]));
+
+	} // end of switch
+
+      } // end of flag loop
+
+    } // end of endcap
+      
+
+  } // end of event loop
+
+  fprintf(stderr, "Processed all events\n");
+
+  std::string histoName1 = "corrTrkIso_" + outName.substr(11);
+
+  TFile* outFile = new TFile("eleVariable.root", "update");
+  
+  //->Write(histoName1.data());
+
+  outFile->Write();
+  
+}
