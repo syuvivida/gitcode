@@ -26,17 +26,13 @@ void muVariable(std::string inputFile, std::string outName){
 
   // Declare the histogram
 
-  TH1D* h_corrTrkIso = new TH1D("h_corrTrkIso", "muCorrTrkIso distribution", 50, 0, 0.05);
+  TH1D* h_corrTrkIso = new TH1D("h_corrTrkIso", "muCorrTrkIso", 50, 0, 0.1);
+  TH1D* h_nVtx = new TH1D("h_nVtx", "nVtx", 50, 0, 50);
+
   h_corrTrkIso->GetXaxis()->SetTitle("corrTrkIso");
   h_corrTrkIso->GetYaxis()->SetTitle("Event number");
-
-  TH1D* h_nVtx = new TH1D("h_nVtx", "nVtx distribution", 50, 0, 50);
   h_nVtx->GetXaxis()->SetTitle("nVtx");
   h_nVtx->GetYaxis()->SetTitle("Event number");
-
-  TH1D* h_ZMass = new TH1D("h_ZMass", "Z Mass", 100, 70, 110);
-  h_ZMass->GetXaxis()->SetTitle("Mass");
-  h_ZMass->GetYaxis()->SetTitle("Event number");
 
 
   // begin of event loop
@@ -49,9 +45,6 @@ void muVariable(std::string inputFile, std::string outName){
 
     Int_t info_nVtx = data.GetInt("info_nVtx");
     Float_t* muPt  = data.GetPtrFloat("muPt");
-    Float_t* muEta = data.GetPtrFloat("muEta");
-    Float_t* muPhi = data.GetPtrFloat("muPhi");
-    Float_t* muM   = data.GetPtrFloat("muM");
     Float_t* muCorrTrkIso = data.GetPtrFloat("muCorrTrkIso");
     Float_t* elePt = data.GetPtrFloat("elePt");
 
@@ -115,23 +108,6 @@ void muVariable(std::string inputFile, std::string outName){
     h_corrTrkIso->Fill(muCorrTrkIso[ndRecoMuIndex]/muPt[ndRecoMuIndex]);
 
     h_nVtx->Fill(info_nVtx);
- 
-    // reconstruct Z mass
-    
-    TLorentzVector stRecoMu, ndRecoMu;  
- 
-    stRecoMu.SetPtEtaPhiM(muPt[stRecoMuIndex], 
-			  muEta[stRecoMuIndex], 
-			  muPhi[stRecoMuIndex],
-			  muM[stRecoMuIndex]);  
-  
-    ndRecoMu.SetPtEtaPhiM(muPt[ndRecoMuIndex], 
-			  muEta[ndRecoMuIndex],
-			  muPhi[ndRecoMuIndex], 
-			  muM[ndRecoMuIndex]); 
-    
-    TLorentzVector Z = stRecoMu + ndRecoMu;
-    h_ZMass->Fill(Z.M());
 
 
   } 
@@ -142,13 +118,11 @@ void muVariable(std::string inputFile, std::string outName){
   
   std::string histoName1 = "corrTrkIso_" + outName.substr(11);
   std::string histoName2 = "nVtx_" + outName.substr(11); 
-  std::string histoName3 = "ZMass_" + outName.substr(11);
 
   TFile* outFile = new TFile("muVariable.root", "update");
   
   h_corrTrkIso->Write(histoName1.data());
   h_nVtx->Write(histoName2.data());
-  h_ZMass->Write(histoName3.data());
 
   outFile->Write();
   

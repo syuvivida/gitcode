@@ -24,35 +24,90 @@ void eleVariable(std::string inputFile, std::string outName){
 
   // Declare the histogram (barrel)
 
-  TH1D* hbarrel_eleDelEtaIn = new TH1D("hbarrel_eleDelEtaIn", "eleDelEtaIn", 100, -0.05, 0.05);
-  TH1D* hbarrel_eleDelPhiIn = new TH1D("hbarrel_eleDelPhiIn", "eleDelPhiIn", 100, -0.05, 0.05);
-  TH1D* hbarrel_eleSigIhIh  = new TH1D("hbarrel_eleSigIhIh", "eleSigIhIh", 100, 0, 0.03);
-  TH1D* hbarrel_eleHoE      = new TH1D("hbarrel_eleHoE", "eleHoE", 100, 0, 0.2); 
-  TH1D* hbarrel_eleDxy      = new TH1D("hbarrel_eleDxy", "eleDx", 100, -0.04, 0.04);  
-  TH1D* hbarrel_eleDz       = new TH1D("hbarrel_eleDz", "eleDz", 100, -0.04, 0.04);   
-  TH1D* hbarrel_eleEoverP   = new TH1D("hbarrel_eleEoverP", "eleEoverP", 100, 0, 0.04);
-  TH1D* hbarrel_elePassConv = new TH1D("hbarrel_elePassConv", "elePassConv", 100, 0.8, 1.2);
-  TH1D* hbarrel_eleMissingHits = new TH1D("hbarrel_eleMissingHits", "eleMissingHits", 100, 0, 0.1);
-  TH1D* hbarrel_elePt       = new TH1D("hbarrel_elePt", "elePt", 100, 40, 140);
-  TH1D* hbarrel_eleEta      = new TH1D("hbarrel_eleEta", "eleEta", 100, 0, 3);
-  TH1D* hbarrel_eleUserTrkIso  = new TH1D("hbarrel_eleUserTrkIso", "eleUserTrkIso", 100, 0, 5);
-  TH1D* hbarrel_eleUserCalIso  = new TH1D("hbarrel_eleUserCalIso", "eleUserCalIso", 100, 0, 15);
+  TH1D* hbarrel_eleDelEtaIn = new TH1D("hbarrel_eleDelEtaIn", "barrel eleDelEtaIn", 100, -0.05, 0.05);
+  TH1D* hbarrel_eleDelPhiIn = new TH1D("hbarrel_eleDelPhiIn", "barrel eleDelPhiIn", 100, -0.05, 0.05);
+  TH1D* hbarrel_eleSigIhIh  = new TH1D("hbarrel_eleSigIhIh", "barrel eleSigIhIh", 100, 0, 0.03);
+  TH1D* hbarrel_eleHoE      = new TH1D("hbarrel_eleHoE", "barrel eleHoE", 100, 0, 0.2); 
+  TH1D* hbarrel_eleDxy      = new TH1D("hbarrel_eleDxy", "barrel eleDx", 100, -0.04, 0.04);  
+  TH1D* hbarrel_eleDz       = new TH1D("hbarrel_eleDz", "barrel eleDz", 100, -0.04, 0.04);   
+  TH1D* hbarrel_eleEoverP   = new TH1D("hbarrel_eleEoverP", "barrel eleEoverP", 100, 0, 0.1);
+  TH1D* hbarrel_elePassConv = new TH1D("hbarrel_elePassConv", "barrel elePassConv", 100, 0.8, 1.2);
+  TH1D* hbarrel_eleMissingHits = new TH1D("hbarrel_eleMissingHits", "barrel eleMissingHits", 100, -0.05, 0.05);
+  TH1D* hbarrel_elePt       = new TH1D("hbarrel_elePt", "barrel elePt", 100, 40, 140);
+  TH1D* hbarrel_eleEta      = new TH1D("hbarrel_eleEta", "barrel eleEta", 100, 0, 3);
+  TH1D* hbarrel_eleUserTrkIso  = new TH1D("hbarrel_eleUserTrkIso", "barrel eleUserTrkIso", 100, 0, 6);
+  TH1D* hbarrel_eleUserCalIso  = new TH1D("hbarrel_eleUserCalIso", "barrel eleUserCalIso", 100, 0, 10);
+
+  hbarrel_eleDelEtaIn->GetXaxis()->SetTitle("DelEtaIn");
+  hbarrel_eleDelEtaIn->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleDelPhiIn->GetXaxis()->SetTitle("DelPhiIn");
+  hbarrel_eleDelPhiIn->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleSigIhIh->GetXaxis()->SetTitle("SigIhIh");
+  hbarrel_eleSigIhIh->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleHoE->GetXaxis()->SetTitle("HoE");
+  hbarrel_eleHoE->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleDxy->GetXaxis()->SetTitle("Dxy");
+  hbarrel_eleDxy->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleDz->GetXaxis()->SetTitle("Dz");
+  hbarrel_eleDz->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleEoverP->GetXaxis()->SetTitle("EoverP");
+  hbarrel_eleEoverP->GetYaxis()->SetTitle("Event number");
+  hbarrel_elePassConv->GetXaxis()->SetTitle("PassConv");
+  hbarrel_elePassConv->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleMissingHits->GetXaxis()->SetTitle("MissingHits");
+  hbarrel_eleMissingHits->GetYaxis()->SetTitle("Event number");
+  hbarrel_elePt->GetXaxis()->SetTitle("Pt");
+  hbarrel_elePt->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleEta->GetXaxis()->SetTitle("Eta");
+  hbarrel_eleEta->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleUserTrkIso->GetXaxis()->SetTitle("UserTrkIso");
+  hbarrel_eleUserTrkIso->GetYaxis()->SetTitle("Event number");
+  hbarrel_eleUserCalIso->GetXaxis()->SetTitle("UserCalIso");
+  hbarrel_eleUserCalIso->GetYaxis()->SetTitle("Event number");
+
 
   // Declare the histogram (endcap)
 
-  TH1D* hendcap_eleDelEtaIn = new TH1D("hendcap_eleDelEtaIn", "eleDelEtaIn", 100, -0.05, 0.05);
-  TH1D* hendcap_eleDelPhiIn = new TH1D("hendcap_eleDelPhiIn", "eleDelPhiIn", 100, -0.05, 0.05);
-  TH1D* hendcap_eleSigIhIh  = new TH1D("hendcap_eleSigIhIh", "eleSigIhIh", 100, 0, 0.03);
-  TH1D* hendcap_eleHoE      = new TH1D("hendcap_eleHoE", "eleHoE", 100, 0, 0.2); 
-  TH1D* hendcap_eleDxy      = new TH1D("hendcap_eleDxy", "eleDx", 100, -0.04, 0.04);  
-  TH1D* hendcap_eleDz       = new TH1D("hendcap_eleDz", "eleDz", 100, -0.04, 0.04);   
-  TH1D* hendcap_eleEoverP   = new TH1D("hendcap_eleEoverP", "eleEoverP", 100, 0, 0.04);
-  TH1D* hendcap_elePassConv = new TH1D("hendcap_elePassConv", "elePassConv", 100, 0.8, 1.2);
-  TH1D* hendcap_eleMissingHits = new TH1D("hendcap_eleMissingHits", "eleMissingHits", 100, 0, 0.1);
-  TH1D* hendcap_elePt       = new TH1D("hendcap_elePt", "elePt", 100, 40, 140);
-  TH1D* hendcap_eleEta      = new TH1D("hendcap_eleEta", "eleEta", 100, 0, 3);
-  TH1D* hendcap_eleUserTrkIso  = new TH1D("hendcap_eleUserTrkIso", "eleUserTrkIso", 100, 0, 5);
-  TH1D* hendcap_eleUserCalIso  = new TH1D("hendcap_eleUserCalIso", "eleUserCalIso", 100, 0, 15);
+  TH1D* hendcap_eleDelEtaIn = new TH1D("hendcap_eleDelEtaIn", "endcap eleDelEtaIn", 100, -0.05, 0.05);
+  TH1D* hendcap_eleDelPhiIn = new TH1D("hendcap_eleDelPhiIn", "endcap eleDelPhiIn", 100, -0.05, 0.05);
+  TH1D* hendcap_eleSigIhIh  = new TH1D("hendcap_eleSigIhIh", "endcap eleSigIhIh", 100, 0.01, 0.05);
+  TH1D* hendcap_eleHoE      = new TH1D("hendcap_eleHoE", "endcap eleHoE", 100, 0, 0.2); 
+  TH1D* hendcap_eleDxy      = new TH1D("hendcap_eleDxy", "endcap eleDx", 100, -0.04, 0.04);  
+  TH1D* hendcap_eleDz       = new TH1D("hendcap_eleDz", "endcap eleDz", 100, -0.04, 0.04);   
+  TH1D* hendcap_eleEoverP   = new TH1D("hendcap_eleEoverP", "endcap eleEoverP", 100, 0, 0.1);
+  TH1D* hendcap_elePassConv = new TH1D("hendcap_elePassConv", "endcap elePassConv", 100, 0.8, 1.2);
+  TH1D* hendcap_eleMissingHits = new TH1D("hendcap_eleMissingHits", "endcap eleMissingHits", 100, -0.05, 0.05);
+  TH1D* hendcap_elePt       = new TH1D("hendcap_elePt", "endcap elePt", 100, 40, 140);
+  TH1D* hendcap_eleEta      = new TH1D("hendcap_eleEta", "endcap eleEta", 100, 1, 3);
+  TH1D* hendcap_eleUserTrkIso  = new TH1D("hendcap_eleUserTrkIso", "endcap eleUserTrkIso", 100, 0, 6);
+  TH1D* hendcap_eleUserCalIso  = new TH1D("hendcap_eleUserCalIso", "endcap eleUserCalIso", 100, 0, 10);
+
+  hendcap_eleDelEtaIn->GetXaxis()->SetTitle("DelEtaIn");
+  hendcap_eleDelEtaIn->GetYaxis()->SetTitle("Event number");
+  hendcap_eleDelPhiIn->GetXaxis()->SetTitle("DelPhiIn");
+  hendcap_eleDelPhiIn->GetYaxis()->SetTitle("Event number");
+  hendcap_eleSigIhIh->GetXaxis()->SetTitle("SigIhIh");
+  hendcap_eleSigIhIh->GetYaxis()->SetTitle("Event number");
+  hendcap_eleHoE->GetXaxis()->SetTitle("HoE");
+  hendcap_eleHoE->GetYaxis()->SetTitle("Event number");
+  hendcap_eleDxy->GetXaxis()->SetTitle("Dxy");
+  hendcap_eleDxy->GetYaxis()->SetTitle("Event number");
+  hendcap_eleDz->GetXaxis()->SetTitle("Dz");
+  hendcap_eleDz->GetYaxis()->SetTitle("Event number");
+  hendcap_eleEoverP->GetXaxis()->SetTitle("EoverP");
+  hendcap_eleEoverP->GetYaxis()->SetTitle("Event number");
+  hendcap_elePassConv->GetXaxis()->SetTitle("PassConv");
+  hendcap_elePassConv->GetYaxis()->SetTitle("Event number");
+  hendcap_eleMissingHits->GetXaxis()->SetTitle("MissingHits");
+  hendcap_eleMissingHits->GetYaxis()->SetTitle("Event number");
+  hendcap_elePt->GetXaxis()->SetTitle("Pt");
+  hendcap_elePt->GetYaxis()->SetTitle("Event number");
+  hendcap_eleEta->GetXaxis()->SetTitle("Eta");
+  hendcap_eleEta->GetYaxis()->SetTitle("Event number");
+  hendcap_eleUserTrkIso->GetXaxis()->SetTitle("UserTrkIso");
+  hendcap_eleUserTrkIso->GetYaxis()->SetTitle("Event number");
+  hendcap_eleUserCalIso->GetXaxis()->SetTitle("UserCalIso");
+  hendcap_eleUserCalIso->GetYaxis()->SetTitle("Event number");
 
 
   // begin of event loop
@@ -242,7 +297,7 @@ void eleVariable(std::string inputFile, std::string outName){
 
   TFile* barrelOutFile = new TFile("barrelEleVariable.root", "update");
 
-  std::string histoNameB0 = "barrel_DelEtaIn__" + outName.substr(11);
+  std::string histoNameB0 = "barrel_DelEtaIn_" + outName.substr(11);
   std::string histoNameB1 = "barrel_DelPhiIn_" + outName.substr(11);
   std::string histoNameB2 = "barrel_SigIhIh_" + outName.substr(11);
   std::string histoNameB3 = "barrel_HoE_" + outName.substr(11);
@@ -274,7 +329,7 @@ void eleVariable(std::string inputFile, std::string outName){
 
   TFile* endcapOutFile = new TFile("endcapEleVariable.root", "update");
 
-  std::string histoNameE0 = "endcap_DelEtaIn__" + outName.substr(11);
+  std::string histoNameE0 = "endcap_DelEtaIn_" + outName.substr(11);
   std::string histoNameE1 = "endcap_DelPhiIn_" + outName.substr(11);
   std::string histoNameE2 = "endcap_SigIhIh_" + outName.substr(11);
   std::string histoNameE3 = "endcap_HoE_" + outName.substr(11);
