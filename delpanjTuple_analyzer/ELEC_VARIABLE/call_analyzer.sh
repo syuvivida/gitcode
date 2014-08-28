@@ -20,7 +20,7 @@ root -q -b -l $1.C++\(\"$BACKGR_DIR/delpanj_v2_DYJetsToLL_PtZ-100.root\"\,\"delp
 echo -e "Done!\n"
 
 echo -e "Processing root file *** delpanj_v2_data_DoubleMu_A.root ***\n"
-root -q -b -l $1.C++\(\"$DATAAA_DIR/delpanj_v2_data_DoubleMu_A.root\"\,\"delpanj_v2_data_DoubleMu_A.root\"\)
+root -q -b -l $1.C++\(\"$DATAAA_DIR/delpanj_v2_data_DoubleEl_A.root\"\,\"delpanj_v2_data_DoubleEl_A.root\"\)
 echo -e "Done!\n"
 
 echo -e "Processing root file *** delpanj_v2_data_DoubleMu_A.root ***\n"

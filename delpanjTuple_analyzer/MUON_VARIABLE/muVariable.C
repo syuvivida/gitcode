@@ -71,16 +71,6 @@ void muVariable(std::string inputFile, std::string outName){
 
 	std::string thisTrig = trigName[it];
 	Int_t results = trigResult[it];
-     
-	// electron channel
-	/*
-	  if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results == 1 ){
-
-	  passTrigger = true;
-	  break;
-
-	  }
-	*/
 
 	// muon channel
 	if( thisTrig.find("HLT_Mu22_TkMu8") != std::string::npos && results == 1 ){
@@ -110,7 +100,7 @@ void muVariable(std::string inputFile, std::string outName){
     if( (stMuPtIndex  < 0 || ndMuPtIndex  < 0 ) && 
 	(stElePtIndex < 0 || ndElePtIndex < 0 )  ) continue; 
   
-    if( stMuPtIndex > 0 && stElePtIndex > 0 ){
+    if( stMuPtIndex > -1 && stElePtIndex > -1 ){
     
       if( (muPt[stMuPtIndex] - elePt[stElePtIndex]) < 1e-6 ) 
 	continue;
