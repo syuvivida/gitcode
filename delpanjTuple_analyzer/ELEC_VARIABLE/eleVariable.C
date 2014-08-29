@@ -34,7 +34,7 @@ void eleVariable(std::string inputFile, std::string outName){
   TH1D* hbarrel_elePassConv = new TH1D("hbarrel_elePassConv", "barrel elePassConv", 100, 0.8, 1.2);
   TH1D* hbarrel_eleMissingHits = new TH1D("hbarrel_eleMissingHits", "barrel eleMissingHits", 100, -0.05, 0.05);
   TH1D* hbarrel_elePt       = new TH1D("hbarrel_elePt", "barrel elePt", 100, 40, 140);
-  TH1D* hbarrel_eleEta      = new TH1D("hbarrel_eleEta", "barrel eleEta", 100, 0, 3);
+  TH1D* hbarrel_eleEta      = new TH1D("hbarrel_eleEta", "barrel eleEta", 100, -2, 2);
   TH1D* hbarrel_eleUserTrkIso  = new TH1D("hbarrel_eleUserTrkIso", "barrel eleUserTrkIso", 100, 0, 6);
   TH1D* hbarrel_eleUserCalIso  = new TH1D("hbarrel_eleUserCalIso", "barrel eleUserCalIso", 100, 0, 10);
 
@@ -78,7 +78,7 @@ void eleVariable(std::string inputFile, std::string outName){
   TH1D* hendcap_elePassConv = new TH1D("hendcap_elePassConv", "endcap elePassConv", 100, 0.8, 1.2);
   TH1D* hendcap_eleMissingHits = new TH1D("hendcap_eleMissingHits", "endcap eleMissingHits", 100, -0.05, 0.05);
   TH1D* hendcap_elePt       = new TH1D("hendcap_elePt", "endcap elePt", 100, 40, 140);
-  TH1D* hendcap_eleEta      = new TH1D("hendcap_eleEta", "endcap eleEta", 100, 1, 3);
+  TH1D* hendcap_eleEta      = new TH1D("hendcap_eleEta", "endcap eleEta", 100, -3, 3);
   TH1D* hendcap_eleUserTrkIso  = new TH1D("hendcap_eleUserTrkIso", "endcap eleUserTrkIso", 100, 0, 6);
   TH1D* hendcap_eleUserCalIso  = new TH1D("hendcap_eleUserCalIso", "endcap eleUserCalIso", 100, 0, 10);
 
@@ -228,7 +228,7 @@ void eleVariable(std::string inputFile, std::string outName){
 	case 7:  hbarrel_elePassConv->Fill(elePassConv[stElePtIndex]);
 	case 8:  hbarrel_eleMissingHits->Fill(eleMissingHits[stElePtIndex]);
 	case 9:  hbarrel_elePt      ->Fill(elePt[stElePtIndex]);
-	case 10: hbarrel_eleEta     ->Fill(fabs(eleEta[stElePtIndex]));
+	case 10: hbarrel_eleEta     ->Fill(eleEta[stElePtIndex]);
 	case 11: hbarrel_eleUserTrkIso->Fill(eleUserTrkIso[stElePtIndex]);
 	case 12: hbarrel_eleUserCalIso->Fill(eleUserCalIso[stElePtIndex]);
 
@@ -279,7 +279,7 @@ void eleVariable(std::string inputFile, std::string outName){
 	case 7:  hendcap_elePassConv->Fill(elePassConv[stElePtIndex]);
 	case 8:  hendcap_eleMissingHits->Fill(eleMissingHits[stElePtIndex]);
 	case 9:  hendcap_elePt      ->Fill(elePt[stElePtIndex]);
-	case 10: hendcap_eleEta     ->Fill(fabs(eleEta[stElePtIndex]));
+	case 10: hendcap_eleEta     ->Fill(eleEta[stElePtIndex]);
 	case 11: hendcap_eleUserTrkIso->Fill(eleUserTrkIso[stElePtIndex]);
 	case 12: hendcap_eleUserCalIso->Fill(eleUserCalIso[stElePtIndex]);
 
