@@ -13,7 +13,7 @@
 #include <TProfile.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include "HEADER/untuplizer.h"
+#include "../HEADER/untuplizer.h"
 
 void generator_level(string inputFile){
 
@@ -148,8 +148,8 @@ void generator_level(string inputFile){
 
   fprintf(stderr, "Processed all events\n");
 
-  std::string outName = "genLv_" + inputFile;
-  TFile* outFile = new TFile(outName.data(), "recreate");
+
+  TFile* outFile = new TFile("genLv.root", "recreate");
 
   h_pt_z_prime->Write();
   h_pt_sm_higgs->Write();

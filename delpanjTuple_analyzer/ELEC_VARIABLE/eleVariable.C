@@ -135,6 +135,8 @@ void eleVariable(std::string inputFile, std::string outName){
     Float_t* eleScEta    = data.GetPtrFloat("eleScEta");
     Float_t* eleUserTrkIso = data.GetPtrFloat("eleUserTrkIso");
     Float_t* eleUserCalIso = data.GetPtrFloat("eleUserCalIso");
+    Float_t* elePhi      = data.GetPtrFloat("elePhi");
+    Float_t* eleM        = data.GetPtrFloat("eleM");
     Float_t* muPt        = data.GetPtrFloat("muPt");
 
 
@@ -190,6 +192,27 @@ void eleVariable(std::string inputFile, std::string outName){
     }
 
     if( stElePtIndex < 0 ) continue;
+
+
+    //-----------------------------------------------------------------------------------//   
+    // reconstruct Z mass
+    
+    TLorentzVector stRecoEle, ndRecoEle;  
+ 
+    stRecoEle.SetPtEtaPhiM(elePt[stElePtIndex], 
+			   eleEta[stElePtIndex], 
+			   elePhi[stElePtIndex],
+			   eleM[stElePtIndex]);  
+  
+    ndRecoEle.SetPtEtaPhiM(elePt[ndElePtIndex], 
+			   eleEta[ndElePtIndex],
+			   elePhi[ndElePtIndex], 
+			   eleM[ndElePtIndex]); 
+    
+    TLorentzVector Z = stRecoEle + ndRecoEle;
+
+    if(Z.Pt() <= 80) continue;
+
 
     Double_t isoCutValue = 2+(0.03*elePt[stElePtIndex]);
 

@@ -207,7 +207,6 @@ void backgEstimate(std::string inputFile, std::string outName){
 			  muM[ndRecoMuIndex]); 
     
     TLorentzVector Z = stRecoMu + ndRecoMu;
-    h_ZMass->Fill(Z.M());
     
 
     //-----------------------------------------------------------------------------------//
@@ -291,6 +290,8 @@ void backgEstimate(std::string inputFile, std::string outName){
     if(Z.Pt() <= 80) continue;
     if(newBoostedJet.M() <= 40 ) continue;
     if(newBoostedJet.Pt() <= 80 ) continue;
+
+    h_ZMass->Fill(Z.M());
 
     // side band region
     if( CA8jetPrunedMass[maxJetIndex[0]] > 50 && CA8jetPrunedMass[maxJetIndex[0]] < 110 ){
