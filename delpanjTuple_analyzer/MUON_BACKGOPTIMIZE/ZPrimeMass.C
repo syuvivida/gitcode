@@ -6,6 +6,7 @@
 #include <TF1.h>
 #include <TH1D.h>
 #include <TH1F.h>
+#include <TBox.h>
 #include <TMath.h>
 #include <TFile.h>
 #include <TList.h>
@@ -42,6 +43,7 @@ void ZPrimeMass(std::string inputFile){
   h_ratioZprime_Mass->GetXaxis()->SetTitle("Ratio");
   h_ratioZprime_Mass->GetYaxis()->SetTitle("Event number");
 
+  TBox* b_window = new TBox(0,0,0,0); 
 
   // begin of event loop
   
@@ -97,6 +99,12 @@ void ZPrimeMass(std::string inputFile){
 
     h_ratioZprime_Mass->Fill(ZprimeMass/genZprime.M());
 
+    Double_t x1 = (ZprimeMass/genZprime.M())*(1-0.12);
+    Double_t x2 = (ZprimeMass/genZprime.M())*(1+0.12);
+
+    b_window = new TBox(x1, 0, x2, 985);
+    b_window->SetFillStyle(3001);
+    b_window->SetFillColor(kTeal+10);
     
   } 
 
@@ -113,9 +121,17 @@ void ZPrimeMass(std::string inputFile){
  
   fprintf(stderr, "Processed all events\n");
 
-  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 760);
-  c->Divide(2,2);
+  TCanvas* c = new TCanvas("c", "", 0, 0, 800, 600);
+  //c->Divide(2,2);
 
+  c->cd(1);
+  h_ratioZprime_Mass->Draw();
+  b_window->Draw("same");
+  h_ratioZprime_Mass->Draw("same");
+
+  c->Print("fitZpMass.png");
+
+  /*
   c->cd(1);
   h_genZprime_Mass->Draw();
 
@@ -127,7 +143,7 @@ void ZPrimeMass(std::string inputFile){
 
   c->cd(4);
   h_PrunedjetMass->Draw();
-
+  */
   
 }
 

@@ -28,7 +28,7 @@ void eleVariable(std::string inputFile, std::string outName){
   TH1D* hbarrel_eleDelPhiIn = new TH1D("hbarrel_eleDelPhiIn", "barrel eleDelPhiIn", 100, -0.05, 0.05);
   TH1D* hbarrel_eleSigIhIh  = new TH1D("hbarrel_eleSigIhIh", "barrel eleSigIhIh", 100, 0, 0.03);
   TH1D* hbarrel_eleHoE      = new TH1D("hbarrel_eleHoE", "barrel eleHoE", 100, 0, 0.2); 
-  TH1D* hbarrel_eleDxy      = new TH1D("hbarrel_eleDxy", "barrel eleDx", 100, -0.04, 0.04);  
+  TH1D* hbarrel_eleDxy      = new TH1D("hbarrel_eleDxy", "barrel eleDxy", 100, -0.04, 0.04);  
   TH1D* hbarrel_eleDz       = new TH1D("hbarrel_eleDz", "barrel eleDz", 100, -0.04, 0.04);   
   TH1D* hbarrel_eleEoverP   = new TH1D("hbarrel_eleEoverP", "barrel eleEoverP", 100, 0, 0.1);
   TH1D* hbarrel_elePassConv = new TH1D("hbarrel_elePassConv", "barrel elePassConv", 100, 0.8, 1.2);
@@ -72,7 +72,7 @@ void eleVariable(std::string inputFile, std::string outName){
   TH1D* hendcap_eleDelPhiIn = new TH1D("hendcap_eleDelPhiIn", "endcap eleDelPhiIn", 100, -0.05, 0.05);
   TH1D* hendcap_eleSigIhIh  = new TH1D("hendcap_eleSigIhIh", "endcap eleSigIhIh", 100, 0.01, 0.05);
   TH1D* hendcap_eleHoE      = new TH1D("hendcap_eleHoE", "endcap eleHoE", 100, 0, 0.2); 
-  TH1D* hendcap_eleDxy      = new TH1D("hendcap_eleDxy", "endcap eleDx", 100, -0.04, 0.04);  
+  TH1D* hendcap_eleDxy      = new TH1D("hendcap_eleDxy", "endcap eleDxy", 100, -0.04, 0.04);  
   TH1D* hendcap_eleDz       = new TH1D("hendcap_eleDz", "endcap eleDz", 100, -0.04, 0.04);   
   TH1D* hendcap_eleEoverP   = new TH1D("hendcap_eleEoverP", "endcap eleEoverP", 100, 0, 0.1);
   TH1D* hendcap_elePassConv = new TH1D("hendcap_elePassConv", "endcap elePassConv", 100, 0.8, 1.2);
