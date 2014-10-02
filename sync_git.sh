@@ -5,7 +5,7 @@ if [ -z $2 ]; then
     exit 1
 fi
 
-git add $1
+git add -A $1
 git commit -m "$2"
 git pull --rebase upstream master
 git push origin master

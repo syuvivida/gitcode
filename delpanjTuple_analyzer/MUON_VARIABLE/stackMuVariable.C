@@ -56,7 +56,7 @@ void stcMuVariable(){
   c_dw->SetPad(0, 0, 1, dw_height);
   c_dw->SetBottomMargin(0.25);
   
-  c_up->cd();
+  c_up->cd()->SetLogy(0);
   myPlot( ((TH1D*)(f->Get("nVtx_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(f->Get("nVtx_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(f->Get("nVtx_data_DoubleMu_A.root")))
@@ -137,11 +137,13 @@ void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_data){
 void myRatio(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_data){
 
   TH1D *h_bkg = (TH1D*)h_data->Clone("h_bkg");
+  h_bkg->Reset();
   h_bkg->Sumw2();
   h_bkg->Add(h_dy70,scale1);
   h_bkg->Add(h_dy100,scale2);
 
   TH1D* h_ratio = (TH1D*)h_data->Clone("h_ratio");
+  h_ratio->Reset();
   h_ratio->Sumw2();
 
   Int_t nbin = h_ratio->GetNbinsX();
@@ -195,5 +197,7 @@ void myRatio(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_data){
   one->SetLineStyle(1);
   one->SetLineWidth(2);
   one->Draw("same");
-  
+
+  h_ratio->Draw("same");
+
 }

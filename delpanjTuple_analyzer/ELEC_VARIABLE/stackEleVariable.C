@@ -582,7 +582,7 @@ void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_data){
   h_stack->Draw("same");
   h_data->Draw("e1same");
 
-  TLegend *leg = new TLegend(0.65, 0.65, 0.9, 0.9);
+  TLegend *leg = new TLegend(0.65, 0.75, 0.9, 0.9);
 
   leg->SetFillStyle(1001);
   leg->SetFillColor(10);
@@ -594,14 +594,17 @@ void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_data){
 
 }
 
+
 void myRatio(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_data){
 
   TH1D *h_bkg = (TH1D*)h_data->Clone("h_bkg");
+  h_bkg->Reset();
   h_bkg->Sumw2();
   h_bkg->Add(h_dy70,scale1);
   h_bkg->Add(h_dy100,scale2);
 
   TH1D* h_ratio = (TH1D*)h_data->Clone("h_ratio");
+  h_ratio->Reset();
   h_ratio->Sumw2();
 
   Int_t nbin = h_ratio->GetNbinsX();
@@ -655,5 +658,7 @@ void myRatio(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_data){
   one->SetLineStyle(1);
   one->SetLineWidth(2);
   one->Draw("same");
-  
+
+  h_ratio->Draw("same");
+
 }
