@@ -9,24 +9,12 @@ fi
 
 DATAAA_DIR=$PWD/../../delpanjTuple_data
 BACKGR_DIR=$PWD/../../delpanjTuple_background
-SIGNAL_DIR=$PWD/../../delpanjTuple_signal/qqll
 
-echo -e "Processing root file *** delpanj_v2_DYJetsToLL_PtZ-70To100.root ***\n"
-root -q -b -l $1.C++\(\"$BACKGR_DIR/delpanj_v2_DYJetsToLL_PtZ-70To100.root\"\,\"delpanj_v2_DYJetsToLL_PtZ-70To100.root\"\)
-echo -e "Done!\n"
+ls -l $BACKGR_DIR | tail -n+2 | awk '{ print "echo -e \"\n\nProcessing root file --> "$9"\"; root -q -b -l '"$1"'.C++\\(\\\"'"$BACKGR_DIR"'/"$9"\\\",\\\""$9"\\\"\\); echo -e \"\nDone!\n\""}' | bash
 
-echo -e "Processing root file *** delpanj_v2_DYJetsToLL_PtZ-100.root ***\n"
-root -q -b -l $1.C++\(\"$BACKGR_DIR/delpanj_v2_DYJetsToLL_PtZ-100.root\"\,\"delpanj_v2_DYJetsToLL_PtZ-100.root\"\)
-echo -e "Done!\n"
-
-echo -e "Processing root file *** delpanj_v2_data_DoubleMu_A.root ***\n"
-root -q -b -l $1.C++\(\"$DATAAA_DIR/delpanj_v2_data_DoubleEl_A.root\"\,\"delpanj_v2_data_DoubleEl_A.root\"\)
-echo -e "Done!\n"
-
-echo -e "Processing root file *** delpanj_v2_data_DoubleMu_A.root ***\n"
-root -q -b -l $1.C++\(\"$SIGNAL_DIR/delpanj_v2_ZPrime_hZ_qqll_LHC8_M1000.root\"\,\"delpanj_v2_ZPrime_hZ_qqll_LHC8_M1000.root\"\)
-echo -e "Done!\n"
-
+echo -e "\n\nProcessing root file --> delpanj_v3_data_DoubleEl_A.root"
+root -q -b -l $1.C++\(\"$DATAAA_DIR/delpanj_v3_data_DoubleEl_A.root\"\,\"delpanj_v3_data_DoubleEl_A.root\"\)
+echo -e "\nDone!\n"
 
 rm -f *.d *.so
 echo -e "All jobs done!\n"

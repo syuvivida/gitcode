@@ -191,7 +191,7 @@ void eleVariable(std::string inputFile, std::string outName){
 
     }
 
-    if( stElePtIndex < 0 ) continue;
+    if( stElePtIndex < 0 || ndElePtIndex < 0 ) continue;
 
 
     //-----------------------------------------------------------------------------------//   
@@ -216,25 +216,26 @@ void eleVariable(std::string inputFile, std::string outName){
 
     Double_t isoCutValue = 2+(0.03*elePt[stElePtIndex]);
 
+
     //-----------------------------------------------------------------------------------//
     // barrel selections and barrel cuts
 
     if( fabs(eleScEta[stElePtIndex]) > 0 && fabs(eleScEta[stElePtIndex]) < 1.4442 ){
 
-      for(Int_t flag = 0; flag <= 10; flag++){
+      for(Int_t flag = 0; flag <= 12; flag++){
 
-	if( eleDelEtaIn[stElePtIndex] >= 0.004 && flag != 0 ) continue;
-	if( eleDelPhiIn[stElePtIndex] >= 0.03  && flag != 1 ) continue;
-	if( eleSigIhIh[stElePtIndex]  >= 0.01  && flag != 2 ) continue;
-	if( eleHoE[stElePtIndex]      >= 0.12  && flag != 3 ) continue;
-	if( eleDxy[stElePtIndex]      >= 0.02  && flag != 4 ) continue;
-	if( eleDz[stElePtIndex]       >= 0.1   && flag != 5 ) continue;
-	if( eleEoverP[stElePtIndex]   >= 0.05  && flag != 6 ) continue;
-	if( elePassConv[stElePtIndex] < 1e-6   && flag != 7 ) continue;
-	if( eleMissingHits[stElePtIndex] > 0   && flag != 8 ) continue;
-	if( elePt[stElePtIndex]         <= 10  && flag != 9 ) continue;
-	if( fabs(eleEta[stElePtIndex])  >= 2.5 && flag != 10) continue;
-	if( eleUserTrkIso[stElePtIndex] >= 5   && flag != 11) continue;
+	if( fabs(eleDelEtaIn[stElePtIndex])  >= 0.004 && flag != 0 ) continue;
+	if( fabs(eleDelPhiIn[stElePtIndex])  >= 0.03  && flag != 1 ) continue;
+	if( eleSigIhIh[stElePtIndex]         >= 0.01  && flag != 2 ) continue;
+	if( eleHoE[stElePtIndex]             >= 0.12   && flag != 3 ) continue;
+	if( fabs(eleDxy[stElePtIndex])       >= 0.02  && flag != 4 ) continue;
+	if( fabs(eleDz[stElePtIndex])        >= 0.1   && flag != 5 ) continue;
+	if( eleEoverP[stElePtIndex]          >= 0.05  && flag != 6 ) continue;
+	if( elePassConv[stElePtIndex]        < 1e-6   && flag != 7 ) continue;
+	if( eleMissingHits[stElePtIndex]     > 0      && flag != 8 ) continue;
+	if( elePt[stElePtIndex]              <= 10    && flag != 9 ) continue;
+	if( fabs(eleEta[stElePtIndex])       >= 2.5   && flag != 10) continue;
+	if( eleUserTrkIso[stElePtIndex]      >= 5     && flag != 11) continue;
 	if( (eleUserCalIso[stElePtIndex]-(0.06205*eleRho)) >= isoCutValue && 
 	    flag != 12 ) continue;
 
@@ -268,20 +269,20 @@ void eleVariable(std::string inputFile, std::string outName){
 
     if( fabs(eleScEta[stElePtIndex]) > 1.566 && fabs(eleScEta[stElePtIndex]) < 2.5 ){
 
-      for(Int_t flag = 0; flag <= 10; flag++){
+      for(Int_t flag = 0; flag <= 12; flag++){
 
-	if( eleDelEtaIn[stElePtIndex] >= 0.005 && flag != 0 ) continue;
-	if( eleDelPhiIn[stElePtIndex] >= 0.02  && flag != 1 ) continue;
-	if( eleSigIhIh[stElePtIndex]  >= 0.03  && flag != 2 ) continue;
-	if( eleHoE[stElePtIndex]      >= 0.1   && flag != 3 ) continue;
-	if( eleDxy[stElePtIndex]      >= 0.02  && flag != 4 ) continue;
-	if( eleDz[stElePtIndex]       >= 0.1   && flag != 5 ) continue;
-	if( eleEoverP[stElePtIndex]   >= 0.05  && flag != 6 ) continue;
-	if( elePassConv[stElePtIndex] < 1e-6   && flag != 7 ) continue;
-	if( eleMissingHits[stElePtIndex] > 0   && flag != 8 ) continue;
-	if( elePt[stElePtIndex]         <= 10  && flag != 9 ) continue;
-	if( fabs(eleEta[stElePtIndex])  >= 2.5 && flag != 10) continue;
-	if( eleUserTrkIso[stElePtIndex] >= 5  && flag != 11) continue;
+	if( fabs(eleDelEtaIn[stElePtIndex])  >= 0.005 && flag != 0 ) continue;
+	if( fabs(eleDelPhiIn[stElePtIndex])  >= 0.02  && flag != 1 ) continue;
+	if( eleSigIhIh[stElePtIndex]         >= 0.03  && flag != 2 ) continue;
+	if( eleHoE[stElePtIndex]             >= 0.1   && flag != 3 ) continue;
+	if( fabs(eleDxy[stElePtIndex])       >= 0.02  && flag != 4 ) continue;
+	if( fabs(eleDz[stElePtIndex])        >= 0.1   && flag != 5 ) continue;
+	if( eleEoverP[stElePtIndex]          >= 0.05  && flag != 6 ) continue;
+	if( elePassConv[stElePtIndex]        < 1e-6   && flag != 7 ) continue;
+	if( eleMissingHits[stElePtIndex]     > 0      && flag != 8 ) continue;
+	if( elePt[stElePtIndex]              <= 10    && flag != 9 ) continue;
+	if( fabs(eleEta[stElePtIndex])       >= 2.5   && flag != 10) continue;
+	if( eleUserTrkIso[stElePtIndex]      >= 5     && flag != 11) continue;
 	if( elePt[stElePtIndex] < 50 )
 	  if( (eleUserCalIso[stElePtIndex]-(0.06205*eleRho)) >= 2.5 && 
 	      flag != 12 ) continue;
