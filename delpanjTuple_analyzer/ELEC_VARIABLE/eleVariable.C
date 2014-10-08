@@ -218,102 +218,101 @@ void eleVariable(std::string inputFile, std::string outName){
 
 
     //-----------------------------------------------------------------------------------//
-    // barrel selections and barrel cuts
+    // electron selections and cuts
 
-    if( fabs(eleScEta[stElePtIndex]) > 0 && fabs(eleScEta[stElePtIndex]) < 1.4442 ){
+    Int_t eleIndex[2] = {stElePtIndex, ndElePtIndex};
 
-      for(Int_t flag = 0; flag <= 12; flag++){
+    for(Int_t eleIndex = 0; eleIndex < 2; eleIndex++){
 
-	if( fabs(eleDelEtaIn[stElePtIndex])  >= 0.004 && flag != 0 ) continue;
-	if( fabs(eleDelPhiIn[stElePtIndex])  >= 0.03  && flag != 1 ) continue;
-	if( eleSigIhIh[stElePtIndex]         >= 0.01  && flag != 2 ) continue;
-	if( eleHoE[stElePtIndex]             >= 0.12   && flag != 3 ) continue;
-	if( fabs(eleDxy[stElePtIndex])       >= 0.02  && flag != 4 ) continue;
-	if( fabs(eleDz[stElePtIndex])        >= 0.1   && flag != 5 ) continue;
-	if( eleEoverP[stElePtIndex]          >= 0.05  && flag != 6 ) continue;
-	if( elePassConv[stElePtIndex]        < 1e-6   && flag != 7 ) continue;
-	if( eleMissingHits[stElePtIndex]     > 0      && flag != 8 ) continue;
-	if( elePt[stElePtIndex]              <= 10    && flag != 9 ) continue;
-	if( fabs(eleEta[stElePtIndex])       >= 2.5   && flag != 10) continue;
-	if( eleUserTrkIso[stElePtIndex]      >= 5     && flag != 11) continue;
-	if( (eleUserCalIso[stElePtIndex]-(0.06205*eleRho)) >= isoCutValue && 
-	    flag != 12 ) continue;
+      if( fabs(eleScEta[eleIndex]) > 0 && fabs(eleScEta[eleIndex]) < 1.4442 ){ // barrel selections and barrel cuts
+
+	for(Int_t flag = 0; flag <= 12; flag++){
+
+	  if( fabs(eleDelEtaIn[eleIndex]) >= 0.004 && flag != 0 ) continue;
+	  if( fabs(eleDelPhiIn[eleIndex]) >= 0.03  && flag != 1 ) continue;
+	  if( eleSigIhIh[eleIndex]        >= 0.01  && flag != 2 ) continue;
+	  if( eleHoE[eleIndex]            >= 0.12  && flag != 3 ) continue;
+	  if( fabs(eleDxy[eleIndex])      >= 0.02  && flag != 4 ) continue;
+	  if( fabs(eleDz[eleIndex])       >= 0.1   && flag != 5 ) continue;
+	  if( eleEoverP[eleIndex]         >= 0.05  && flag != 6 ) continue;
+	  if( elePassConv[eleIndex]       < 1e-6   && flag != 7 ) continue;
+	  if( eleMissingHits[eleIndex]    > 0      && flag != 8 ) continue;
+	  if( elePt[eleIndex]             <= 10    && flag != 9 ) continue;
+	  if( fabs(eleEta[eleIndex])      >= 2.5   && flag != 10) continue;
+	  if( eleUserTrkIso[eleIndex]     >= 5     && flag != 11) continue;
+	  if( (eleUserCalIso[eleIndex]-(0.06205*eleRho)) >= isoCutValue && flag != 12 ) continue;
 
 	    
-	switch(flag){
+	  switch(flag){
 
-	case 0:  hbarrel_eleDelEtaIn->Fill(eleDelEtaIn[stElePtIndex]);
-	case 1:  hbarrel_eleDelPhiIn->Fill(eleDelPhiIn[stElePtIndex]);
-	case 2:  hbarrel_eleSigIhIh ->Fill(eleSigIhIh[stElePtIndex]);
-	case 3:  hbarrel_eleHoE     ->Fill(eleHoE[stElePtIndex]);
-	case 4:  hbarrel_eleDxy     ->Fill(eleDxy[stElePtIndex]);
-	case 5:  hbarrel_eleDz      ->Fill(eleDz[stElePtIndex]);
-	case 6:  hbarrel_eleEoverP  ->Fill(eleEoverP[stElePtIndex]);
-	case 7:  hbarrel_elePassConv->Fill(elePassConv[stElePtIndex]);
-	case 8:  hbarrel_eleMissingHits->Fill(eleMissingHits[stElePtIndex]);
-	case 9:  hbarrel_elePt      ->Fill(elePt[stElePtIndex]);
-	case 10: hbarrel_eleEta     ->Fill(eleEta[stElePtIndex]);
-	case 11: hbarrel_eleUserTrkIso->Fill(eleUserTrkIso[stElePtIndex]);
-	case 12: hbarrel_eleUserCalIso->Fill(eleUserCalIso[stElePtIndex]);
+	  case 0: hbarrel_eleDelEtaIn->Fill(eleDelEtaIn[eleIndex]);
+	  case 1: hbarrel_eleDelPhiIn->Fill(eleDelPhiIn[eleIndex]);
+	  case 2: hbarrel_eleSigIhIh->Fill(eleSigIhIh[eleIndex]);
+	  case 3: hbarrel_eleHoE->Fill(eleHoE[eleIndex]);
+	  case 4: hbarrel_eleDxy->Fill(eleDxy[eleIndex]);
+	  case 5: hbarrel_eleDz->Fill(eleDz[eleIndex]);
+	  case 6: hbarrel_eleEoverP->Fill(eleEoverP[eleIndex]);
+	  case 7: hbarrel_elePassConv->Fill(elePassConv[eleIndex]);
+	  case 8: hbarrel_eleMissingHits->Fill(eleMissingHits[eleIndex]);
+	  case 9: hbarrel_elePt->Fill(elePt[eleIndex]);
+	  case 10: hbarrel_eleEta->Fill(eleEta[eleIndex]);
+	  case 11: hbarrel_eleUserTrkIso->Fill(eleUserTrkIso[eleIndex]);
+	  case 12: hbarrel_eleUserCalIso->Fill(eleUserCalIso[eleIndex]);
+	 
 
-
-	} // end of switch
+	  } // end of switch
     
-      } // end of flag loop
+	} // end of flag loop
 
-    } // end of barrel
+      } // end of barrel
 
 
-    //-----------------------------------------------------------------------------------//
-    // endcap selections and endcap cuts
+      if( fabs(eleScEta[eleIndex]) > 1.566 && fabs(eleScEta[eleIndex]) < 2.5 ){ // endcap selections and endcap cuts
 
-    if( fabs(eleScEta[stElePtIndex]) > 1.566 && fabs(eleScEta[stElePtIndex]) < 2.5 ){
+	for(Int_t flag = 0; flag <= 12; flag++){
 
-      for(Int_t flag = 0; flag <= 12; flag++){
-
-	if( fabs(eleDelEtaIn[stElePtIndex])  >= 0.005 && flag != 0 ) continue;
-	if( fabs(eleDelPhiIn[stElePtIndex])  >= 0.02  && flag != 1 ) continue;
-	if( eleSigIhIh[stElePtIndex]         >= 0.03  && flag != 2 ) continue;
-	if( eleHoE[stElePtIndex]             >= 0.1   && flag != 3 ) continue;
-	if( fabs(eleDxy[stElePtIndex])       >= 0.02  && flag != 4 ) continue;
-	if( fabs(eleDz[stElePtIndex])        >= 0.1   && flag != 5 ) continue;
-	if( eleEoverP[stElePtIndex]          >= 0.05  && flag != 6 ) continue;
-	if( elePassConv[stElePtIndex]        < 1e-6   && flag != 7 ) continue;
-	if( eleMissingHits[stElePtIndex]     > 0      && flag != 8 ) continue;
-	if( elePt[stElePtIndex]              <= 10    && flag != 9 ) continue;
-	if( fabs(eleEta[stElePtIndex])       >= 2.5   && flag != 10) continue;
-	if( eleUserTrkIso[stElePtIndex]      >= 5     && flag != 11) continue;
-	if( elePt[stElePtIndex] < 50 )
-	  if( (eleUserCalIso[stElePtIndex]-(0.06205*eleRho)) >= 2.5 && 
-	      flag != 12 ) continue;
-	if( elePt[stElePtIndex] > 50 )
-	  if( (eleUserCalIso[stElePtIndex]-(0.06205*eleRho)) >= (isoCutValue+0.5) &&
-	      flag != 12 ) continue;
+	  if( fabs(eleDelEtaIn[eleIndex]) >= 0.005 && flag != 0 ) continue;
+	  if( fabs(eleDelPhiIn[eleIndex]) >= 0.02  && flag != 1 ) continue;
+	  if( eleSigIhIh[eleIndex]        >= 0.03  && flag != 2 ) continue;
+	  if( eleHoE[eleIndex]            >= 0.1   && flag != 3 ) continue;
+	  if( fabs(eleDxy[eleIndex])      >= 0.02  && flag != 4 ) continue;
+	  if( fabs(eleDz[eleIndex])       >= 0.1   && flag != 5 ) continue;
+	  if( eleEoverP[eleIndex]         >= 0.05  && flag != 6 ) continue;
+	  if( elePassConv[eleIndex]       < 1e-6   && flag != 7 ) continue;
+	  if( eleMissingHits[eleIndex]    > 0      && flag != 8 ) continue;
+	  if( elePt[eleIndex]             <= 10    && flag != 9 ) continue;
+	  if( fabs(eleEta[eleIndex])      >= 2.5   && flag != 10) continue;
+	  if( eleUserTrkIso[eleIndex]     >= 5     && flag != 11) continue;
+	  if( elePt[eleIndex] < 50 )
+	    if( (eleUserCalIso[eleIndex]-(0.06205*eleRho)) >= 2.5 && flag != 12 ) continue;
+	  if( elePt[eleIndex] > 50 )
+	    if( (eleUserCalIso[eleIndex]-(0.06205*eleRho)) >= (isoCutValue+0.5) && flag != 12 ) continue;
 	
 	
-	switch(flag){
+	  switch(flag){
 
-	case 0:  hendcap_eleDelEtaIn->Fill(eleDelEtaIn[stElePtIndex]);
-	case 1:  hendcap_eleDelPhiIn->Fill(eleDelPhiIn[stElePtIndex]);
-	case 2:  hendcap_eleSigIhIh ->Fill(eleSigIhIh[stElePtIndex]);
-	case 3:  hendcap_eleHoE     ->Fill(eleHoE[stElePtIndex]);
-	case 4:  hendcap_eleDxy     ->Fill(eleDxy[stElePtIndex]);
-	case 5:  hendcap_eleDz      ->Fill(eleDz[stElePtIndex]);
-	case 6:  hendcap_eleEoverP  ->Fill(eleEoverP[stElePtIndex]);
-	case 7:  hendcap_elePassConv->Fill(elePassConv[stElePtIndex]);
-	case 8:  hendcap_eleMissingHits->Fill(eleMissingHits[stElePtIndex]);
-	case 9:  hendcap_elePt      ->Fill(elePt[stElePtIndex]);
-	case 10: hendcap_eleEta     ->Fill(eleEta[stElePtIndex]);
-	case 11: hendcap_eleUserTrkIso->Fill(eleUserTrkIso[stElePtIndex]);
-	case 12: hendcap_eleUserCalIso->Fill(eleUserCalIso[stElePtIndex]);
-
+	  case 0: hendcap_eleDelEtaIn->Fill(eleDelEtaIn[eleIndex]);
+	  case 1: hendcap_eleDelPhiIn->Fill(eleDelPhiIn[eleIndex]);
+	  case 2: hendcap_eleSigIhIh->Fill(eleSigIhIh[eleIndex]);
+	  case 3: hendcap_eleHoE->Fill(eleHoE[eleIndex]);
+	  case 4: hendcap_eleDxy->Fill(eleDxy[eleIndex]);
+	  case 5: hendcap_eleDz->Fill(eleDz[eleIndex]);
+	  case 6: hendcap_eleEoverP->Fill(eleEoverP[eleIndex]);
+	  case 7: hendcap_elePassConv->Fill(elePassConv[eleIndex]);
+	  case 8: hendcap_eleMissingHits->Fill(eleMissingHits[eleIndex]);
+	  case 9: hendcap_elePt->Fill(elePt[eleIndex]);
+	  case 10: hendcap_eleEta->Fill(eleEta[eleIndex]);
+	  case 11: hendcap_eleUserTrkIso->Fill(eleUserTrkIso[eleIndex]);
+	  case 12: hendcap_eleUserCalIso->Fill(eleUserCalIso[eleIndex]);
+	  
 	
-	} // end of switch
+	  } // end of switch
 	
-      } // end of flag loop
+	} // end of flag loop
 
-    } // end of endcap
+      } // end of endcap
     
+    } // end of two electrons loop
 
   } // end of event loop
 
