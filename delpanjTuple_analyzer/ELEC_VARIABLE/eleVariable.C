@@ -245,19 +245,19 @@ void eleVariable(std::string inputFile, std::string outName){
 	    
 	  switch(flag){
 
-	  case 0: hbarrel_eleDelEtaIn->Fill(eleDelEtaIn[eleIndex[ie]]);
-	  case 1: hbarrel_eleDelPhiIn->Fill(eleDelPhiIn[eleIndex[ie]]);
-	  case 2: hbarrel_eleSigIhIh->Fill(eleSigIhIh[eleIndex[ie]]);
-	  case 3: hbarrel_eleHoE->Fill(eleHoE[eleIndex[ie]]);
-	  case 4: hbarrel_eleDxy->Fill(eleDxy[eleIndex[ie]]);
-	  case 5: hbarrel_eleDz->Fill(eleDz[eleIndex[ie]]);
-	  case 6: hbarrel_eleEoverP->Fill(eleEoverP[eleIndex[ie]]);
-	  case 7: hbarrel_elePassConv->Fill(elePassConv[eleIndex[ie]]);
-	  case 8: hbarrel_eleMissingHits->Fill(eleMissingHits[eleIndex[ie]]);
-	  case 9: hbarrel_elePt->Fill(elePt[eleIndex[ie]]);
-	  case 10: hbarrel_eleEta->Fill(eleEta[eleIndex[ie]]);
-	  case 11: hbarrel_eleUserTrkIso->Fill(eleUserTrkIso[eleIndex[ie]]);
-	  case 12: hbarrel_eleUserCalIso->Fill(eleUserCalIso[eleIndex[ie]]);
+	  case 0: hbarrel_eleDelEtaIn->Fill(eleDelEtaIn[eleIndex[ie]]); break;
+	  case 1: hbarrel_eleDelPhiIn->Fill(eleDelPhiIn[eleIndex[ie]]); break;
+	  case 2: hbarrel_eleSigIhIh->Fill(eleSigIhIh[eleIndex[ie]]); break;
+	  case 3: hbarrel_eleHoE->Fill(eleHoE[eleIndex[ie]]); break;
+	  case 4: hbarrel_eleDxy->Fill(eleDxy[eleIndex[ie]]); break;
+	  case 5: hbarrel_eleDz->Fill(eleDz[eleIndex[ie]]); break;
+	  case 6: hbarrel_eleEoverP->Fill(eleEoverP[eleIndex[ie]]); break;
+	  case 7: hbarrel_elePassConv->Fill(elePassConv[eleIndex[ie]]); break;
+	  case 8: hbarrel_eleMissingHits->Fill(eleMissingHits[eleIndex[ie]]); break;
+	  case 9: hbarrel_elePt->Fill(elePt[eleIndex[ie]]); break;
+	  case 10: hbarrel_eleEta->Fill(eleEta[eleIndex[ie]]); break;
+	  case 11: hbarrel_eleUserTrkIso->Fill(eleUserTrkIso[eleIndex[ie]]); break;
+	  case 12: hbarrel_eleUserCalIso->Fill(eleUserCalIso[eleIndex[ie]]); break;
 	 
 
 	  } // end of switch
@@ -291,19 +291,19 @@ void eleVariable(std::string inputFile, std::string outName){
 	
 	  switch(flag){
 
-	  case 0: hendcap_eleDelEtaIn->Fill(eleDelEtaIn[eleIndex[ie]]);
-	  case 1: hendcap_eleDelPhiIn->Fill(eleDelPhiIn[eleIndex[ie]]);
-	  case 2: hendcap_eleSigIhIh->Fill(eleSigIhIh[eleIndex[ie]]);
-	  case 3: hendcap_eleHoE->Fill(eleHoE[eleIndex[ie]]);
-	  case 4: hendcap_eleDxy->Fill(eleDxy[eleIndex[ie]]);
-	  case 5: hendcap_eleDz->Fill(eleDz[eleIndex[ie]]);
-	  case 6: hendcap_eleEoverP->Fill(eleEoverP[eleIndex[ie]]);
-	  case 7: hendcap_elePassConv->Fill(elePassConv[eleIndex[ie]]);
-	  case 8: hendcap_eleMissingHits->Fill(eleMissingHits[eleIndex[ie]]);
-	  case 9: hendcap_elePt->Fill(elePt[eleIndex[ie]]);
-	  case 10: hendcap_eleEta->Fill(eleEta[eleIndex[ie]]);
-	  case 11: hendcap_eleUserTrkIso->Fill(eleUserTrkIso[eleIndex[ie]]);
-	  case 12: hendcap_eleUserCalIso->Fill(eleUserCalIso[eleIndex[ie]]);
+	  case 0: hendcap_eleDelEtaIn->Fill(eleDelEtaIn[eleIndex[ie]]); break;
+	  case 1: hendcap_eleDelPhiIn->Fill(eleDelPhiIn[eleIndex[ie]]); break;
+	  case 2: hendcap_eleSigIhIh->Fill(eleSigIhIh[eleIndex[ie]]); break;
+	  case 3: hendcap_eleHoE->Fill(eleHoE[eleIndex[ie]]); break;
+	  case 4: hendcap_eleDxy->Fill(eleDxy[eleIndex[ie]]); break;
+	  case 5: hendcap_eleDz->Fill(eleDz[eleIndex[ie]]); break;
+	  case 6: hendcap_eleEoverP->Fill(eleEoverP[eleIndex[ie]]); break;
+	  case 7: hendcap_elePassConv->Fill(elePassConv[eleIndex[ie]]); break;
+	  case 8: hendcap_eleMissingHits->Fill(eleMissingHits[eleIndex[ie]]); break;
+	  case 9: hendcap_elePt->Fill(elePt[eleIndex[ie]]); break;
+	  case 10: hendcap_eleEta->Fill(eleEta[eleIndex[ie]]); break;
+	  case 11: hendcap_eleUserTrkIso->Fill(eleUserTrkIso[eleIndex[ie]]); break;
+	  case 12: hendcap_eleUserCalIso->Fill(eleUserCalIso[eleIndex[ie]]); break;
 	  
 	
 	  } // end of switch

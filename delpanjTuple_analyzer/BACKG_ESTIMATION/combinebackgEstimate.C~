@@ -21,33 +21,37 @@
 #include <TSystemDirectory.h>
 #include <TGraphAsymmErrors.h>
 
-const Int_t totalNEvent_dy70 = 11764538;
-const Int_t totalNEvent_dy100 = 12511326;
-const Double_t crossSection_dy70 = 63.5*1000;
-const Double_t crossSection_dy100 = 39.4*1000;
-// scale = data_luminosity / bkg_luminosity
-Double_t scale_dy70 = 0.876 / (totalNEvent_dy70 / crossSection_dy70);
-Double_t scale_dy100 = 0.876 / (totalNEvent_dy100 / crossSection_dy100);
+const Int_t totalNEvent1 = 11765438;
+const Int_t totalNEvent2 = 12511326;
+const Double_t crossSection1 = 63.5*1000;
+const Double_t crossSection2 = 39.4*1000;
 
 void combineBkgEst(){
 
   TFile *f = TFile::Open("backgEstimate.root");
 
-  TH1D* h_dy70side  = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_dy70sign  = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_dy70side   = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_dy70sign   = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_dy70zmass  = (TH1D*)(f->Get("ZMass_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_dy100side  = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_dy100sign  = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_dy100zmass = (TH1D*)(f->Get("ZMass_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_dataside   = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_A.root"));
+  TH1D* h_datasign   = (TH1D*)(f->Get("signZpMass_data_DoubleMu_A.root"));
+  TH1D* h_datazmass  = (TH1D*)(f->Get("ZMass_data_DoubleMu_A.root"));
 
-  h_dataMuAside->Sumw2();
-  h_dataMuAsign->Sumw2();
-
+  h_dataside->Sumw2();
+  h_datasign->Sumw2();
+  h_datazmass->Sumw2();
 
   const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
 			      1250,1400,1600,1800,2000,2400};
 
   Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
+
+  // scale = ? fb^-1 / luminosity
+  Double_t scale1 = 0.876 / (totalNEvent1 / crossSection1); // DYJetsToLL_PtZ-70To100
+  Double_t scale2 = 0.876 / (totalNEvent2 / crossSection2); // DYJetsToLL_PtZ100
 
   TH1D* h_combineSide = new TH1D("h_combineSide", "Side-band region Zprime Mass", nvarBins, varBins);
   h_combineSide->Sumw2();
@@ -67,6 +71,16 @@ void combineBkgEst(){
   cout << "Total event of bkg signal region:     " << h_combineSign->Integral() << endl;
   cout << "Total event of data side band region: " << h_dataside->Integral() << endl;
   cout << "Total event of data signal region:    " << h_datasign->Integral() << endl;
+
+  TH1D* h_combineZMass = new TH1D("h_combineZMass", "Z Mass", 100, 70, 110);
+  h_combineZMass->Sumw2();
+  h_combineZMass->GetXaxis()->SetTitle("Mass");
+  h_combineZMass->GetYaxis()->SetTitle("Event Number");
+  h_combineZMass->Add(h_dy70zmass, scale1);
+  h_combineZMass->Add(h_dy100zmass, scale2);
+
+  cout << "Total event of background: " << h_combineZMass->Integral() << endl;
+  cout << "Total event of data: " << h_datazmass->Integral() << endl;
 
   TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
   h_alpha->Sumw2();
@@ -103,6 +117,23 @@ void combineBkgEst(){
   leg2->SetBorderSize(1);
   leg2->AddEntry(h_combineSign, "DYJetsToLL", "f"); 
   leg2->Draw();
+
+  c->cd(3);
+  h_datazmass->SetMarkerStyle(8);
+  h_datazmass->SetMarkerSize(0.5);
+  h_datazmass->Draw();
+  h_combineZMass->SetLineColor(1);
+  h_combineZMass->SetFillColor(kBlue-4);
+  h_combineZMass->SetFillStyle(3001);
+  h_combineZMass->Draw("histesame");
+  
+  TLegend *leg3 = new TLegend(0.65, 0.75, 0.9, 0.9);
+  leg3->SetFillStyle(1001);
+  leg3->SetFillColor(10);
+  leg3->SetBorderSize(1);
+  leg3->AddEntry(h_datazmass, "Data", "p"); 
+  leg3->AddEntry(h_combineZMass, "DYJetsToLL", "f"); 
+  leg3->Draw();
 
   c->cd(4);
   h_dataside->SetLineColor(1);
@@ -142,17 +173,3 @@ void combineBkgEst(){
   c->Print("backgroundEstimation.gif");
 
 }
-
-/*  
-  TF1* fitRatio = new TF1("fitRatio", fitFunc, 0.8, 1.2, 3);
-  fitRatio->SetParameters(100, 0.9);
-
-  h_ratioZprime_Mass->Fit("fitRatio", "","", 0.8, 1.2);
-
-Double_t fitFunc(Double_t* v, Double_t* par){
-  
-  Double_t x = v[0];
-  return TMath::Exp(par[0]*x + par[1]/x);
-
-}
-*/

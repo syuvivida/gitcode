@@ -66,8 +66,8 @@ void recoGenMuonMatching(TreeReader &data,
 
   for(Int_t i = 0; i < nGenPar; i++){
 
-    if( genMomParId[i] == 23 && genParSt[i] == 1 && genParId[i] == 13 ) gen_MuonID = i;
-    if( genMomParId[i] == 23 && genParSt[i] == 1 && genParId[i] == -13 ) gen_antiMuonID = i; 
+    if( genMomParId[i] == 13 && genParSt[i] == 1 && genParId[i] == 13 ) gen_MuonID = i;
+    if( genMomParId[i] == -13 && genParSt[i] == 1 && genParId[i] == -13 ) gen_antiMuonID = i; 
     if( gen_MuonID > -1 && gen_antiMuonID > -1 ) break;
     
   }

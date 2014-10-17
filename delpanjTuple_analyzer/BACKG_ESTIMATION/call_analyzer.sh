@@ -7,20 +7,12 @@ fi
 
 ##---------------- Run the analyzer macro ----------------##
 
-DATAAA_DIR=$PWD/../../delpanjTuple_data
+DATAAA_DIR=$PWD/../../delpanjTuple_data/muon
 BACKGR_DIR=$PWD/../../delpanjTuple_background
 
-echo -e "Processing root file *** delpanj_v2_DYJetsToLL_PtZ-70To100.root ***\n"
-root -q -b -l $1.C++\(\"$BACKGR_DIR/delpanj_v2_DYJetsToLL_PtZ-70To100.root\"\,\"delpanj_v2_DYJetsToLL_PtZ-70To100.root\"\)
-echo -e "Done!\n"
+ls -l $BACKGR_DIR | tail -n+2 | awk '{ print "echo -e \"\n\nProcessing root file --> "$9"\"; root -q -b -l '"$1"'.C++\\(\\\"'"$BACKGR_DIR"'/"$9"\\\",\\\""$9"\\\"\\); echo -e \"\nDone!\n\""}' | bash
 
-echo -e "Processing root file *** delpanj_v2_DYJetsToLL_PtZ-100.root ***\n"
-root -q -b -l $1.C++\(\"$BACKGR_DIR/delpanj_v2_DYJetsToLL_PtZ-100.root\"\,\"delpanj_v2_DYJetsToLL_PtZ-100.root\"\)
-echo -e "Done!\n"
-
-echo -e "Processing root file *** delpanj_v2_data_DoubleMu_A.root ***\n"
-root -q -b -l $1.C++\(\"$DATAAA_DIR/delpanj_v2_data_DoubleMu_A.root\"\,\"delpanj_v2_data_DoubleMu_A.root\"\)
-echo -e "Done!\n"
+ls -l $DATAAA_DIR | tail -n+2 | awk '{ print "echo -e \"\n\nProcessing root file --> "$9"\"; root -q -b -l '"$1"'.C++\\(\\\"'"$DATAAA_DIR"'/"$9"\\\",\\\""$9"\\\"\\); echo -e \"\nDone!\n\""}' | bash
 
 rm -f *.d *.so
 echo -e "All jobs done!\n"

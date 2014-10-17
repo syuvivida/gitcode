@@ -188,7 +188,7 @@ void backgEstimate(std::string inputFile, std::string outName){
     Int_t stRecoMuIndex, ndRecoMuIndex;
 
     if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
-      continue;
+    continue;
 
 
     //-----------------------------------------------------------------------------------//   
@@ -306,7 +306,7 @@ void backgEstimate(std::string inputFile, std::string outName){
     // signal region
     if( CA8jetPrunedMass[maxJetIndex[0]] > 110 && CA8jetPrunedMass[maxJetIndex[0]] < 140 ){
 
-      TLorentzVector Zprime = Z + newBoostedJet; 
+    TLorentzVector Zprime = Z + newBoostedJet; 
       h_signPrunedjetMass->Fill(CA8jetPrunedMass[maxJetIndex[0]]);
       h_signZprimeMass->Fill(Zprime.M());
     
@@ -318,16 +318,39 @@ void backgEstimate(std::string inputFile, std::string outName){
 
   fprintf(stderr, "Processed all events\n");
 
+  // draw results
+
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 760);
+  c->Divide(3,2);
+
+  c->cd(1)->SetLogy();
+  h_sidePrunedjetMass->Draw();
+
+  c->cd(2);
+  h_sideZprimeMass->Draw();
+
+  c->cd(4)->SetLogy();
+  h_signPrunedjetMass->Draw();
+
+  c->cd(5);
+  h_signZprimeMass->Draw();
+
+  c->cd(6);
+  h_alpha->Divide(h_signZprimeMass, h_sideZprimeMass);
+  h_alpha->Draw();
+
 
   // output file
 
   std::string sideName = "sideZpMass_" + outName.substr(11);
   std::string signName = "signZpMass_" + outName.substr(11);
+  std::string ZMassName = "ZMass_" + outName.substr(11);
 
   TFile* outFile = new TFile("backgEstimate.root", "update");
 
   h_sideZprimeMass->Write(sideName.data());
   h_signZprimeMass->Write(signName.data());
+  h_ZMass->Write(ZMassName.data());
 
   outFile->Write();
   

@@ -209,11 +209,11 @@ void muVariable(std::string inputFile, std::string outName){
 
     Int_t muIndex[2] = {stMuPtIndex, ndMuPtIndex};
 
-    for(Int_t im = 0; im < 2; im++){
+    for(Int_t flag = 0; flag <= 10; flag++){
 
-      if( isGlobalMuon[muIndex[im]] ){ // global selections and global cuts
+      for(Int_t im = 0; im < 2; im++){
 
-	for(Int_t flag = 0; flag <= 10; flag++){
+	if( isGlobalMuon[muIndex[im]] ){ // global selections and global cuts
 
 	  if( muHits[muIndex[im]]      <= 0   && flag != 0 ) continue;
 	  if( muMatches[muIndex[im]]   <= 1   && flag != 1 ) continue;
@@ -227,35 +227,40 @@ void muVariable(std::string inputFile, std::string outName){
 	  if( fabs(muPhi[muIndex[im]]) >= 3.2 && flag != 9 ) continue;
 	  if( (muCorrTrkIso[muIndex[im]]/muPt[muIndex[im]]) >= 0.1 && flag != 10 ) continue;
 
-
 	  switch(flag){
 
-	  case 0: hglobal_muHits->Fill(muHits[muIndex[im]]);
-	  case 1: hglobal_muMatches->Fill(muMatches[muIndex[im]]);
-	  case 2: hglobal_muPixelHits->Fill(muPixelHits[muIndex[im]]);
-       	  case 3: hglobal_muTrkLayers->Fill(muTrkLayers[muIndex[im]]);
-	  case 4: hglobal_muPtErrx->Fill(muPtErrx[muIndex[im]]);
-	  case 5: hglobal_mudxy->Fill(mudxy[muIndex[im]]);
-	  case 6: hglobal_mudz->Fill(mudz[muIndex[im]]);
-	  case 7: hglobal_muPt->Fill(muPt[muIndex[im]]);
-	  case 8: hglobal_muEta->Fill(muEta[muIndex[im]]);
-	  case 9: hglobal_muPhi->Fill(muPhi[muIndex[im]]);
-	  case 10: hglobal_muCorrTrkIso->Fill(muCorrTrkIso[muIndex[im]]/muPt[muIndex[im]]);
+	  case 0: hglobal_muHits->Fill(muHits[muIndex[im]]); break;
+	  case 1: hglobal_muMatches->Fill(muMatches[muIndex[im]]); break;
+	  case 2: hglobal_muPixelHits->Fill(muPixelHits[muIndex[im]]); break;
+       	  case 3: hglobal_muTrkLayers->Fill(muTrkLayers[muIndex[im]]); break;
+	  case 4: hglobal_muPtErrx->Fill(muPtErrx[muIndex[im]]); break;
+	  case 5: hglobal_mudxy->Fill(mudxy[muIndex[im]]); break;
+	  case 6: hglobal_mudz->Fill(mudz[muIndex[im]]); break;
+	  case 7: hglobal_muPt->Fill(muPt[muIndex[im]]); break;
+	  case 8: hglobal_muEta->Fill(muEta[muIndex[im]]); break;
+	  case 9: hglobal_muPhi->Fill(muPhi[muIndex[im]]); break;
+	  case 10: hglobal_muCorrTrkIso->Fill(muCorrTrkIso[muIndex[im]]/muPt[muIndex[im]]); break;
 
 
 	  } // end of switch
 
-	} // end of flag loop
+	} // end of global loop
 
 	hglobal_muTrkIso->Fill(muTrkIso[muIndex[im]]/muPt[muIndex[im]]); 
      
-      } // end of global
+      } // end of two muons
+
+    } // end of flag loop 
 
 
+      //-----------------------------------------------------------------------------------//
 
-      if( isTrackerMuon[muIndex[im]] ){ // tracker selections and tracker cuts
 
-	for(Int_t flag = 0; flag <= 10; flag++){
+    for(Int_t flag = 0; flag <= 10; flag++){
+
+      for(Int_t im = 0; im < 2; im++){
+
+	if( isTrackerMuon[muIndex[im]] ){ // tracker selections and tracker cuts
 
 	  if( muHits[muIndex[im]]      <= 0   && flag != 0 ) continue;
 	  if( muMatches[muIndex[im]]   <= 1   && flag != 1 ) continue;
@@ -269,31 +274,31 @@ void muVariable(std::string inputFile, std::string outName){
 	  if( fabs(muPhi[muIndex[im]]) >= 3.2 && flag != 9 ) continue;
 	  if( (muCorrTrkIso[muIndex[im]]/muPt[muIndex[im]]) >= 0.1 && flag != 10 ) continue;
 
-
 	  switch(flag){
 
-	  case 0: htracker_muHits->Fill(muHits[muIndex[im]]);
-	  case 1: htracker_muMatches->Fill(muMatches[muIndex[im]]);
-	  case 2: htracker_muPixelHits->Fill(muPixelHits[muIndex[im]]);
-	  case 3: htracker_muTrkLayers->Fill(muTrkLayers[muIndex[im]]);
-	  case 4: htracker_muPtErrx->Fill(muPtErrx[muIndex[im]]);
-	  case 5: htracker_mudxy->Fill(mudxy[muIndex[im]]);
-	  case 6: htracker_mudz->Fill(mudz[muIndex[im]]);
-	  case 7: htracker_muPt->Fill(muPt[muIndex[im]]);
-	  case 8: htracker_muEta->Fill(muEta[muIndex[im]]);
-	  case 9: htracker_muPhi->Fill(muPhi[muIndex[im]]);
-	  case 10: htracker_muCorrTrkIso->Fill(muCorrTrkIso[muIndex[im]]/muPt[muIndex[im]]);
+	  case 0: htracker_muHits->Fill(muHits[muIndex[im]]); break;
+	  case 1: htracker_muMatches->Fill(muMatches[muIndex[im]]); break;
+	  case 2: htracker_muPixelHits->Fill(muPixelHits[muIndex[im]]); break;
+	  case 3: htracker_muTrkLayers->Fill(muTrkLayers[muIndex[im]]); break;
+	  case 4: htracker_muPtErrx->Fill(muPtErrx[muIndex[im]]); break;
+	  case 5: htracker_mudxy->Fill(mudxy[muIndex[im]]); break;
+	  case 6: htracker_mudz->Fill(mudz[muIndex[im]]); break;
+	  case 7: htracker_muPt->Fill(muPt[muIndex[im]]); break;
+	  case 8: htracker_muEta->Fill(muEta[muIndex[im]]); break;
+	  case 9: htracker_muPhi->Fill(muPhi[muIndex[im]]); break;
+	  case 10: htracker_muCorrTrkIso->Fill(muCorrTrkIso[muIndex[im]]/muPt[muIndex[im]]); break;
 
 
 	  } // end of switch
 
-	} // end of flag loop
+	} // end of tracker loop
       
 	htracker_muTrkIso->Fill(muTrkIso[muIndex[im]]/muPt[muIndex[im]]); 
       
-      } // end of tracker 
+      } // end of two muons loop 
     
-    } // end of two muons loop
+    } // end of flag loop
+
     
   } // end of event loop
 

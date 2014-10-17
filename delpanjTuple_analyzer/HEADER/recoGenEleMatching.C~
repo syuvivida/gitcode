@@ -68,8 +68,8 @@ void recoGenEleMatching(TreeReader &data,
 
   for(Int_t i = 0; i < nGenPar; i++){
 
-    if( genMomParId[i] == 23 && genParSt[i] == 1 && genParId[i] == 11 ) gen_ElectronID = i;
-    if( genMomParId[i] == 23 && genParSt[i] == 1 && genParId[i] == -11 ) gen_antiElectronID = i; 
+    if( genMomParId[i] == 11 && genParSt[i] == 1 && genParId[i] == 11 ) gen_ElectronID = i;
+    if( genMomParId[i] == -11 && genParSt[i] == 1 && genParId[i] == -11 ) gen_antiElectronID = i; 
     if( gen_ElectronID > -1 && gen_antiElectronID > -1 ) break;
     
   }

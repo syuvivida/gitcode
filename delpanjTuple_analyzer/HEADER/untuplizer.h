@@ -1,4 +1,4 @@
-/* Reader of tree's TTrees. (v2)
+/* Reader of tree's TTrees.
  *
  * Works both with old as well as with new ntuples. In particular, for tree
  * branches containing vector<...> objects of elementary data types as well as
@@ -486,6 +486,8 @@ void TreeReader::InitSingleTTree(const char* path)
    // get tree's tree
    fTree = dynamic_cast<TTree*>(fFile->Get("tree/tree"));
    if (!fTree)
+     fTree = dynamic_cast<TTree*>(fFile->Get("tree"));
+   if (!fTree)   
       FATAL("TTree not found");
 
    // be 100% sure: check explicitly object's class
@@ -515,9 +517,27 @@ void TreeReader::InitTChain(const char** paths, int npaths)
    fTree = new TChain("tree/tree");
 
    // add root files with TTrees, reading the number of entries in each file
+   bool differentTree=false;
+   if (((TChain*)fTree)->AddFile(paths[0], 0) != 1)
+     differentTree=true;
+
+   if(differentTree)
+     {
+       std::cout << "Try tree instead" << std::endl;
+       delete fTree;
+       fTree = new TChain("tree");
+     }
+   else
+     {
+       delete fTree;
+       fTree = new TChain("tree/tree");
+     }
+
    for (int i = 0; i < npaths; i++)
+     {
       if (((TChain*)fTree)->AddFile(paths[i], 0) != 1)
          FATAL("TChain::AddFile() failed");
+     }
 
    // find out availability of MC truth info (check existence of "nMC" branch)
    fkMC = fTree->GetBranch("nMC") ? kTRUE : kFALSE;
