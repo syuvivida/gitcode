@@ -19,7 +19,7 @@
 
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
-void leptonEff(std::string inputFile, std::string outName){
+void leptonEff(std::string inputFile, std::string massName){
 
   TreeReader data(inputFile.data());
 
@@ -51,7 +51,6 @@ void leptonEff(std::string inputFile, std::string outName){
     
     }
 
-
     Float_t* muPt  = data.GetPtrFloat("muPt");
     Float_t* muCorrTrkIso = data.GetPtrFloat("muCorrTrkIso");
 
@@ -61,13 +60,7 @@ void leptonEff(std::string inputFile, std::string outName){
     Bool_t isRecoMuon = false;
     Int_t stRecoMuIndex, ndRecoMuIndex;
 
-    if( passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) ){
-      
-      isRecoMuon = true;
-      break;
-
-    }
-
+    if( passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) ) isRecoMuon = true;
 
     Bool_t isRecoIsoMuon = false;
     Int_t stRecoMuIsoIndex, ndRecoMuIsoIndex;
@@ -77,12 +70,7 @@ void leptonEff(std::string inputFile, std::string outName){
       Double_t stReIso = muCorrTrkIso[stRecoMuIsoIndex] / muPt[stRecoMuIsoIndex];
       Double_t ndReIso = muCorrTrkIso[ndRecoMuIsoIndex] / muPt[ndRecoMuIsoIndex];
 
-      if( stReIso < 0.1 && ndReIso < 0.1 ){
-      
-	isRecoIsoMuon = true;
-	break;
-
-      }
+      if( stReIso < 0.1 && ndReIso < 0.1 ) isRecoIsoMuon = true;
 
     }
     
@@ -97,11 +85,10 @@ void leptonEff(std::string inputFile, std::string outName){
 
   Double_t eventEff = (Double_t)recoEventCounter/genEventCounter;
   Double_t eventIsoEff = (Double_t)recoIsoEventCounter/genEventCounter;
-  cout << genEventCounter << "   " << recoEventCounter << endl;
 
   std::ofstream fout;
   fout.open("massptEff.txt", ios::app);
-  fout << outName.substr(34,4) << "\t" << eventEff << "\t" << eventIsoEff << endl;
+  fout << massName.data() << "\t" << eventEff << "\t" << eventIsoEff << endl;
   fout.close();
   
 }
