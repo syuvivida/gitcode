@@ -42,7 +42,7 @@ void makeLeptonEff(std::string inputFile){
   h_eff->GetYaxis()->SetTitle("Efficiency");
   h_eff->GetYaxis()->SetTitleOffset(1.5);
   h_eff->SetMinimum(0);
-  h_eff->SetTitle("DiMuon Efficiency");
+  h_eff->SetTitle("DiElectron Efficiency");
   h_eff->SetMarkerStyle(8);
   h_eff->SetMarkerSize(0.6);
   h_eff->SetLineWidth(2);
@@ -52,7 +52,7 @@ void makeLeptonEff(std::string inputFile){
   h_isoeff->GetXaxis()->SetTitle("Zprime mass");
   h_isoeff->GetYaxis()->SetTitle("Efficiency");
   h_isoeff->GetYaxis()->SetTitleOffset(1.5);
-  h_isoeff->SetTitle("DiMuon Efficiency");
+  h_isoeff->SetTitle("DiElectron Efficiency");
   h_isoeff->SetMarkerStyle(8);
   h_isoeff->SetMarkerSize(0.6);
   h_isoeff->SetLineWidth(2);
@@ -71,6 +71,6 @@ void makeLeptonEff(std::string inputFile){
   leg->AddEntry(h_isoeff, "basic cut+iso cut", "lp");
   leg->Draw("same");
 
-  c->Print("dimuonEfficiency.png");
+  c->Print("dielectronEfficiency.png");
 
 }

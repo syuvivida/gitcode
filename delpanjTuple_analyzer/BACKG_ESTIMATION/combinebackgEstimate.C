@@ -40,6 +40,8 @@ void combineBkgEst(){
   TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
   TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
 
+
+  /*
   TH1D* h_dataMuAside = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_A.root"));
   TH1D* h_dataMuAsign = (TH1D*)(f->Get("signZpMass_data_DoubleMu_A.root"));
   TH1D* h_dataMuBside = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_B.root"));
@@ -57,6 +59,8 @@ void combineBkgEst(){
   h_dataMuCsign->Sumw2();
   h_dataMuDside->Sumw2();
   h_dataMuDsign->Sumw2();
+  */
+
 
   const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
 			      1250,1400,1600,1800,2000,2400};
@@ -80,6 +84,8 @@ void combineBkgEst(){
   cout << "Total event of bkg side band region:  " << h_combineBkgSide->Integral() << endl;
   cout << "Total event of bkg signal region:     " << h_combineBkgSign->Integral() << endl;
 
+
+  /*
   TH1D* h_combineDataSide = new TH1D("h_combineDataSide", "Data Zprime Mass", nvarBins, varBins);
   h_combineDataSide->Sumw2();
   h_combineDataSide->GetXaxis()->SetTitle("Mass");
@@ -100,6 +106,8 @@ void combineBkgEst(){
 
   cout << "Total event of data side band region: " << h_combineDataSide->Integral() << endl;
   cout << "Total event of data signal region:    " << h_combineDataSign->Integral() << endl;
+  */
+
 
   TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
   h_alpha->Sumw2();
@@ -112,14 +120,14 @@ void combineBkgEst(){
   h_alphaFit->GetYaxis()->SetTitle("Alpha Ratio");
 
   TF1* fitCurve = new TF1("fitCurve", fitFunc, 680, 2400, 2);
-  fitCurve->SetParameters(1, 1);
-  h_combineBkgSide->Fit("fitCurve", "", "", 680, 2400);
-  h_combineBkgSign->Fit("fitCurve", "", "", 680, 2400);
+  fitCurve->SetParameters(15, 15);
+  h_combineBkgSide->Fit("fitCurve", "R");
+  h_combineBkgSign->Fit("fitCurve", "R");
 
   gStyle->SetOptStat(0);
 
-  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 500);
-  c->Divide(3,1);
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1280, 500);
+  c->Divide(2,1);
 
   c->cd(1);
   h_combineBkgSide->SetLineColor(1);
@@ -140,6 +148,8 @@ void combineBkgEst(){
   leg1->AddEntry(h_combineBkgSign, "Signal region", "f");
   leg1->Draw();
 
+
+  /*
   c->cd(2);
   h_combineDataSide->SetLineColor(1);
   h_combineDataSide->SetFillColor(kMagenta-4);
@@ -158,8 +168,10 @@ void combineBkgEst(){
   leg2->AddEntry(h_combineDataSide, "Sideband region", "f");
   leg2->AddEntry(h_combineDataSign, "Signal region", "f");
   leg2->Draw();
+  */
 
-  c->cd(3);
+
+  c->cd(2);
   h_alpha->Divide(h_combineBkgSign, h_combineBkgSide);
   h_alpha->SetLineColor(1);
   h_alpha->SetMarkerStyle(8);
@@ -167,9 +179,7 @@ void combineBkgEst(){
   h_alpha->SetMinimum(0);
   h_alpha->SetMaximum(1);
   h_alpha->Draw();
-
-
-  
+ 
   c->Print("backgroundEstimation.gif");
 
 }

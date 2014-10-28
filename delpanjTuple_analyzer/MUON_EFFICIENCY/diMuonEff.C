@@ -19,7 +19,7 @@
 
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
-void leptonEff(std::string inputFile, std::string massName){
+void diMuonEff(std::string inputFile, std::string massName){
 
   TreeReader data(inputFile.data());
 
@@ -51,6 +51,9 @@ void leptonEff(std::string inputFile, std::string massName){
     
     }
 
+    if(!isGenMuon) continue;
+    genEventCounter++;
+
     Float_t* muPt  = data.GetPtrFloat("muPt");
     Float_t* muCorrTrkIso = data.GetPtrFloat("muCorrTrkIso");
 
@@ -58,25 +61,23 @@ void leptonEff(std::string inputFile, std::string massName){
     // you comment the isolation cut in the code
 
     Bool_t isRecoMuon = false;
-    Int_t stRecoMuIndex, ndRecoMuIndex;
+    Int_t stRecoMuIndex = -1; 
+    Int_t ndRecoMuIndex = -1;
 
-    if( passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) ) isRecoMuon = true;
+    if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) ) continue;
+    recoEventCounter++;
+
+    if( stRecoMuIndex < 0 || ndRecoMuIndex < 0 ) continue;
 
     Bool_t isRecoIsoMuon = false;
-    Int_t stRecoMuIsoIndex, ndRecoMuIsoIndex;
+   
+    Double_t stReIso = muCorrTrkIso[stRecoMuIndex] / muPt[stRecoMuIndex];
+    Double_t ndReIso = muCorrTrkIso[ndRecoMuIndex] / muPt[ndRecoMuIndex];
     
-    if( passMuonID(data, &stRecoMuIsoIndex, &ndRecoMuIsoIndex) ){
-
-      Double_t stReIso = muCorrTrkIso[stRecoMuIsoIndex] / muPt[stRecoMuIsoIndex];
-      Double_t ndReIso = muCorrTrkIso[ndRecoMuIsoIndex] / muPt[ndRecoMuIsoIndex];
-
-      if( stReIso < 0.1 && ndReIso < 0.1 ) isRecoIsoMuon = true;
-
-    }
+    if( stReIso < 0.1 && ndReIso < 0.1 ) isRecoIsoMuon = true;
     
-    if(isGenMuon) genEventCounter++;
-    if(isRecoMuon) recoEventCounter++;
-    if(isRecoIsoMuon) recoIsoEventCounter++;
+    if(!isRecoIsoMuon) continue;
+    recoIsoEventCounter++;
 
    
   } // end of event loop
@@ -90,7 +91,7 @@ void leptonEff(std::string inputFile, std::string massName){
   Double_t eventIsoEffError = TMath::Sqrt((1-eventIsoEff)*eventIsoEff/genEventCounter);
 
   std::ofstream fout;
-  fout.open("massptEff.txt", ios::app);
+  fout.open("massMuptEff.txt", ios::app);
   fout << massName.data() << "\t" 
        << eventEff << "\t" 
        << eventEffError << "\t" 
