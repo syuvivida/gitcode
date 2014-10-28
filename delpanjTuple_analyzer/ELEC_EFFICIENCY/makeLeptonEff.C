@@ -62,7 +62,7 @@ void makeLeptonEff(std::string inputFile){
   h_eff->Draw();
   h_isoeff->Draw("cpsame");
 
-  TLegend *leg = new TLegend(0.6, 0.78, 0.9, 0.9);
+  TLegend *leg = new TLegend(0.6, 0.6, 0.9, 0.7);
   leg->SetBorderSize(1);
   leg->SetFillColor(10);
   leg->SetFillStyle(1001);

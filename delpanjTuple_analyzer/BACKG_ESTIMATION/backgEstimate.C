@@ -37,35 +37,16 @@ void backgEstimate(std::string inputFile, std::string outName){
 
   Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
 
-
   TH1D* h_ZMass = new TH1D("h_ZMass", "Z Mass", 100, 70, 110);
-
-  // Declare the side band region histogram
-
-  TH1D* h_sidePrunedjetMass = new TH1D("h_sidePrunedjetMass", "Side-band region Pruned Jet Mass", 100, 50, 110);
-  h_sidePrunedjetMass->GetXaxis()->SetTitle("Pruned jet mass");
-  h_sidePrunedjetMass->GetYaxis()->SetTitle("Event number");
 
   TH1D* h_sideZprimeMass = new TH1D("h_sideZprimeMass", "Side-band region Zprime Mass", nvarBins, varBins);
   h_sideZprimeMass->GetXaxis()->SetTitle("Zprime mass");
   h_sideZprimeMass->GetYaxis()->SetTitle("Event number");
 
-  // Declare the signal region histogram
-
-  TH1D* h_signPrunedjetMass = new TH1D("h_signPrunedjetMass", "Signal region Pruned Jet Mass", 100, 110, 140);
-  h_signPrunedjetMass->GetXaxis()->SetTitle("Pruned jet mass");
-  h_signPrunedjetMass->GetYaxis()->SetTitle("Event number");
-
   TH1D* h_signZprimeMass = new TH1D("h_signZprimeMass", "Signal region Zprime Mass", nvarBins, varBins);
   h_signZprimeMass->GetXaxis()->SetTitle("Zprime mass");
   h_signZprimeMass->GetYaxis()->SetTitle("Event number");
 
-  // Declare the alpha ratio histogram
-
-  TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
-  h_alpha->Sumw2();
-  h_alpha->GetXaxis()->SetTitle("Zprime mass");
-  h_alpha->GetYaxis()->SetTitle("Alpha Ratio");
 
   // begin of event loop
 
@@ -296,9 +277,7 @@ void backgEstimate(std::string inputFile, std::string outName){
     // side band region
     if( CA8jetPrunedMass[maxJetIndex[0]] > 50 && CA8jetPrunedMass[maxJetIndex[0]] < 110 ){
 
-
       TLorentzVector Zprime = Z + newBoostedJet; 
-      h_sidePrunedjetMass->Fill(CA8jetPrunedMass[maxJetIndex[0]]);
       h_sideZprimeMass->Fill(Zprime.M());
 
     }
@@ -307,7 +286,6 @@ void backgEstimate(std::string inputFile, std::string outName){
     if( CA8jetPrunedMass[maxJetIndex[0]] > 110 && CA8jetPrunedMass[maxJetIndex[0]] < 140 ){
 
       TLorentzVector Zprime = Z + newBoostedJet; 
-      h_signPrunedjetMass->Fill(CA8jetPrunedMass[maxJetIndex[0]]);
       h_signZprimeMass->Fill(Zprime.M());
     
     }

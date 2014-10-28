@@ -84,11 +84,19 @@ void leptonEff(std::string inputFile, std::string massName){
   fprintf(stderr, "Processed all events\n");
 
   Double_t eventEff = (Double_t)recoEventCounter/genEventCounter;
+  Double_t eventEffError = TMath::Sqrt((1-eventEff)*eventEff/genEventCounter);
+
   Double_t eventIsoEff = (Double_t)recoIsoEventCounter/genEventCounter;
+  Double_t eventIsoEffError = TMath::Sqrt((1-eventIsoEff)*eventIsoEff/genEventCounter);
 
   std::ofstream fout;
   fout.open("massptEff.txt", ios::app);
-  fout << massName.data() << "\t" << eventEff << "\t" << eventIsoEff << endl;
+  fout << massName.data() << "\t" 
+       << eventEff << "\t" 
+       << eventEffError << "\t" 
+       << eventIsoEff << "\t" 
+       << eventIsoEffError << endl;
+
   fout.close();
   
 }

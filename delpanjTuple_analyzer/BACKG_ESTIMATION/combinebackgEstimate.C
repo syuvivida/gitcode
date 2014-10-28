@@ -2,9 +2,9 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <TF1.h>
 #include <TPad.h>
 #include <TH1D.h>
-#include <TH1F.h>
 #include <TMath.h>
 #include <TFile.h>
 #include <TList.h>
@@ -26,8 +26,10 @@ const Int_t totalNEvent_dy100 = 12511326;
 const Double_t crossSection_dy70 = 63.5*1000;
 const Double_t crossSection_dy100 = 39.4*1000;
 // scale = data_luminosity / bkg_luminosity
-Double_t scale_dy70 = 0.876 / (totalNEvent_dy70 / crossSection_dy70);
-Double_t scale_dy100 = 0.876 / (totalNEvent_dy100 / crossSection_dy100);
+Double_t scale_dy70 = 1 / (totalNEvent_dy70 / crossSection_dy70);
+Double_t scale_dy100 = 1 / (totalNEvent_dy100 / crossSection_dy100);
+
+Double_t fitFunc(Double_t*, Double_t*);
 
 void combineBkgEst(){
 
@@ -37,101 +39,128 @@ void combineBkgEst(){
   TH1D* h_dy70sign  = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-70To100.root"));
   TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
   TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
+
+  TH1D* h_dataMuAside = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_A.root"));
+  TH1D* h_dataMuAsign = (TH1D*)(f->Get("signZpMass_data_DoubleMu_A.root"));
+  TH1D* h_dataMuBside = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_B.root"));
+  TH1D* h_dataMuBsign = (TH1D*)(f->Get("signZpMass_data_DoubleMu_B.root"));
+  TH1D* h_dataMuCside = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_C.root"));
+  TH1D* h_dataMuCsign = (TH1D*)(f->Get("signZpMass_data_DoubleMu_C.root"));
+  TH1D* h_dataMuDside = (TH1D*)(f->Get("sideZpMass_data_DoubleMu_D.root"));
+  TH1D* h_dataMuDsign = (TH1D*)(f->Get("signZpMass_data_DoubleMu_D.root"));
 
   h_dataMuAside->Sumw2();
   h_dataMuAsign->Sumw2();
-
+  h_dataMuBside->Sumw2();
+  h_dataMuBsign->Sumw2();
+  h_dataMuCside->Sumw2();
+  h_dataMuCsign->Sumw2();
+  h_dataMuDside->Sumw2();
+  h_dataMuDsign->Sumw2();
 
   const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
 			      1250,1400,1600,1800,2000,2400};
 
   Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
 
-  TH1D* h_combineSide = new TH1D("h_combineSide", "Side-band region Zprime Mass", nvarBins, varBins);
-  h_combineSide->Sumw2();
-  h_combineSide->GetXaxis()->SetTitle("Mass");
-  h_combineSide->GetYaxis()->SetTitle("Event Number");
-  h_combineSide->Add(h_dy70side, scale1);
-  h_combineSide->Add(h_dy100side, scale2);
+  TH1D* h_combineBkgSide = new TH1D("h_combineBkgSide", "Background Zprime Mass", nvarBins, varBins);
+  h_combineBkgSide->Sumw2();
+  h_combineBkgSide->GetXaxis()->SetTitle("Mass");
+  h_combineBkgSide->GetYaxis()->SetTitle("Event Number");
+  h_combineBkgSide->Add(h_dy70side, scale_dy70);
+  h_combineBkgSide->Add(h_dy100side, scale_dy100);
 
-  TH1D* h_combineSign = new TH1D("h_combineSign", "Signal region Zprime Mass", nvarBins, varBins);
-  h_combineSign->Sumw2();
-  h_combineSign->GetXaxis()->SetTitle("Mass");
-  h_combineSign->GetYaxis()->SetTitle("Event Number");
-  h_combineSign->Add(h_dy70sign, scale1);
-  h_combineSign->Add(h_dy100sign, scale2);
+  TH1D* h_combineBkgSign = new TH1D("h_combineBkgSign", "Background Zprime Mass", nvarBins, varBins);
+  h_combineBkgSign->Sumw2();
+  h_combineBkgSign->GetXaxis()->SetTitle("Mass");
+  h_combineBkgSign->GetYaxis()->SetTitle("Event Number");
+  h_combineBkgSign->Add(h_dy70sign, scale_dy70);
+  h_combineBkgSign->Add(h_dy100sign, scale_dy100);
 
-  cout << "Total event of bkg side band region:  " << h_combineSide->Integral() << endl;
-  cout << "Total event of bkg signal region:     " << h_combineSign->Integral() << endl;
-  cout << "Total event of data side band region: " << h_dataside->Integral() << endl;
-  cout << "Total event of data signal region:    " << h_datasign->Integral() << endl;
+  cout << "Total event of bkg side band region:  " << h_combineBkgSide->Integral() << endl;
+  cout << "Total event of bkg signal region:     " << h_combineBkgSign->Integral() << endl;
+
+  TH1D* h_combineDataSide = new TH1D("h_combineDataSide", "Data Zprime Mass", nvarBins, varBins);
+  h_combineDataSide->Sumw2();
+  h_combineDataSide->GetXaxis()->SetTitle("Mass");
+  h_combineDataSide->GetYaxis()->SetTitle("Event Number");
+  h_combineDataSide->Add(h_dataMuAside);
+  h_combineDataSide->Add(h_dataMuBside);
+  h_combineDataSide->Add(h_dataMuCside);
+  h_combineDataSide->Add(h_dataMuDside);
+
+  TH1D* h_combineDataSign = new TH1D("h_combineDataSign", "Data Zprime Mass", nvarBins, varBins);
+  h_combineDataSign->Sumw2();
+  h_combineDataSign->GetXaxis()->SetTitle("Mass");
+  h_combineDataSign->GetYaxis()->SetTitle("Event Number");
+  h_combineDataSign->Add(h_dataMuAsign);
+  h_combineDataSign->Add(h_dataMuBsign);
+  h_combineDataSign->Add(h_dataMuCsign);
+  h_combineDataSign->Add(h_dataMuDsign);
+
+  cout << "Total event of data side band region: " << h_combineDataSide->Integral() << endl;
+  cout << "Total event of data signal region:    " << h_combineDataSign->Integral() << endl;
 
   TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
   h_alpha->Sumw2();
   h_alpha->GetXaxis()->SetTitle("Zprime mass");
   h_alpha->GetYaxis()->SetTitle("Alpha Ratio");
 
+  TH1D* h_alphaFit = new TH1D("h_alphaFit", "Alpha ratio", nvarBins, varBins);
+  h_alphaFit->Sumw2();
+  h_alphaFit->GetXaxis()->SetTitle("Zprime mass");
+  h_alphaFit->GetYaxis()->SetTitle("Alpha Ratio");
+
+  TF1* fitCurve = new TF1("fitCurve", fitFunc, 680, 2400, 2);
+  fitCurve->SetParameters(1, 1);
+  h_combineBkgSide->Fit("fitCurve", "", "", 680, 2400);
+  h_combineBkgSign->Fit("fitCurve", "", "", 680, 2400);
+
   gStyle->SetOptStat(0);
 
-  TCanvas* c = new TCanvas("c", "", 0, 0, 1920, 1080);
-  c->Divide(3,2);
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 500);
+  c->Divide(3,1);
 
   c->cd(1);
-  h_combineSide->SetLineColor(1);
-  h_combineSide->SetFillColor(kMagenta-4);
-  h_combineSide->SetFillStyle(3001);
-  h_combineSide->Draw("histe");
+  h_combineBkgSide->SetLineColor(1);
+  h_combineBkgSide->SetFillColor(kMagenta-4);
+  h_combineBkgSide->SetFillStyle(3001);
+  h_combineBkgSide->Draw("histe");
 
-  TLegend *leg1 = new TLegend(0.65, 0.75, 0.9, 0.9);
+  h_combineBkgSign->SetLineColor(1);
+  h_combineBkgSign->SetFillColor(kRed-4);
+  h_combineBkgSign->SetFillStyle(3001);
+  h_combineBkgSign->Draw("histesame");
+
+  TLegend *leg1 = new TLegend(0.55, 0.75, 0.9, 0.9);
   leg1->SetFillStyle(1001);
   leg1->SetFillColor(10);
   leg1->SetBorderSize(1);
-  leg1->AddEntry(h_combineSide, "DYJetsToLL", "f"); 
+  leg1->AddEntry(h_combineBkgSide, "Sideband region", "f");
+  leg1->AddEntry(h_combineBkgSign, "Signal region", "f");
   leg1->Draw();
 
   c->cd(2);
-  h_combineSign->SetLineColor(1);
-  h_combineSign->SetFillColor(kRed-4);
-  h_combineSign->SetFillStyle(3001);
-  h_combineSign->Draw("histe");
+  h_combineDataSide->SetLineColor(1);
+  h_combineDataSide->SetFillColor(kMagenta-4);
+  h_combineDataSide->SetFillStyle(3001);
+  h_combineDataSide->Draw("histe");
 
-  TLegend *leg2 = new TLegend(0.65, 0.75, 0.9, 0.9);
+  h_combineDataSign->SetLineColor(1);
+  h_combineDataSign->SetFillColor(kRed-4);
+  h_combineDataSign->SetFillStyle(3001);
+  h_combineDataSign->Draw("histesame");
+
+  TLegend *leg2 = new TLegend(0.55, 0.75, 0.9, 0.9);
   leg2->SetFillStyle(1001);
   leg2->SetFillColor(10);
   leg2->SetBorderSize(1);
-  leg2->AddEntry(h_combineSign, "DYJetsToLL", "f"); 
+  leg2->AddEntry(h_combineDataSide, "Sideband region", "f");
+  leg2->AddEntry(h_combineDataSign, "Signal region", "f");
   leg2->Draw();
 
-  c->cd(4);
-  h_dataside->SetLineColor(1);
-  h_dataside->SetFillColor(kMagenta-4);
-  h_dataside->SetFillStyle(3001);
-  h_dataside->Draw("histe");
-
-  TLegend *leg4 = new TLegend(0.65, 0.75, 0.9, 0.9);
-  leg4->SetFillStyle(1001);
-  leg4->SetFillColor(10);
-  leg4->SetBorderSize(1);
-  leg4->AddEntry(h_dataside, "Data", "f"); 
-  leg4->Draw();
-
-  c->cd(5);
-  h_datasign->SetLineColor(1);
-  h_datasign->SetFillColor(kRed-4);
-  h_datasign->SetFillStyle(3001);
-  h_datasign->Draw("histe");
-
-  TLegend *leg5 = new TLegend(0.65, 0.75, 0.9, 0.9);
-  leg5->SetFillStyle(1001);
-  leg5->SetFillColor(10);
-  leg5->SetBorderSize(1);
-  leg5->AddEntry(h_datasign, "Data", "f"); 
-  leg5->Draw();
-
-  c->cd(6);
-  h_alpha->Divide(h_combineSign, h_combineSide);
+  c->cd(3);
+  h_alpha->Divide(h_combineBkgSign, h_combineBkgSide);
   h_alpha->SetLineColor(1);
   h_alpha->SetMarkerStyle(8);
   h_alpha->SetMarkerSize(0.8);
@@ -139,15 +168,11 @@ void combineBkgEst(){
   h_alpha->SetMaximum(1);
   h_alpha->Draw();
 
+
+  
   c->Print("backgroundEstimation.gif");
 
 }
-
-/*  
-  TF1* fitRatio = new TF1("fitRatio", fitFunc, 0.8, 1.2, 3);
-  fitRatio->SetParameters(100, 0.9);
-
-  h_ratioZprime_Mass->Fit("fitRatio", "","", 0.8, 1.2);
 
 Double_t fitFunc(Double_t* v, Double_t* par){
   
@@ -155,4 +180,3 @@ Double_t fitFunc(Double_t* v, Double_t* par){
   return TMath::Exp(par[0]*x + par[1]/x);
 
 }
-*/
