@@ -28,35 +28,13 @@
 void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 
-void backgEstimate(std::string inputFile, std::string outName){
+void backgZpMass(std::string inputFile, std::string outName){
 
   TreeReader data(inputFile.data());
 
-  // variable bin
-
-  const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
-			      1250,1400,1600,1800,2000,2400};
-
-  Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
-
-  TH1D* h_sideZprimeMass = new TH1D("h_sideZprimeMass", "Side-band region Zprime Mass", nvarBins, varBins);
-  h_sideZprimeMass->GetXaxis()->SetTitle("Zprime mass");
-  h_sideZprimeMass->GetYaxis()->SetTitle("Event number");
-
-  TH1D* h_signZprimeMass = new TH1D("h_signZprimeMass", "Signal region Zprime Mass", nvarBins, varBins);
-  h_signZprimeMass->GetXaxis()->SetTitle("Zprime mass");
-  h_signZprimeMass->GetYaxis()->SetTitle("Event number");
-
-
-  // constant bin
-
-  TH1D* h_sideZprimeMass_constBin = new TH1D("h_sideZprimeMass_constBin", "Side-band region Zprime Mass",43 ,680, 2400);
-  h_sideZprimeMass_constBin->GetXaxis()->SetTitle("Zprime mass");
-  h_sideZprimeMass_constBin->GetYaxis()->SetTitle("Event number");
-
-  TH1D* h_signZprimeMass_constBin = new TH1D("h_signZprimeMass_constBin", "Signal region Zprime Mass",43 ,680, 2400);
-  h_signZprimeMass_constBin->GetXaxis()->SetTitle("Zprime mass");
-  h_signZprimeMass_constBin->GetYaxis()->SetTitle("Event number");
+  TH1D* h_ZprimeMass = new TH1D("h_ZprimeMass", "al region Zprime Mass", nvarBins, varBins);
+  h_ZprimeMass->GetXaxis()->SetTitle("Zprime mass");
+  h_ZprimeMass->GetYaxis()->SetTitle("Event number");
 
 
   // begin of event loop
@@ -283,22 +261,22 @@ void backgEstimate(std::string inputFile, std::string outName){
     if(newBoostedJet.M() <= 40 ) continue;
     if(newBoostedJet.Pt() <= 80 ) continue;
 
+    h_ZMass->Fill(Z.M());
+
     // side band region
     if( CA8jetPrunedMass[maxJetIndex[0]] > 50 && CA8jetPrunedMass[maxJetIndex[0]] < 110 ){
 
       TLorentzVector Zprime = Z + newBoostedJet; 
       h_sideZprimeMass->Fill(Zprime.M());
-      h_sideZprimeMass_constBin->Fill(Zprime.M());
 
     }
     
-    // signal region
+    // al region
     if( CA8jetPrunedMass[maxJetIndex[0]] > 110 && CA8jetPrunedMass[maxJetIndex[0]] < 140 ){
 
       TLorentzVector Zprime = Z + newBoostedJet; 
-      h_signZprimeMass->Fill(Zprime.M());
-      h_signZprimeMass_constBin->Fill(Zprime.M());
-   
+      h_ZprimeMass->Fill(Zprime.M());
+    
     }
     
   }
@@ -311,16 +289,12 @@ void backgEstimate(std::string inputFile, std::string outName){
   // output file
 
   std::string sideName = "sideZpMass_" + outName.substr(11);
-  std::string signName = "signZpMass_" + outName.substr(11);
-  std::string sideNameCB = "sideZpMass_constBin_" + outName.substr(11);
-  std::string signNameCB = "signZpMass_constBin_" + outName.substr(11);
+  std::string Name = "ZpMass_" + outName.substr(11);
 
   TFile* outFile = new TFile("backgEstimate.root", "update");
 
   h_sideZprimeMass->Write(sideName.data());
-  h_signZprimeMass->Write(signName.data());
-  h_sideZprimeMass_constBin->Write(sideNameCB.data());
-  h_signZprimeMass_constBin->Write(signNameCB.data());
+  h_ZprimeMass->Write(Name.data());
 
   outFile->Write();
   

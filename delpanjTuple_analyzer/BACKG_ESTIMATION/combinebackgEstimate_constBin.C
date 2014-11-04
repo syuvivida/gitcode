@@ -31,28 +31,23 @@ Double_t scale_dy100 = 1 / (totalNEvent_dy100 / crossSection_dy100);
 
 Double_t fitFunc(Double_t*, Double_t*);
 
-void combineBkgEst(){
+void combineBkgEstConstBin(){
 
   TFile *f = TFile::Open("backgEstimate.root");
 
-  TH1D* h_dy70side  = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_dy70sign  = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_dy70side  = (TH1D*)(f->Get("sideZpMass_constBin_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_dy70sign  = (TH1D*)(f->Get("signZpMass_constBin_DYJetsToLL_PtZ-70To100.root"));
+  TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_constBin_DYJetsToLL_PtZ-100.root"));
+  TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_constBin_DYJetsToLL_PtZ-100.root"));
 
-  const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
-			      1250,1400,1600,1800,2000,2400};
-
-  Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
-
-  TH1D* h_combineBkgSide = new TH1D("h_combineBkgSide", "Side-band Zp Mass", nvarBins, varBins);
+  TH1D* h_combineBkgSide = new TH1D("h_combineBkgSide", "Side-band Zp Mass", 43, 680, 2400);
   h_combineBkgSide->Sumw2();
   h_combineBkgSide->GetXaxis()->SetTitle("Mass");
   h_combineBkgSide->GetYaxis()->SetTitle("Event Number");
   h_combineBkgSide->Add(h_dy70side, scale_dy70);
   h_combineBkgSide->Add(h_dy100side, scale_dy100);
 
-  TH1D* h_combineBkgSign = new TH1D("h_combineBkgSign", "Signal-band Zp Mass", nvarBins, varBins);
+  TH1D* h_combineBkgSign = new TH1D("h_combineBkgSign", "Signal-band Zp Mass", 43, 680, 2400);
   h_combineBkgSign->Sumw2();
   h_combineBkgSign->GetXaxis()->SetTitle("Mass");
   h_combineBkgSign->GetYaxis()->SetTitle("Event Number");
@@ -62,15 +57,10 @@ void combineBkgEst(){
   cout << "Total event of bkg side band region: " << h_combineBkgSide->Integral() << endl;
   cout << "Total event of bkg signal region:    " << h_combineBkgSign->Integral() << endl;
 
-  TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
+  TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", 43, 680, 2400);
   h_alpha->Sumw2();
   h_alpha->GetXaxis()->SetTitle("Zprime mass");
   h_alpha->GetYaxis()->SetTitle("Alpha Ratio");
-
-  TH1D* h_alphaFit = new TH1D("h_alphaFit", "Alpha ratio", nvarBins, varBins);
-  h_alphaFit->Sumw2();
-  h_alphaFit->GetXaxis()->SetTitle("Zprime mass");
-  h_alphaFit->GetYaxis()->SetTitle("Alpha Ratio");
 
   TF1* fitCurveSide = new TF1("fitCurveSide", fitFunc, 680, 2400, 3);
   TF1* fitCurveSign = new TF1("fitCurveSign", fitFunc, 680, 2400, 3);
@@ -103,7 +93,7 @@ void combineBkgEst(){
   h_alpha->SetMaximum(1);
   h_alpha->Draw();
 
-  c->Print("alphaRatio.gif");
+  c->Print("aplhaRatio_constBin.gif");
 
 }
 
