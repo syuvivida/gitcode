@@ -68,7 +68,7 @@ void combineBkgEst(){
   TH1D* h_combineBkgSign = new TH1D("h_combineBkgSign", "Signal-band Zp Mass", nvarBins, varBins);
   TH1D* h_alpha = new TH1D("h_alpha", "Alpha ratio", nvarBins, varBins);
 
-  gStyle->SetOptStat(0);
+  gStyle->SetOptFit(1111);
 
   TCanvas* c = new TCanvas("c", "", 0, 0, 1280, 800);
   c->Divide(2,2);
@@ -99,7 +99,6 @@ void combineBkgEst(){
   
   c->cd(3);
   h_alpha->Sumw2();
-
   h_alpha->SetMarkerColor(1);
   h_alpha->SetMarkerStyle(8);
   h_alpha->SetMarkerSize(0.8);
@@ -128,6 +127,22 @@ void combineBkgEst(){
   h_alpha->Draw("same");
   
   c->Print("alphaRatio.gif");
+
+  // Calculate the Chi-square of alpha ratio 
+  Double_t DifSqr = 0.;
+  Double_t ErrSqr = 0.;
+  Double_t ChiSqr = 0.;
+
+  for(Int_t i = 1; i <= nvarBins; i++){
+
+    Double_t DifSqr = pow((f_alphaFit->Eval(varBins[i-1]) - h_alpha->GetBinContent(i)), 2);
+    Double_t ErrSqr = pow(h_alpha->GetBinError(i), 2);
+
+    ChiSqr += DifSqr/ErrSqr;
+
+  }
+
+  cout << "\n----- Chi-Square = " << ChiSqr << " -----" << endl;
 
 }
 
