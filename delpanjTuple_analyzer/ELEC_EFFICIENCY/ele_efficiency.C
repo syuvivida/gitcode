@@ -103,10 +103,8 @@ void ele_efficiency(string inputFile){
     specificLeptonPt(data, &max_muPt_index, &second_muPt_index, 
 		     &max_elePt_index, &second_elePt_index);
 
-    if( max_muPt_index     < 0 && 
-	second_muPt_index  < 0 && 
-	max_elePt_index    < 0 && 
-	second_elePt_index < 0 ) continue;
+    if( (max_muPt_index < 0 || second_muPt_index < 0 ) && 
+	(max_elePt_index < 0 || second_elePt_index < 0 ) continue;
 
     if( (elePt[max_elePt_index] - muPt[max_muPt_index]) < 1e-6 ) continue;
 

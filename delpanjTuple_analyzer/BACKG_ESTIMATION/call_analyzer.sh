@@ -7,8 +7,8 @@ fi
 
 ##---------------- Run the analyzer macro ----------------##
 
-DATAAA_DIR=$PWD/../../delpanjTuple_data/muon
-BACKGR_DIR=$PWD/../../delpanjTuple_background/DY
+#DATAAA_DIR=$PWD/../../delpanjTuple_data/muon
+BACKGR_DIR=$PWD/../../delpanjTuple_background/minorBkg
 
 ls -l $BACKGR_DIR | tail -n+2 | awk '{ print "echo -e \"\n\nProcessing root file --> "$9"\"; root -q -b -l '"$1"'.C++\\(\\\"'"$BACKGR_DIR"'/"$9"\\\",\\\""$9"\\\"\\); echo -e \"\nDone!\n\""}' | bash
 

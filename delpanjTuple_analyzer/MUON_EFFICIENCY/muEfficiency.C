@@ -108,7 +108,7 @@ void muEfficiency(std::string inputFile){
     if( (stMuPtIndex  < 0 || ndMuPtIndex  < 0 ) && 
 	(stElePtIndex < 0 || ndElePtIndex < 0 )  ) continue; 
   
-    if( stMuPtIndex > 0 && stElePtIndex > 0 ){
+    if( stMuPtIndex >= 0 && stElePtIndex >= 0 ){
     
       if( (muPt[stMuPtIndex] - elePt[stElePtIndex]) < 1e-6 ) 
 	continue;

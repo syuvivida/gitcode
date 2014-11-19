@@ -17,9 +17,9 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-Bool_t PassJetID(TreeReader &data, Int_t &accepted){
+Bool_t passJetID(TreeReader &data, Int_t *accepted){
 
-  accepted = -1;
+  *accepted = -1;
 
   Int_t    CA8nJet     = data.GetInt("CA8nJet");
   Float_t* CA8jetPt    = data.GetPtrFloat("CA8jetPt");
@@ -117,7 +117,7 @@ Bool_t PassJetID(TreeReader &data, Int_t &accepted){
     Bool_t basicCuts = (CA8jetPt[jIndex]>30)&&(fabs(CA8jetEta[jIndex])<2.4);
     Bool_t IDcut = (CA8jetID[jIndex]>0);
     Bool_t prunedJetCuts = (CA8jetPt[jIndex]>80)&&(CA8jetPrunedM[jIndex]>40);
-
+    Bool_t tau21cut = ((CA8jetTau2[jIndex]/CA8jetTau1[jIndex])<0.5);
 
     alljets.SetPtEtaPhiM(CA8jetPt[jIndex],
                          CA8jetEta[jIndex],
@@ -172,13 +172,14 @@ Bool_t PassJetID(TreeReader &data, Int_t &accepted){
     if(!basicCuts) continue;
     if(!IDcut) continue;
     if(!prunedJetCuts) continue;
+    if(!tau21cut) continue;
 
     goodJetIndex.push_back(jIndex);    
     
   } // overlap
 
-  if( goodJetIndex.size() > 0 && (CA8jetTau2[goodJetIndex[0]]/CA8jetTau1[goodJetIndex[0]]) < 0.5 ){
-    accepted = goodJetIndex[0];
+  if( goodJetIndex.size() > 0 ){
+    *accepted = goodJetIndex[0];
     return true;
   }
   
