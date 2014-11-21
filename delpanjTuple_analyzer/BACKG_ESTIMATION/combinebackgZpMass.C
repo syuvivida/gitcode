@@ -78,6 +78,16 @@ void combineBkgZpMass(){
   h_wzpythia->Scale(scale_wzpythia);
   h_zzpythia->Scale(scale_zzpythia);
 
+  h_ttto2l2nu2b->SetMaximum(0.01);
+  h_wwjetsto2l2nu->SetMaximum(0.01);
+  h_wzjetsto2l2q->SetMaximum(0.01);
+  h_wzjetsto3lnu->SetMaximum(0.01);
+  h_zzjetsto2l2nu->SetMaximum(0.01);
+  h_zzjetsto2l2q->SetMaximum(0.01);
+  h_wwpythia->SetMaximum(0.01);
+  h_wzpythia->SetMaximum(0.01);
+  h_zzpythia->SetMaximum(0.01);
+
   h_ttto2l2nu2b->SetLineColor(1);
   h_wwjetsto2l2nu->SetLineColor(1);
   h_wzjetsto2l2q->SetLineColor(1);
@@ -97,6 +107,17 @@ void combineBkgZpMass(){
   h_wwpythia->SetFillColor(kViolet+2);
   h_wzpythia->SetFillColor(kPink+10);
   h_zzpythia->SetFillColor(kPink-7);
+
+  h_ttto2l2nu2b->SetFillStyle(3244);
+  h_wwjetsto2l2nu->SetFillStyle(3244);
+  h_wzjetsto2l2q->SetFillStyle(3244);
+  h_wzjetsto3lnu->SetFillStyle(3244);
+  h_zzjetsto2l2nu->SetFillStyle(3244);
+  h_zzjetsto2l2q->SetFillStyle(3244);
+  h_wwpythia->SetFillStyle(3244);
+  h_wzpythia->SetFillStyle(3244);
+  h_zzpythia->SetFillStyle(3244);
+
 
   TCanvas* c = new TCanvas("c", "", 0, 0, 1000, 800);
 

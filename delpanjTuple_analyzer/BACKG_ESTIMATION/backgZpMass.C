@@ -36,7 +36,7 @@ void backgZpMass(std::string inputFile, std::string outName){
 
   TreeReader data(inputFile.data());
 
-  TH1D* h_ZprimeMass = new TH1D("h_ZprimeMass", "Signal region Zprime Mass", 500, 600, 2000);
+  TH1D* h_ZprimeMass = new TH1D("h_ZprimeMass", "Signal region Zprime Mass", 66, 680, 2000);
   h_ZprimeMass->GetXaxis()->SetTitle("Zprime mass");
   h_ZprimeMass->GetYaxis()->SetTitle("Event number");
 
