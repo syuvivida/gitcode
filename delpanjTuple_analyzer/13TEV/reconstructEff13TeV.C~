@@ -212,6 +212,5 @@ void reconstructEff13TeV(){
   c->cd(3);
   h_reconstrcEff_trctrc->Draw();
 
-  c->Print("13TeVreconstructEff.png");
 
 }
