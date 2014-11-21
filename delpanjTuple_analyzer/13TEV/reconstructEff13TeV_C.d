@@ -94,6 +94,8 @@
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TRotation.h
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TSystemDirectory.h
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TSystemFile.h
+./reconstructEff13TeV_C.so: /home/henry/root/include/TGraphAsymmErrors.h
+./reconstructEff13TeV_C.so: /home/henry/root/include/TGraph.h
 ./reconstructEff13TeV_C.so: ../HEADER/untuplizer.h
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TLeafF.h
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TLeaf.h

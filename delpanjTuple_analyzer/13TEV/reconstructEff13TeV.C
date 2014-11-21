@@ -14,6 +14,7 @@
 #include <TProfile.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
+#include <TGraphAsymmErrors.h>
 #include "../HEADER/untuplizer.h"
 #include "../HEADER/specificLeptonPt.C"
 
@@ -34,23 +35,25 @@ void reconstructEff13TeV(){
   TH1D* h_DeltaR_glbtrc = (TH1D*)h_deltaRtemplate->Clone("h_DeltaR_glbtrc");
   TH1D* h_DeltaR_trctrc = (TH1D*)h_deltaRtemplate->Clone("h_DeltaR_trctrc");
 
-  TH1D* h_efftemplate = new TH1D("h_efftemplate", "", 50, 0, 2);
-  h_efftemplate->GetXaxis()->SetTitle("DeltaR");
-  h_efftemplate->GetYaxis()->SetTitle("Efficiency");
+  TGraphAsymmErrors* h_efftemplate = new TGraphAsymmErrors();
+  h_efftemplate->SetMarkerColor(kRed);
+  h_efftemplate->SetMarkerStyle(20);
+  h_efftemplate->SetMarkerSize(0.5);
 
-  TH1D* h_reconstrcEff_glbglb = (TH1D*)h_efftemplate->Clone("h_reconstrcEff_glbglb");
-  TH1D* h_reconstrcEff_glbtrc = (TH1D*)h_efftemplate->Clone("h_reconstrcEff_glbtrc");
-  TH1D* h_reconstrcEff_trctrc = (TH1D*)h_efftemplate->Clone("h_reconstrcEff_trctrc");
-
-  h_reconstrcEff_glbglb->Sumw2();
-  h_reconstrcEff_glbtrc->Sumw2();
-  h_reconstrcEff_trctrc->Sumw2();
+  TGraphAsymmErrors* h_reconstrcEff_glbglb = (TGraphAsymmErrors*)h_efftemplate->Clone("h_reconstrcEff_glbglb");
+  TGraphAsymmErrors* h_reconstrcEff_glbtrc = (TGraphAsymmErrors*)h_efftemplate->Clone("h_reconstrcEff_glbtrc");
+  TGraphAsymmErrors* h_reconstrcEff_trctrc = (TGraphAsymmErrors*)h_efftemplate->Clone("h_reconstrcEff_trctrc");
 
   h_reconstrcEff_glbglb->SetTitle("Efficiency_glbglb");
   h_reconstrcEff_glbtrc->SetTitle("Efficiency_glbtrc");
   h_reconstrcEff_trctrc->SetTitle("Efficiency_trctrc");
+  h_reconstrcEff_glbtrc->GetXaxis()->SetTitle("DeltaR");
+  h_reconstrcEff_glbglb->GetXaxis()->SetTitle("DeltaR");
+  h_reconstrcEff_trctrc->GetXaxis()->SetTitle("DeltaR");
+  h_reconstrcEff_glbtrc->GetYaxis()->SetTitle("Efficiency");
+  h_reconstrcEff_glbglb->GetYaxis()->SetTitle("Efficiency");
+  h_reconstrcEff_trctrc->GetYaxis()->SetTitle("Efficiency");
 
-  int count = 0;
 
   // begin of event loop
 
@@ -120,7 +123,6 @@ void reconstructEff13TeV(){
     if( genParPt[genMuonID] <= 20 || genParPt[genAntiMuonID] <= 20 ) continue; 
     if( fabs(genParEta[genMuonID]) >= 2.4 || fabs(genParEta[genAntiMuonID]) >= 2.4 ) continue;
 
-    count++;
 
     TLorentzVector genMuon, genAntiMuon;
 
@@ -157,8 +159,7 @@ void reconstructEff13TeV(){
       ndGenIndex = genAntiMuonID;
     }
 
-    if( stRecoIndex < 0 || ndRecoIndex < 0 || 
-	stGenIndex < 0  || ndGenIndex < 0  ) continue; 
+    if( stRecoIndex < 0 || ndRecoIndex < 0 || stGenIndex < 0  || ndGenIndex < 0  ) continue; 
 
 
     // Fill histogram with 3 cases
@@ -171,39 +172,28 @@ void reconstructEff13TeV(){
     Int_t* isGlobalMuon  = data.GetPtrInt("isGlobalMuon");
     Int_t* isTrackerMuon = data.GetPtrInt("isTrackerMuon");
 
-    if( isGlobalMuon[stRecoIndex] && isGlobalMuon[ndRecoIndex] ){  
-  
+    if( isGlobalMuon[stRecoIndex] && isGlobalMuon[ndRecoIndex] )
       h_DeltaR_glbglb->Fill(stPassMuon.DeltaR(ndPassMuon));
-      h_reconstrcEff_glbglb->Divide(h_DeltaR_glbglb, h_DeltaR_denom, 1, 1, "B");
 
-    }
-
-    if( isGlobalMuon[stRecoIndex] || isGlobalMuon[ndRecoIndex] ){ 
-   
+    if( isGlobalMuon[stRecoIndex] || isGlobalMuon[ndRecoIndex] )
       h_DeltaR_glbtrc->Fill(stPassMuon.DeltaR(ndPassMuon));
-      h_reconstrcEff_glbtrc->Divide(h_DeltaR_glbtrc, h_DeltaR_denom, 1, 1, "B");
 
-    }
-
-    if( isTrackerMuon[stRecoIndex] && isTrackerMuon[ndRecoIndex] ){
-
+    if( isTrackerMuon[stRecoIndex] && isTrackerMuon[ndRecoIndex] )
       h_DeltaR_trctrc->Fill(stPassMuon.DeltaR(ndPassMuon));
-      h_reconstrcEff_trctrc->Divide(h_DeltaR_trctrc, h_DeltaR_denom, 1, 1, "B");
-
-    }
 
 
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
+  h_reconstrcEff_glbglb->BayesDivide(h_DeltaR_glbglb, h_DeltaR_denom);
+  h_reconstrcEff_glbtrc->BayesDivide(h_DeltaR_glbtrc, h_DeltaR_denom);
+  h_reconstrcEff_trctrc->BayesDivide(h_DeltaR_trctrc, h_DeltaR_denom);
 
-  cout << count << endl;
-  
-  TCanvas* c = new TCanvas("c", "", 0, 0, 1000, 800);
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1280, 720);
   c->Divide(2,2);
 
-  c->cd(1); 
+  c->cd(1);
   h_reconstrcEff_glbglb->Draw();
 
   c->cd(2);
@@ -213,5 +203,6 @@ void reconstructEff13TeV(){
   h_reconstrcEff_trctrc->Draw();
 
   c->Print("13TeVreconstructEff.png");
+
 
 }
