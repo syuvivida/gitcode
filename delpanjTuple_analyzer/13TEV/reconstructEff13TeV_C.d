@@ -111,7 +111,5 @@
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TBranchElement.h
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TClassRef.h
 ./reconstructEff13TeV_C.so: /home/henry/root/include/TRef.h
-./reconstructEff13TeV_C.so: ../HEADER/specificLeptonPt.C
-./reconstructEff13TeV_C.so: ../HEADER/untuplizer.h
 ./reconstructEff13TeV_C.so: /home/henry/root/include/cintdictversion.h /home/henry/root/include/RVersion.h
 reconstructEff13TeV_C__ROOTBUILDVERSION= 5.34/21

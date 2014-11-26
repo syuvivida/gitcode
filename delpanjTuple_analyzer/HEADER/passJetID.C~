@@ -118,7 +118,6 @@ Bool_t passJetID(TreeReader &data, Int_t *accepted){
     Bool_t IDcut = (CA8jetID[jIndex]>0);
     Bool_t prunedJetCuts = (CA8jetPt[jIndex]>80)&&(CA8jetPrunedM[jIndex]>40);
     Bool_t tau21cut = ((CA8jetTau2[jIndex]/CA8jetTau1[jIndex])<0.5);
-    Bool_t signalBand = (CA8jetPrunedM[jIndex]>110&&CA8jetPrunedM[jIndex]<140);
 
     alljets.SetPtEtaPhiM(CA8jetPt[jIndex],
                          CA8jetEta[jIndex],
@@ -174,7 +173,6 @@ Bool_t passJetID(TreeReader &data, Int_t *accepted){
     if(!IDcut) continue;
     if(!prunedJetCuts) continue;
     if(!tau21cut) continue;
-    if(!signalBand) continue;
 
     goodJetIndex.push_back(jIndex);    
     

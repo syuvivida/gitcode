@@ -16,9 +16,6 @@
 #include <TSystemDirectory.h>
 #include <TGraphAsymmErrors.h>
 #include "../HEADER/untuplizer.h"
-#include "../HEADER/specificLeptonPt.C"
-
-void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
 
 void reconstructEff13TeV(){
 
@@ -36,9 +33,9 @@ void reconstructEff13TeV(){
   TH1D* h_DeltaR_trctrc = (TH1D*)h_deltaRtemplate->Clone("h_DeltaR_trctrc");
 
   TGraphAsymmErrors* h_efftemplate = new TGraphAsymmErrors();
-  h_efftemplate->SetMarkerColor(kRed);
+  h_efftemplate->SetMarkerColor(kBlue);
   h_efftemplate->SetMarkerStyle(20);
-  h_efftemplate->SetMarkerSize(0.5);
+  h_efftemplate->SetMarkerSize(0.7);
 
   TGraphAsymmErrors* h_reconstrcEff_glbglb = (TGraphAsymmErrors*)h_efftemplate->Clone("h_reconstrcEff_glbglb");
   TGraphAsymmErrors* h_reconstrcEff_glbtrc = (TGraphAsymmErrors*)h_efftemplate->Clone("h_reconstrcEff_glbtrc");
@@ -47,15 +44,8 @@ void reconstructEff13TeV(){
   h_reconstrcEff_glbglb->SetTitle("Efficiency_glbglb");
   h_reconstrcEff_glbtrc->SetTitle("Efficiency_glbtrc");
   h_reconstrcEff_trctrc->SetTitle("Efficiency_trctrc");
-  h_reconstrcEff_glbtrc->GetXaxis()->SetTitle("DeltaR");
-  h_reconstrcEff_glbglb->GetXaxis()->SetTitle("DeltaR");
-  h_reconstrcEff_trctrc->GetXaxis()->SetTitle("DeltaR");
-  h_reconstrcEff_glbtrc->GetYaxis()->SetTitle("Efficiency");
-  h_reconstrcEff_glbglb->GetYaxis()->SetTitle("Efficiency");
-  h_reconstrcEff_trctrc->GetYaxis()->SetTitle("Efficiency");
 
-
-  // begin of event loop
+  // Begin of event loop
 
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
@@ -64,32 +54,7 @@ void reconstructEff13TeV(){
     data.GetEntry(ev);
 
 
-    Float_t* elePt  = data.GetPtrFloat("elePt");
-    Float_t* muPt  = data.GetPtrFloat("muPt");
-    Float_t* muEta = data.GetPtrFloat("muEta");
-    Float_t* muPhi = data.GetPtrFloat("muPhi");
-    Float_t* muM   = data.GetPtrFloat("muM");
-
-    Int_t stMuPtIndex  = -1;
-    Int_t ndMuPtIndex  = -1;
-    Int_t stElePtIndex = -1;
-    Int_t ndElePtIndex = -1;
-
-    specificLeptonPt(data, &stMuPtIndex, &ndMuPtIndex, 
-		     &stElePtIndex, &ndElePtIndex);
-
-    if( (stMuPtIndex  < 0 || ndMuPtIndex  < 0 ) && 
-	(stElePtIndex < 0 || ndElePtIndex < 0 )  ) continue; 
-  
-    if( stMuPtIndex > 0 && stElePtIndex > 0 ){
-    
-      if( (muPt[stMuPtIndex] - elePt[stElePtIndex]) < 1e-6 ) 
-	continue;
-
-    }
-
-
-    // to pass the generator muons
+    // To pass the generator muons
 
     Int_t    nGenPar     = data.GetInt("nGenPar"); 
     Int_t*   genParId    = data.GetPtrInt("genParId");
@@ -100,95 +65,137 @@ void reconstructEff13TeV(){
     Float_t* genParPhi   = data.GetPtrFloat("genParPhi");
     Float_t* genParM     = data.GetPtrFloat("genParM");
       
-    Int_t genMuonID = -1;
-    Int_t genAntiMuonID = -1;
+    Int_t genMuIndex[2] = {-1,-1};
 
     for(Int_t i = 0; i < nGenPar; i++){
 
-      if( (genMomParId[i] == 23 || abs(genMomParId[i]) == 13) && genParId[i] == +13 && genParSt[i] == 1) 
-	genMuonID = i;
+      if( abs(genParId[i]) != 13 ) continue;
+      if( genParSt[i] != 1 ) continue;
+      if( genMomParId[i] != 23 && genMomParId[i] != 13 ) continue;
+      if( genParPt[i] <= 20 ) continue;
+      if( fabs(genParEta[i]) >= 2.4 ) continue;
 
-      if( (genMomParId[i] == 23 || abs(genMomParId[i]) == 13) && genParId[i] == -13 && genParSt[i] == 1) 
-	genAntiMuonID = i; 
+      if( genMuIndex[0] < 0 ) genMuIndex[0] = i;
+      else if( genMuIndex[1] < 0 ) genMuIndex[1] = i;
 
-      if( genMuonID > -1 && genAntiMuonID > -1 ) break;
+      if( genMuIndex[0] >= 0 && genMuIndex[1] >= 0 ) break;
+
+    }
+
+    if( genMuIndex[0] < 0 || genMuIndex[1] < 0 ) continue;
+
+    TLorentzVector genMuon[2];
+
+    for(Int_t i = 0; i < 2; i++){
+
+      genMuon[i].SetPtEtaPhiM(genParPt[genMuIndex[i]], 
+			      genParEta[genMuIndex[i]], 
+			      genParPhi[genMuIndex[i]], 
+			      genParM[genMuIndex[i]]
+			      );
     
     }
 
-    if( genMuonID < 0 || genAntiMuonID < 0 ) continue;
+    Double_t gendR = genMuon[0].DeltaR(genMuon[1]);
+
+    h_DeltaR_denom->Fill(gendR);
 
 
-    // Pass basic cut
+    // Overloop all reconstructed muons that have possible matches
 
-    if( genParPt[genMuonID] <= 20 || genParPt[genAntiMuonID] <= 20 ) continue; 
-    if( fabs(genParEta[genMuonID]) >= 2.4 || fabs(genParEta[genAntiMuonID]) >= 2.4 ) continue;
+    Int_t    nMu   = data.GetInt("nMu");
+    Int_t*   isGlobalMuon  = data.GetPtrInt("isGlobalMuon");
+    Int_t*   isTrackerMuon = data.GetPtrInt("isTrackerMuon");
+    Float_t* muPt  = data.GetPtrFloat("muPt");
+    Float_t* muEta = data.GetPtrFloat("muEta");
+    Float_t* muPhi = data.GetPtrFloat("muPhi");
+    Float_t* muM   = data.GetPtrFloat("muM");
+
+    TLorentzVector recoMuoni, recoMuonj;
+
+    Double_t dRMin = 0.4;
+    Bool_t findPair[3] = {false, false, false}; //gg,gt,tt
+
+    for(Int_t i = 0; i < nMu; i++){ // i for loop
 
 
-    TLorentzVector genMuon, genAntiMuon;
+      if( !isGlobalMuon[i] && !isTrackerMuon[i] )continue;
+     
+      TLorentzVector stRecoMu(0,0,0,0);
 
-    genMuon.SetPtEtaPhiM(genParPt[genMuonID], genParEta[genMuonID], genParPhi[genMuonID], genParM[genMuonID]);
-    genAntiMuon.SetPtEtaPhiM(genParPt[genAntiMuonID], genParEta[genAntiMuonID], genParPhi[genAntiMuonID], genParM[genAntiMuonID]);
+      stRecoMu.SetPtEtaPhiM(muPt[i], 
+			    muEta[i], 
+			    muPhi[i], 
+			    muM[i]
+			    );
+      
+      Double_t dR_reco0gen0 = stRecoMu.DeltaR(genMuon[0]);
+      Double_t dR_reco0gen1 = stRecoMu.DeltaR(genMuon[1]);
 
-    h_DeltaR_denom->Fill(genMuon.DeltaR(genAntiMuon));
+      if( dR_reco0gen0 > dRMin && dR_reco0gen1 > dRMin )continue;
+
+ 
+      for(Int_t j = 0; j < i; j++){ // j for loop
 
 
-    // to check if reconstructed muon match generator muon
-    
-    TLorentzVector reco_stMuon, reco_ndMuon;
+	if( !isGlobalMuon[j] && !isTrackerMuon[j] )continue;
+     
+	TLorentzVector ndRecoMu(0,0,0,0);
 
-    reco_stMuon.SetPtEtaPhiM(muPt[stMuPtIndex], muEta[stMuPtIndex], muPhi[stMuPtIndex], muM[stMuPtIndex]);
-    reco_ndMuon.SetPtEtaPhiM(muPt[ndMuPtIndex], muEta[ndMuPtIndex], muPhi[ndMuPtIndex], muM[ndMuPtIndex]);
+	ndRecoMu.SetPtEtaPhiM(muPt[j], 
+			      muEta[j], 
+			      muPhi[j], 
+			      muM[j]
+			      );
+      
+	Double_t dR_reco1gen0 = ndRecoMu.DeltaR(genMuon[0]);
+	Double_t dR_reco1gen1 = ndRecoMu.DeltaR(genMuon[1]);
 
-    Double_t recostMuon_with_genMuonDeltaR = reco_stMuon.DeltaR(genMuon);
-    Double_t recostMuon_with_genantiMuonDeltaR = reco_stMuon.DeltaR(genAntiMuon);
-    Double_t recondMuon_with_genMuonDeltaR = reco_ndMuon.DeltaR(genMuon);
-    Double_t recondMuon_with_genantiMuonDeltaR = reco_ndMuon.DeltaR(genAntiMuon);
+	if( dR_reco1gen0 > dRMin && dR_reco1gen1 > dRMin )continue;
 
-    Int_t stRecoIndex = -1;
-    Int_t ndRecoIndex = -1;
-    Int_t stGenIndex = -1;
-    Int_t ndGenIndex = -1;
+	// Pass 3 cases
 
-    if( recostMuon_with_genMuonDeltaR < 0.3 || recostMuon_with_genantiMuonDeltaR < 0.3 ){
-      stRecoIndex = stMuPtIndex;
-      stGenIndex = genMuonID;
-    }
+	Bool_t glbglb = (isGlobalMuon[i] && isGlobalMuon[j]);
+	Bool_t atleastglb = (isGlobalMuon[i] && isGlobalMuon[j]) || (isGlobalMuon[i] && isTrackerMuon[j]) || (isGlobalMuon[j] && isTrackerMuon[i]);
+	Bool_t trktrk = (isTrackerMuon[i] && isTrackerMuon[j]);
+	Bool_t muMatching = ((dR_reco0gen0 < dRMin && dR_reco1gen1 < dRMin) || (dR_reco0gen1 < dRMin && dR_reco1gen0 < dRMin));
 
-    if( recondMuon_with_genMuonDeltaR < 0.3 || recondMuon_with_genantiMuonDeltaR < 0.3 ){
-      ndRecoIndex = ndMuPtIndex;
-      ndGenIndex = genAntiMuonID;
-    }
+	if( glbglb && muMatching ) 
+	  findPair[0] = true;
 
-    if( stRecoIndex < 0 || ndRecoIndex < 0 || stGenIndex < 0  || ndGenIndex < 0  ) continue; 
+	if( atleastglb && muMatching )	   
+	  findPair[1] = true;
+
+	if( trktrk && muMatching )
+	  findPair[2] = true;
+	
+
+      } // end of j for loop
+
+    } // end of i for loop
 
 
     // Fill histogram with 3 cases
 
-    TLorentzVector stPassMuon, ndPassMuon;
-
-    stPassMuon.SetPtEtaPhiM(genParPt[stGenIndex], genParEta[stGenIndex], genParPhi[stGenIndex], genParM[stGenIndex]);
-    ndPassMuon.SetPtEtaPhiM(genParPt[ndGenIndex], genParEta[ndGenIndex], genParPhi[ndGenIndex], genParM[ndGenIndex]);
-
-    Int_t* isGlobalMuon  = data.GetPtrInt("isGlobalMuon");
-    Int_t* isTrackerMuon = data.GetPtrInt("isTrackerMuon");
-
-    if( isGlobalMuon[stRecoIndex] && isGlobalMuon[ndRecoIndex] )
-      h_DeltaR_glbglb->Fill(stPassMuon.DeltaR(ndPassMuon));
-
-    if( isGlobalMuon[stRecoIndex] || isGlobalMuon[ndRecoIndex] )
-      h_DeltaR_glbtrc->Fill(stPassMuon.DeltaR(ndPassMuon));
-
-    if( isTrackerMuon[stRecoIndex] && isTrackerMuon[ndRecoIndex] )
-      h_DeltaR_trctrc->Fill(stPassMuon.DeltaR(ndPassMuon));
+    if(findPair[0]) h_DeltaR_glbglb->Fill(gendR);
+    if(findPair[1]) h_DeltaR_glbtrc->Fill(gendR);
+    if(findPair[2]) h_DeltaR_trctrc->Fill(gendR); 
 
 
-  } // end of event loop
+  } // End of event loop
 
   fprintf(stderr, "Processed all events\n");
 
   h_reconstrcEff_glbglb->BayesDivide(h_DeltaR_glbglb, h_DeltaR_denom);
   h_reconstrcEff_glbtrc->BayesDivide(h_DeltaR_glbtrc, h_DeltaR_denom);
   h_reconstrcEff_trctrc->BayesDivide(h_DeltaR_trctrc, h_DeltaR_denom);
+
+  h_reconstrcEff_glbtrc->GetXaxis()->SetTitle("DeltaR");
+  h_reconstrcEff_glbglb->GetXaxis()->SetTitle("DeltaR");
+  h_reconstrcEff_trctrc->GetXaxis()->SetTitle("DeltaR");
+  h_reconstrcEff_glbtrc->GetYaxis()->SetTitle("Efficiency");
+  h_reconstrcEff_glbglb->GetYaxis()->SetTitle("Efficiency");
+  h_reconstrcEff_trctrc->GetYaxis()->SetTitle("Efficiency");
 
   TCanvas* c = new TCanvas("c", "", 0, 0, 1280, 720);
   c->Divide(2,2);
@@ -203,6 +210,5 @@ void reconstructEff13TeV(){
   h_reconstrcEff_trctrc->Draw();
 
   c->Print("13TeVreconstructEff.png");
-
 
 }

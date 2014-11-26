@@ -22,12 +22,10 @@
 #include <TSystemDirectory.h>
 #include <TGraphAsymmErrors.h>
 #include "../HEADER/untuplizer.h"
-#include "../HEADER/specificLeptonPt.C"
 #include "../HEADER/passMuonID.C"
 #include "../HEADER/passElectronID.C"
 #include "../HEADER/passJetID.C"
 
-void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 Bool_t passElectronID(TreeReader&, Int_t*, Int_t*);
 Bool_t passJetID(TreeReader&, Int_t*);
@@ -42,6 +40,7 @@ void backgZpMass(std::string inputFile, std::string outName){
 
 
   // begin of event loop
+  Int_t count = 0;
 
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
@@ -76,51 +75,37 @@ void backgZpMass(std::string inputFile, std::string outName){
     
 
     //-----------------------------------------------------------------------------------//
-    // passJetID, reconstruct boosted-jet
-
-
-    Int_t jetIndex;
-
-    if( !passJetID(data, &jetIndex) )
-      continue;
-
-
-    TLorentzVector boostedJet;
-
-    boostedJet.SetPtEtaPhiM(CA8jetPt[jetIndex],
-			    CA8jetEta[jetIndex],
-			    CA8jetPhi[jetIndex],
-			    CA8jetMass[jetIndex]);
-
-
-    //-----------------------------------------------------------------------------------//
     // choose the primary lepton
-    
 
-    Int_t stMuPtIndex  = -1;
-    Int_t ndMuPtIndex  = -1;
-    Int_t stElePtIndex = -1;
-    Int_t ndElePtIndex = -1;
+    Int_t stMuPtIndex, ndMuPtIndex;
+    Int_t stElePtIndex, ndElePtIndex;
 
-    specificLeptonPt(data, &stMuPtIndex, &ndMuPtIndex, 
-		     &stElePtIndex, &ndElePtIndex);
+    passMuonID(data, &stMuPtIndex, &ndMuPtIndex);
+    passElectronID(data, &stElePtIndex, &ndElePtIndex);
 
-    if( (stMuPtIndex  < 0 || ndMuPtIndex  < 0 ) && 
-	(stElePtIndex < 0 || ndElePtIndex < 0 )  ) continue; 
 
     Bool_t muonEvent = false;
     Bool_t electronEvent = false;
-
-    if( stMuPtIndex >= 0 && stElePtIndex >= 0 ){
     
-      if( (muPt[stMuPtIndex] - elePt[stElePtIndex]) > 0 ) 
+    if( nMu > 0 && nEle > 0 ){
+
+      if( muPt[stMuPtIndex] > elePt[stElePtIndex] ) 
 	muonEvent = true;
 
-      else if( (elePt[stElePtIndex] - muPt[stMuPtIndex]) > 0 )
+      else if( elePt[stElePtIndex] > muPt[stMuPtIndex] )
 	electronEvent = true;
 
     }
 
+    else if( nEle == 0 && nMu > 0 ) 
+      muonEvent = true;
+
+    else if( nMu == 0 && nEle > 0 )
+      electronEvent = true;
+
+
+    TLorentzVector stRecoLepton(0,0,0,0), ndRecoLepton(0,0,0,0), Z(0,0,0,0); 
+    
 
     //-----------------------------------------------------------------------------------// 
     // muon event, passMuonID, reconstruct Z, recnstruct Zp in signal region
@@ -128,42 +113,21 @@ void backgZpMass(std::string inputFile, std::string outName){
 
     if( muonEvent ){
 
-      TLorentzVector muZ(0,0,0,0);
-
       Int_t stRecoMuIndex, ndRecoMuIndex;
 
-      if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
-	continue;
-
-
-      TLorentzVector stRecoMu, ndRecoMu;  
+      if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) ) continue;
  
-      stRecoMu.SetPtEtaPhiM(muPt[stRecoMuIndex], 
-			    muEta[stRecoMuIndex], 
-			    muPhi[stRecoMuIndex],
-			    muM[stRecoMuIndex]);  
+      stRecoLepton.SetPtEtaPhiM(muPt[stRecoMuIndex], 
+				muEta[stRecoMuIndex], 
+				muPhi[stRecoMuIndex],
+				muM[stRecoMuIndex]);  
   
-      ndRecoMu.SetPtEtaPhiM(muPt[ndRecoMuIndex], 
-			    muEta[ndRecoMuIndex],
-			    muPhi[ndRecoMuIndex], 
-			    muM[ndRecoMuIndex]); 
+      ndRecoLepton.SetPtEtaPhiM(muPt[ndRecoMuIndex], 
+				muEta[ndRecoMuIndex],
+				muPhi[ndRecoMuIndex], 
+				muM[ndRecoMuIndex]); 
     
-      muZ = stRecoMu + ndRecoMu;
-
-
-      if( muZ.E() <= 1e-6 || boostedJet.E() <= 1e-6 ) continue;
-      if( muZ.M() <= 70 || muZ.M() >=110 ) continue;
-      if( muZ.Pt() <= 80) continue;
-      if( boostedJet.M() <= 40 ) continue;
-      if( boostedJet.Pt() <= 80 ) continue;
-    
-
-      if( CA8jetPrunedMass[jetIndex] > 110 && CA8jetPrunedMass[jetIndex] < 140 ){
-
-	TLorentzVector Zprime = muZ + boostedJet; 
-	h_ZprimeMass->Fill(Zprime.M());
-    
-      }
+      Z = stRecoLepton + ndRecoLepton;
 
 
     } // end of muon event
@@ -175,63 +139,65 @@ void backgZpMass(std::string inputFile, std::string outName){
 
     else if( electronEvent ){
 
-      TLorentzVector eleZ(0,0,0,0);
-
       Int_t stRecoEleIndex, ndRecoEleIndex;
 
-      if( !passElectronID(data, &stRecoEleIndex, &ndRecoEleIndex) )
-	continue;
+      if( !passElectronID(data, &stRecoEleIndex, &ndRecoEleIndex) ) continue;
 
-
-      TLorentzVector stRecoEle, ndRecoEle;  
- 
-      stRecoEle.SetPtEtaPhiM(elePt[stRecoEleIndex], 
-			     eleEta[stRecoEleIndex], 
-			     elePhi[stRecoEleIndex],
-			     eleM[stRecoEleIndex]);  
+      stRecoLepton.SetPtEtaPhiM(elePt[stRecoEleIndex], 
+				eleEta[stRecoEleIndex], 
+				elePhi[stRecoEleIndex],
+				eleM[stRecoEleIndex]);  
   
-      ndRecoEle.SetPtEtaPhiM(elePt[ndRecoEleIndex], 
-			     eleEta[ndRecoEleIndex],
-			     elePhi[ndRecoEleIndex], 
-			     eleM[ndRecoEleIndex]); 
+      ndRecoLepton.SetPtEtaPhiM(elePt[ndRecoEleIndex], 
+				eleEta[ndRecoEleIndex],
+				elePhi[ndRecoEleIndex], 
+				eleM[ndRecoEleIndex]); 
     
-      eleZ = stRecoEle + ndRecoEle;
-
-
-      if( eleZ.E() <= 1e-6 || boostedJet.E() <= 1e-6 ) continue;
-      if( eleZ.M() <= 70 || eleZ.M() >=110 ) continue;
-      if( eleZ.Pt() <= 80) continue;
-      if( boostedJet.M() <= 40 ) continue;
-      if( boostedJet.Pt() <= 80 ) continue;
-
-
-      if( CA8jetPrunedMass[jetIndex] > 110 && CA8jetPrunedMass[jetIndex] < 140 ){
-
-	TLorentzVector Zprime = eleZ + boostedJet; 
-	h_ZprimeMass->Fill(Zprime.M());
-    
-      }
+      Z = stRecoLepton + ndRecoLepton;
 
 
     } // end of electron event
 
 
-    //-----------------------------------------------------------------------------------//
- 
-    else continue;
+    //-----------------------------------------------------------------------------------// 
+    // passJetID, reconstruct boosted-jet, Z and boosted-jet cut
+
+
+    Int_t jetIndex;
+
+    // this passJetID cuts tau21 and also select signal region(cut prunedmass) already
+    if( !passJetID(data, &jetIndex) ) continue;
+
+    TLorentzVector Higgs(0,0,0,0);
+
+    Higgs.SetPtEtaPhiM(CA8jetPt[jetIndex],
+		       CA8jetEta[jetIndex],
+		       CA8jetPhi[jetIndex],
+		       CA8jetMass[jetIndex]);
+
+    if( Z.M() <= 70 || Z.M() >= 110 ) continue;
+    if( Z.E() <= 0 || Higgs.E() <= 0 ) continue;
+    if( Z.Pt() <= 80 || Higgs.Pt() <= 80 ) continue;
+
+    TLorentzVector Zprime = Z + Higgs;
+    h_ZprimeMass->Fill(Zprime.M());
+
+    count++;
+
     
   } // end of event loop
 
-
   fprintf(stderr, "Processed all events\n");
 
-  // output file
+  cout << "Total pass event: " << count << endl;
 
+  // output file
+  /*
   std::string Name = "ZpMass_" + outName.substr(11);
   TFile* outFile = new TFile("backgZpMass.root", "update");
 
   h_ZprimeMass->Write(Name.data());
   outFile->Write();
- 
+  */
  
 }

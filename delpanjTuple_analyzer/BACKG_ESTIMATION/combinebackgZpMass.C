@@ -21,7 +21,7 @@
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
 #include <TGraphAsymmErrors.h>
-
+/*
 const Int_t NEvent_ttto2l2nu2b   = 10783509;
 const Int_t NEvent_wwjetsto2l2nu = 1918235;
 const Int_t NEvent_wzjetsto2l2q  = 3170990;
@@ -51,7 +51,7 @@ Double_t scale_zzjetsto2l2q  = 1 / (NEvent_zzjetsto2l2q / xSection_zzjetsto2l2q)
 Double_t scale_wwpythia = 1 / (NEvent_wwpythia / xSection_wwpythia);
 Double_t scale_wzpythia = 1 / (NEvent_wzpythia / xSection_wzpythia);
 Double_t scale_zzpythia = 1 / (NEvent_zzpythia / xSection_zzpythia);
-
+*/
 void combineBkgZpMass(){
 
   gStyle->SetOptStat(0);
@@ -68,25 +68,27 @@ void combineBkgZpMass(){
   TH1D* h_wzpythia = (TH1D*)(f->Get("ZpMass_WZ_pythia_filtered.root"));
   TH1D* h_zzpythia = (TH1D*)(f->Get("ZpMass_ZZ_pythia_filtered.root"));
 
-  h_ttto2l2nu2b->Scale(scale_ttto2l2nu2b);
-  h_wwjetsto2l2nu->Scale(scale_wwjetsto2l2nu);
-  h_wzjetsto2l2q->Scale(scale_wzjetsto2l2q);
-  h_wzjetsto3lnu->Scale(scale_wzjetsto3lnu);
-  h_zzjetsto2l2nu->Scale(scale_zzjetsto2l2nu);
-  h_zzjetsto2l2q->Scale(scale_zzjetsto2l2q);
-  h_wwpythia->Scale(scale_wwpythia);
-  h_wzpythia->Scale(scale_wzpythia);
-  h_zzpythia->Scale(scale_zzpythia);
+  h_ttto2l2nu2b->Scale(1/h_ttto2l2nu2b->Integral());
+  h_wwjetsto2l2nu->Scale(1/h_wwjetsto2l2nu->Integral());
+  h_wzjetsto2l2q->Scale(1/h_wzjetsto2l2q->Integral());
+  h_wzjetsto3lnu->Scale(1/h_wzjetsto3lnu->Integral());
+  h_zzjetsto2l2nu->Scale(1/h_zzjetsto2l2nu->Integral());
+  h_zzjetsto2l2q->Scale(1/h_zzjetsto2l2q->Integral());
+  h_wwpythia->Scale(1/h_wwpythia->Integral());
+  h_wzpythia->Scale(1/h_wzpythia->Integral());
+  h_zzpythia->Scale(1/h_zzpythia->Integral());
 
-  h_ttto2l2nu2b->SetMaximum(0.01);
-  h_wwjetsto2l2nu->SetMaximum(0.01);
-  h_wzjetsto2l2q->SetMaximum(0.01);
-  h_wzjetsto3lnu->SetMaximum(0.01);
-  h_zzjetsto2l2nu->SetMaximum(0.01);
-  h_zzjetsto2l2q->SetMaximum(0.01);
-  h_wwpythia->SetMaximum(0.01);
-  h_wzpythia->SetMaximum(0.01);
-  h_zzpythia->SetMaximum(0.01);
+  Double_t vmax = 0.3;
+
+  h_ttto2l2nu2b->SetMaximum(vmax);
+  h_wwjetsto2l2nu->SetMaximum(vmax);
+  h_wzjetsto2l2q->SetMaximum(vmax);
+  h_wzjetsto3lnu->SetMaximum(vmax);
+  h_zzjetsto2l2nu->SetMaximum(vmax);
+  h_zzjetsto2l2q->SetMaximum(vmax);
+  h_wwpythia->SetMaximum(vmax);
+  h_wzpythia->SetMaximum(vmax);
+  h_zzpythia->SetMaximum(vmax);
 
   h_ttto2l2nu2b->SetLineColor(1);
   h_wwjetsto2l2nu->SetLineColor(1);
