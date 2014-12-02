@@ -78,7 +78,7 @@ void combineBkgZpMass(){
   h_wzpythia->Scale(1/h_wzpythia->Integral());
   h_zzpythia->Scale(1/h_zzpythia->Integral());
 
-  Double_t vmax = 1;
+  Double_t vmax = 0.5;
 
   h_ttto2l2nu2b->SetMaximum(vmax);
   h_wwjetsto2l2nu->SetMaximum(vmax);

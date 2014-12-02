@@ -83,7 +83,6 @@ void backgZpMass(std::string inputFile, std::string outName){
     passMuonID(data, &stMuPtIndex, &ndMuPtIndex);
     passElectronID(data, &stElePtIndex, &ndElePtIndex);
 
-
     Bool_t muonEvent = false;
     Bool_t electronEvent = false;
     
@@ -129,7 +128,6 @@ void backgZpMass(std::string inputFile, std::string outName){
     
       Z = stRecoLepton + ndRecoLepton;
 
-
     } // end of muon event
 
 
@@ -155,8 +153,12 @@ void backgZpMass(std::string inputFile, std::string outName){
     
       Z = stRecoLepton + ndRecoLepton;
 
-
     } // end of electron event
+
+    if( Z.E() <= 0 ) continue;
+    if( Z.M() <= 70 ) continue;
+    if( Z.M() >= 110 ) continue;
+    if( Z.Pt() <= 80 ) continue;
 
 
     //-----------------------------------------------------------------------------------// 
@@ -168,6 +170,7 @@ void backgZpMass(std::string inputFile, std::string outName){
     // this passJetID cuts tau21 and also select signal region(cut prunedmass) already
     if( !passJetID(data, &jetIndex) ) continue;
 
+
     TLorentzVector Higgs(0,0,0,0);
 
     Higgs.SetPtEtaPhiM(CA8jetPt[jetIndex],
@@ -175,9 +178,8 @@ void backgZpMass(std::string inputFile, std::string outName){
 		       CA8jetPhi[jetIndex],
 		       CA8jetMass[jetIndex]);
 
-    if( Z.M() <= 70 || Z.M() >= 110 ) continue;
-    if( Z.E() <= 0 || Higgs.E() <= 0 ) continue;
-    if( Z.Pt() <= 80 || Higgs.Pt() <= 80 ) continue;
+    if( Higgs.E() <= 0 ) continue;
+    if( Higgs.Pt() <= 80 ) continue;
 
     TLorentzVector Zprime = Z + Higgs;
     h_ZprimeMass->Fill(Zprime.M());
@@ -192,12 +194,12 @@ void backgZpMass(std::string inputFile, std::string outName){
   cout << "Total pass event: " << count << endl;
 
   // output file
-  /*
+  
   std::string Name = "ZpMass_" + outName.substr(11);
   TFile* outFile = new TFile("backgZpMass.root", "update");
 
   h_ZprimeMass->Write(Name.data());
   outFile->Write();
-  */
+  
  
 }
