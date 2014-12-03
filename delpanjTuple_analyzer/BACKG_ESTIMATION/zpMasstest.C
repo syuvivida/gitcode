@@ -29,43 +29,58 @@ void zpMasstest(){
 
   TFile *f = TFile::Open("backgZpMass.root");
 
-  TH1D* h_ttto2l2nu2b   = (TH1D*)(f->Get("ZpMass_TTTo2L2Nu2B.root"));
-  TH1D* h_ttjetsfulll = (TH1D*)(f->Get("ZpMass_TTJets_FullLeptMGDecays_8TeV_filtered.root"));
+  TH1D* h_ttto2l2nu2b[5];
+  TH1D* h_ttjetsfulll[5];
 
+  h_ttto2l2nu2b[0] = (TH1D*)(f->Get("ZpMass_TTTo2L2Nu2B.root"));
+  h_ttto2l2nu2b[1] = (TH1D*)(f->Get("ZPt_TTTo2L2Nu2B.root"));
+  h_ttto2l2nu2b[2] = (TH1D*)(f->Get("ZEta_TTTo2L2Nu2B.root"));
+  h_ttto2l2nu2b[3] = (TH1D*)(f->Get("HiggsPt_TTTo2L2Nu2B.root"));
+  h_ttto2l2nu2b[4] = (TH1D*)(f->Get("HiggsEta_TTTo2L2Nu2B.root"));
 
-  h_ttto2l2nu2b->Scale(1/h_ttto2l2nu2b->Integral());
-  h_ttjetsfulll->Scale(1/h_ttjetsfulll->Integral());
+  h_ttjetsfulll[0] = (TH1D*)(f->Get("ZpMass_TTJets_FullLeptMGDecays_8TeV_filtered.root"));
+  h_ttjetsfulll[1] = (TH1D*)(f->Get("ZPt_TTJets_FullLeptMGDecays_8TeV_filtered.root"));
+  h_ttjetsfulll[2] = (TH1D*)(f->Get("ZEta_TTJets_FullLeptMGDecays_8TeV_filtered.root"));
+  h_ttjetsfulll[3] = (TH1D*)(f->Get("HiggsPt_TTJets_FullLeptMGDecays_8TeV_filtered.root"));
+  h_ttjetsfulll[4] = (TH1D*)(f->Get("HiggsEta_TTJets_FullLeptMGDecays_8TeV_filtered.root"));
 
+  Double_t vmax = 0.2;
 
-  Double_t vmax = 0.3;
+  TCanvas* c = new TCanvas("c", "", 0, 0, 1400, 900);
+  c->Divide(3,2);
 
-  h_ttto2l2nu2b->SetMaximum(vmax);
-  h_ttjetsfulll->SetMaximum(vmax);
+  TLegend *leg[5];
 
-  h_ttto2l2nu2b->SetLineColor(1);
-  h_ttjetsfulll->SetLineColor(1);
+  for(Int_t i = 0; i < 5; i++){
 
-  h_ttto2l2nu2b->SetFillColor(kRed);
-  h_ttjetsfulll->SetFillColor(kBlue+1);
+    h_ttto2l2nu2b[i]->Scale(1/h_ttto2l2nu2b[i]->Integral());
+    h_ttjetsfulll[i]->Scale(1/h_ttjetsfulll[i]->Integral());
 
-  h_ttto2l2nu2b->SetFillStyle(3004);
-  h_ttjetsfulll->SetFillStyle(3005);
+    h_ttto2l2nu2b[i]->SetMaximum(vmax);
+    h_ttjetsfulll[i]->SetMaximum(vmax);
 
+    h_ttto2l2nu2b[i]->SetLineColor(1);
+    h_ttjetsfulll[i]->SetLineColor(1);
 
-  TCanvas* c = new TCanvas("c", "", 0, 0, 1000, 800);
+    h_ttto2l2nu2b[i]->SetFillColor(kRed);
+    h_ttjetsfulll[i]->SetFillColor(kBlue+1);
 
-  c->cd(1);
-  h_ttto2l2nu2b->Draw();
-  h_ttjetsfulll->Draw("same");
+    h_ttto2l2nu2b[i]->SetFillStyle(3002);
+    h_ttjetsfulll[i]->SetFillStyle(3002);
 
+    c->cd(i+1);
+    h_ttto2l2nu2b[i]->Draw();
+    h_ttjetsfulll[i]->Draw("same");
 
-  TLegend *leg = new TLegend(0.7, 0.8, 0.9, 0.9);
-  leg->SetFillStyle(1001);
-  leg->SetFillColor(10);
-  leg->SetBorderSize(1);
-  leg->AddEntry(h_ttto2l2nu2b, "ttto2l2nu2b", "f");
-  leg->AddEntry(h_ttjetsfulll, "ttjetsfullleptmgdecays", "f");
-  leg->Draw();
+    leg[i] = new TLegend(0.5, 0.8, 0.9, 0.9);
+    leg[i]->SetFillStyle(1001);
+    leg[i]->SetFillColor(10);
+    leg[i]->SetBorderSize(1);
+    leg[i]->AddEntry(h_ttto2l2nu2b[i], "ttto2l2nu2b", "f");
+    leg[i]->AddEntry(h_ttjetsfulll[i], "ttjetsfullleptmgdecays", "f");
+    leg[i]->Draw();
+    
+  }
 
   c->Print("zpMasstest.gif");
 

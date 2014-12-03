@@ -171,9 +171,9 @@ Bool_t passJetID(TreeReader &data, Int_t *accepted){
 
     if(overlap == true) continue;
     if(!basicCuts) continue;
-    if(!IDcut) continue;
-    if(!prunedJetCuts) continue;
-    if(!tau21cut) continue;
+    //if(!IDcut) continue;
+    //if(!prunedJetCuts) continue;
+    //if(!tau21cut) continue;
     if(!signalBand) continue;
 
     goodJetIndex.push_back(jIndex);    

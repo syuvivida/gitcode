@@ -38,6 +38,22 @@ void backgZpMass(std::string inputFile, std::string outName){
   h_ZprimeMass->GetXaxis()->SetTitle("Zprime mass");
   h_ZprimeMass->GetYaxis()->SetTitle("Event number");
 
+  TH1D* h_ZPt = new TH1D("h_ZPt", "Signal region Z Pt", 100, 0, 1000);
+  h_ZPt->GetXaxis()->SetTitle("Z Pt");
+  h_ZPt->GetYaxis()->SetTitle("Event number");
+
+  TH1D* h_ZEta = new TH1D("h_ZEta", "Signal region Z Eta", 60, -3, 3);
+  h_ZEta->GetXaxis()->SetTitle("Z Eta");
+  h_ZEta->GetYaxis()->SetTitle("Event number");
+
+  TH1D* h_HiggsPt = new TH1D("h_HiggsPt", "Signal region Higgs Pt", 100, 0, 1000);
+  h_HiggsPt->GetXaxis()->SetTitle("Higgs Pt");
+  h_HiggsPt->GetYaxis()->SetTitle("Event number");
+
+  TH1D* h_HiggsEta = new TH1D("h_HiggsEta", "Signal region Higgs Eta", 60, -3, 3);
+  h_HiggsEta->GetXaxis()->SetTitle("Higgs Eta");
+  h_HiggsEta->GetYaxis()->SetTitle("Event number");
+
 
   // begin of event loop
   Int_t count = 0;
@@ -184,6 +200,11 @@ void backgZpMass(std::string inputFile, std::string outName){
     TLorentzVector Zprime = Z + Higgs;
     h_ZprimeMass->Fill(Zprime.M());
 
+    h_ZPt->Fill(Z.Pt());
+    h_ZEta->Fill(Z.Eta());
+    h_HiggsPt->Fill(Higgs.Pt());
+    h_HiggsEta->Fill(Higgs.Eta());
+
     count++;
 
     
@@ -195,10 +216,20 @@ void backgZpMass(std::string inputFile, std::string outName){
 
   // output file
   
-  std::string Name = "ZpMass_" + outName.substr(11);
+  std::string zpmName = "ZpMass_" + outName.substr(11);
+  std::string zptName = "ZPt_" + outName.substr(11);
+  std::string zetaName = "ZEta_" + outName.substr(11);
+  std::string hptName = "HiggsPt_" + outName.substr(11);
+  std::string hetaName = "HiggsEta_" + outName.substr(11);
+
   TFile* outFile = new TFile("backgZpMass.root", "update");
 
-  h_ZprimeMass->Write(Name.data());
+  h_ZprimeMass->Write(zpmName.data());
+  h_ZPt->Write(zptName.data());
+  h_ZEta->Write(zetaName.data());
+  h_HiggsPt->Write(hptName.data());
+  h_HiggsEta->Write(hetaName.data());
+
   outFile->Write();
   
  
