@@ -199,6 +199,13 @@ void reconstructEff13TeV(){
   h_reconstrcEff_glbglb->GetYaxis()->SetTitle("Efficiency");
   h_reconstrcEff_trctrc->GetYaxis()->SetTitle("Efficiency");
 
+  h_reconstrcEff_glbtrc->SetMinimum(0);
+  h_reconstrcEff_glbglb->SetMinimum(0);
+  h_reconstrcEff_trctrc->SetMinimum(0);
+  h_reconstrcEff_glbtrc->SetMaximum(1.2);
+  h_reconstrcEff_glbglb->SetMaximum(1.2);
+  h_reconstrcEff_trctrc->SetMaximum(1.2);
+
   TCanvas* c = new TCanvas("c", "", 0, 0, 1280, 720);
   c->Divide(2,2);
 
