@@ -113,12 +113,13 @@ void reconstructEff13TeV(){
 
     TLorentzVector recoMuoni, recoMuonj;
 
-    Double_t dRMin = 0.4;
+    Double_t dRMin = 0.1;
     Bool_t findPair[3] = {false, false, false}; //gg,gt,tt
 
     for(Int_t i = 0; i < nMu; i++){ // i for loop
 
-
+      if( muPt[i] <= 10 ) continue;
+      if( fabs(muEta[i]) >= 2.4 ) continue;
       if( !isGlobalMuon[i] && !isTrackerMuon[i] )continue;
      
       TLorentzVector stRecoMu(0,0,0,0);
@@ -137,7 +138,8 @@ void reconstructEff13TeV(){
  
       for(Int_t j = 0; j < i; j++){ // j for loop
 
-
+	if( muPt[j] <= 10 ) continue;
+	if( fabs(muEta[j]) >= 2.4 ) continue;
 	if( !isGlobalMuon[j] && !isTrackerMuon[j] )continue;
      
 	TLorentzVector ndRecoMu(0,0,0,0);
