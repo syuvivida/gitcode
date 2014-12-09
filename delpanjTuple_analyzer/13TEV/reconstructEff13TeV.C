@@ -74,15 +74,13 @@ void reconstructEff13TeV(){
 
     if( genMuIndex[0][0] < 0 || genMuIndex[0][1] < 0 ) continue;
 
+    Int_t npair = (genMuIndex[1][0] >= 0 && genMuIndex[1][1] >= 0) ? 2 : 1;
     
     TLorentzVector genMuon[2][2] = {{TLorentzVector(0,0,0,0),TLorentzVector(0,0,0,0)},
 				    {TLorentzVector(0,0,0,0),TLorentzVector(0,0,0,0)}};
 
     for(Int_t i = 0; i < 2; i++){
       for(Int_t j = 0; j < 2; j++){
-
-	if( genMuIndex[1][0] < 0 && genMuIndex[1][1] < 0 )
-	  break;
 
 	genMuon[i][j].SetPtEtaPhiM(genParPt[genMuIndex[i][j]], 
 				   genParEta[genMuIndex[i][j]], 
@@ -95,15 +93,10 @@ void reconstructEff13TeV(){
 
     Double_t gendR[2];
 
-    for(Int_t i = 0; i < 2; i++){
+    for(Int_t gm = 0; gm < npair; gm++){
 
-
-      if( genMuIndex[1][0] < 0 && genMuIndex[1][1] < 0 )
-	break;
-
-
-      gendR[i] = genMuon[i][0].DeltaR(genMuon[i][1]);
-      h_DeltaR[0]->Fill(gendR[i]);
+      gendR[gm] = genMuon[gm][0].DeltaR(genMuon[gm][1]);
+      h_DeltaR[0]->Fill(gendR[gm]);
 
     }
 
@@ -122,10 +115,7 @@ void reconstructEff13TeV(){
     Double_t dRMin = 0.1;
     Bool_t findPair[2][3] = {{},{false, false, false}}; //gg,gt,tt
 
-    for(Int_t gm = 0; gm < 2; gm++){ // genmu for loop
-
-      if( genMuIndex[1][0] < 0 && genMuIndex[1][1] < 0 )
-	break;
+    for(Int_t gm = 0; gm < npair; gm++){ // genmu for loop
 
       for(Int_t i = 0; i < nMu; i++){ // i for loop
 
@@ -181,7 +171,7 @@ void reconstructEff13TeV(){
 
     // Fill histogram with 3 cases
     
-    for(Int_t gm = 0; gm < 2; gm++){
+    for(Int_t gm = 0; gm < npair; gm++){
       for(Int_t i = 0; i < 3; i++){
 
 	if(findPair[gm][i]) h_DeltaR[i+1]->Fill(gendR[gm]);
