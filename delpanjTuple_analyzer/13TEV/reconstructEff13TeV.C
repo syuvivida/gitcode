@@ -80,19 +80,22 @@ void reconstructEff13TeV(){
       else if( genMuIndex[1][0] < 0 ) genMuIndex[1][0] = i; 
       else if( genMuIndex[1][1] < 0 ) genMuIndex[1][1] = i;
 
-      if( (genMuIndex[0][0] >= 0 && genMuIndex[0][1] >= 0 ) ||
-	  (genMuIndex[0][0] >= 0 && genMuIndex[0][1] >= 0 &&
-	   genMuIndex[1][0] >= 0 && genMuIndex[1][1] >= 0 )) break;
+      if( genMuIndex[0][0] >= 0 && genMuIndex[0][1] >= 0 &&
+	  genMuIndex[1][0] >= 0 && genMuIndex[1][1] >= 0 ) break;
 
     }
 
-    if( genMuIndex[0][0] < 0 || 
-	genMuIndex[0][1] < 0 ) continue;
+    if( genMuIndex[0][0] < 0 || genMuIndex[0][1] < 0 ) continue;
 
-    TLorentzVector genMuon[2][2];
+    
+    TLorentzVector genMuon[2][2] = {{TLorentzVector(0,0,0,0),TLorentzVector(0,0,0,0)},
+				    {TLorentzVector(0,0,0,0),TLorentzVector(0,0,0,0)}};
 
     for(Int_t i = 0; i < 2; i++){
       for(Int_t j = 0; j < 2; j++){
+
+	if( genMuIndex[i][j] < 0 )
+	  genMuon[i][j] = TLorentzVector(-999,-999,-999,-999);
 
 	genMuon[i][j].SetPtEtaPhiM(genParPt[genMuIndex[i][j]], 
 				   genParEta[genMuIndex[i][j]], 
@@ -124,7 +127,7 @@ void reconstructEff13TeV(){
     TLorentzVector recoMuoni, recoMuonj;
 
     Double_t dRMin = 0.1;
-    Bool_t findPair[3] = {false, false, false}; //gg,gt,tt
+    Bool_t findPair[2][3] = {{},{false, false, false}}; //gg,gt,tt
 
     for(Int_t gm = 0; gm < 2; gm++){ // genmu for loop
 
@@ -175,13 +178,13 @@ void reconstructEff13TeV(){
 	  Bool_t muMatching = ((dR_reco0gen0 < dRMin && dR_reco1gen1 < dRMin) || (dR_reco0gen1 < dRMin && dR_reco1gen0 < dRMin));
 
 	  if( glbglb && muMatching ) 
-	    findPair[0] = true;
+	    findPair[gm][0] = true;
 
 	  if( atleastglb && muMatching )	   
-	    findPair[1] = true;
+	    findPair[gm][1] = true;
 
 	  if( trktrk && muMatching )
-	    findPair[2] = true;
+	    findPair[gm][2] = true;
 	
 
 	} // end of j for loop
@@ -189,19 +192,21 @@ void reconstructEff13TeV(){
       } // end of i for loop
 
     } // end of genmu loop
-
+    
 
     // Fill histogram with 3 cases
 
-    for(Int_t i = 0; i < 2; i++){
+    for(Int_t gm = 0; gm < 2; gm++){
+      for(Int_t i = 0; i < 2; i++){
 
-      if(findPair[0]) h_DeltaR_glbglb->Fill(gendR[i]);
-      if(findPair[1]) h_DeltaR_glbtrc->Fill(gendR[i]);
-      if(findPair[2]) h_DeltaR_trctrc->Fill(gendR[i]);
+	if(findPair[gm][0]) h_DeltaR_glbglb->Fill(gendR[i]);
+	if(findPair[gm][1]) h_DeltaR_glbtrc->Fill(gendR[i]);
+	if(findPair[gm][2]) h_DeltaR_trctrc->Fill(gendR[i]);
 
+      }
     } 
 
-
+    
   } // End of event loop
 
   fprintf(stderr, "Processed all events\n");
