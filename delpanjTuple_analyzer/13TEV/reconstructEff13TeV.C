@@ -17,13 +17,11 @@
 #include <TGraphAsymmErrors.h>
 #include "../HEADER/untuplizer.h"
 
-void reconstructEff13TeV(){
+void reconstructEff13TeV(std::string inputFile, std::string outName){
 
   gStyle->SetOptStat(0);
 
-  //TreeReader data("../../tree_RSGravToZZ_kMpl01_M-4500_Tune4C_13TeV-pythia8_Phys14DR.root");
-  //TreeReader data("../../delpanj_v4_default_my.root");
-  TreeReader data("../../delpanj_v4_narrow_my.root");
+  TreeReader data(inputFile.data());
 
   TGraphAsymmErrors* h_reconstrcEff[3]; // glbglb,glbtrc,trctrc
   TH1D* h_DeltaRtemp = new TH1D("h_DeltaRtemp", "", 50, 0, 2);
@@ -185,10 +183,12 @@ void reconstructEff13TeV(){
 
   fprintf(stderr, "Processed all events\n");
 
+  TFile* outFile = new TFile(outName.data(), "recreate");
   TCanvas* c = new TCanvas("c", "", 0, 0, 1280, 720);
   c->Divide(2,2);
 
   std::string title[3]={"Two Global muons","1 Global muon + 1 Tracker muon","Two Tracker muons"};
+  std::string namee[3]={"twoGlbMu","oneGlbMuoneTrkMu","twoTrkMu"};
 
   for(Int_t he = 0; he < 3; he++){
 
@@ -204,9 +204,11 @@ void reconstructEff13TeV(){
     h_reconstrcEff[he]->SetMinimum(0);
     h_reconstrcEff[he]->SetMaximum(1.2);
     h_reconstrcEff[he]->Draw("ap");
+    h_reconstrcEff[he]->Write(namee[he].data());
 
   }
 
   c->Print("13TeVreconstructEff.png");
-  
+  outFile->Write();
+
 }
