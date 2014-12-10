@@ -21,7 +21,9 @@ void reconstructEff13TeV(){
 
   gStyle->SetOptStat(0);
 
-  TreeReader data("../../tree_RSGravToZZ_kMpl01_M-4500_Tune4C_13TeV-pythia8_Phys14DR.root");
+  //TreeReader data("../../tree_RSGravToZZ_kMpl01_M-4500_Tune4C_13TeV-pythia8_Phys14DR.root");
+  //TreeReader data("../../delpanj_v4_default_my.root");
+  TreeReader data("../../delpanj_v4_narrow_my.root");
 
   TGraphAsymmErrors* h_reconstrcEff[3]; // glbglb,glbtrc,trctrc
   TH1D* h_DeltaRtemp = new TH1D("h_DeltaRtemp", "", 50, 0, 2);
@@ -79,7 +81,7 @@ void reconstructEff13TeV(){
     TLorentzVector genMuon[2][2] = {{TLorentzVector(0,0,0,0),TLorentzVector(0,0,0,0)},
 				    {TLorentzVector(0,0,0,0),TLorentzVector(0,0,0,0)}};
 
-    for(Int_t i = 0; i < 2; i++){
+    for(Int_t i = 0; i < npair; i++){
       for(Int_t j = 0; j < 2; j++){
 
 	genMuon[i][j].SetPtEtaPhiM(genParPt[genMuIndex[i][j]], 
@@ -186,7 +188,7 @@ void reconstructEff13TeV(){
   TCanvas* c = new TCanvas("c", "", 0, 0, 1280, 720);
   c->Divide(2,2);
 
-  std::string title[3]={"Two Global muons","Inclusive 1 Global + 1 Trk","Two Tracker muons"};
+  std::string title[3]={"Two Global muons","1 Global muon + 1 Tracker muon","Two Tracker muons"};
 
   for(Int_t he = 0; he < 3; he++){
 
