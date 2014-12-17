@@ -89,7 +89,7 @@ void combineCmpAlp(){
     for(Int_t j = 0; j < 2; j++){
 
       h_alpha[i] = new TH1D(Form("h_alpha%d",i), "", nvarBins, varBins);
-      fitCurve[j] = new TF1(Form("fitCurve%d",i), fitFunc, 680, 2400, 3);
+      fitCurve[j] = new TF1(Form("fitCurve%d",j), fitFunc, 680, 2400, 3);
       h_combine[i][j] = new TH1D(Form("h_combine%d%d",i,j), "", nvarBins, varBins);
 
       c->cd(hcount);
@@ -116,7 +116,7 @@ void combineCmpAlp(){
     h_alpha[i]->SetMarkerColor(1);
     h_alpha[i]->SetMarkerStyle(8);
     h_alpha[i]->SetMarkerSize(0.8);
-    h_alpha[i]->Divide(h_combine[i][0], h_combine[i][1]);
+    h_alpha[i]->Divide(h_combine[i][1], h_combine[i][0]);
     h_alpha[i]->SetMinimum(0);
     h_alpha[i]->SetMaximum(1);
     h_alpha[i]->SetTitle("Alpha Ratio");
