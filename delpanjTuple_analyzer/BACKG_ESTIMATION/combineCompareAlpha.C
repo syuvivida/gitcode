@@ -88,9 +88,9 @@ void combineCmpAlp(){
   for(Int_t i = 0; i < 2; i++){
     for(Int_t j = 0; j < 2; j++){
 
-      h_alpha[i] = new TH1D("h_alpha", "", nvarBins, varBins);
-      fitCurve[j] = new TF1("fitCurve", fitFunc, 680, 2400, 3);
-      h_combine[i][j] = new TH1D("h_combine", "", nvarBins, varBins);
+      h_alpha[i] = new TH1D(Form("h_alpha%d",i), "", nvarBins, varBins);
+      fitCurve[j] = new TF1(Form("fitCurve%d",i), fitFunc, 680, 2400, 3);
+      h_combine[i][j] = new TH1D(Form("h_combine%d%d",i,j), "", nvarBins, varBins);
 
       c->cd(hcount);
 
