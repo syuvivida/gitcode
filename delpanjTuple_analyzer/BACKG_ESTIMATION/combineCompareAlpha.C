@@ -70,9 +70,10 @@ void combineCmpAlp(){
     }
   }
 
-  TF1* fitCurve[2]; // side-band,signal-band
+  TF1* fitCurve[2][2]; // [bkg,data][side,signal]
   TH1D* h_combine[2][2]; // [bkg,data][side,signal]
-  TH1D* h_alpha[2]; // bkg,data
+  TH1D* h_alpha = new TH1D("h_alpha", "", nvarBins, varBins); // bkg only
+  TH1D* h_numbkgData = new TH1D("h_numbkgData", "", nvarBins, varBins);
   TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 800);
 
   Int_t hcount = 1;
@@ -80,16 +81,14 @@ void combineCmpAlp(){
   std::string htitle[2][2] = {{"Bkg: Side-band Zp Mass","Bkg: Signal-band Zp Mass"},
 			      {"Data: Side-band Zp Mass","Data: Signal-band Zp Mass"}};
 
-  //gStyle->SetOptFit(1111);
-  //gStyle->SetOptStat(0);
-
   c->Divide(3,2);
+
+  gStyle->SetOptFit(1111);
 
   for(Int_t i = 0; i < 2; i++){
     for(Int_t j = 0; j < 2; j++){
 
-      h_alpha[i] = new TH1D(Form("h_alpha%d",i), "", nvarBins, varBins);
-      fitCurve[j] = new TF1(Form("fitCurve%d",j), fitFunc, 680, 2400, 3);
+      fitCurve[i][j] = new TF1(Form("fitCurve%d%d",i,j), fitFunc, 680, 2400, 3);
       h_combine[i][j] = new TH1D(Form("h_combine%d%d",i,j), "", nvarBins, varBins);
 
       c->cd(hcount);
@@ -98,55 +97,79 @@ void combineCmpAlp(){
       h_combine[i][j]->SetMarkerStyle(8);
       h_combine[i][j]->SetMarkerSize(0.7);
       h_combine[i][j]->SetMarkerColor(1);
-      h_combine[i][j]->Add(h_target[j][0], scale[0]);
-      h_combine[i][j]->Add(h_target[j][1], scale[1]);
-      h_combine[i][j]->Fit("fitCurve", "", "", 680, 2400);
       h_combine[i][j]->SetTitle(htitle[i][j].data());
       h_combine[i][j]->GetXaxis()->SetTitle("Mass");
       h_combine[i][j]->GetYaxis()->SetTitle("Event Number");
+      
+      if( i < 1 ){
+
+	h_combine[i][j]->Add(h_target[j][0], scale[0]);
+	h_combine[i][j]->Add(h_target[j][1], scale[1]);
+
+      }else if( i > 0 ){
+
+	h_combine[i][j]->Add(h_target[j][2], scale[2]);
+	fitCurve[i][j]->SetParameters(10,-0.005,400);
+
+
+      }
+
+      h_combine[i][j]->Fit(Form("fitCurve%d%d",i,j), "", "", 680, 2400);
       h_combine[i][j]->Draw();
 
       hcount++;
 
     }
 
-    c->cd(hcount);
+  }
 
-    h_alpha[i]->Sumw2();
-    h_alpha[i]->SetMarkerColor(1);
-    h_alpha[i]->SetMarkerStyle(8);
-    h_alpha[i]->SetMarkerSize(0.8);
-    h_alpha[i]->Divide(h_combine[i][1], h_combine[i][0]);
-    h_alpha[i]->SetMinimum(0);
-    h_alpha[i]->SetMaximum(1);
-    h_alpha[i]->SetTitle("Alpha Ratio");
-    h_alpha[i]->GetXaxis()->SetTitle("Zprime mass");
-    h_alpha[i]->GetYaxis()->SetTitle("Alpha Ratio");
-    h_alpha[i]->Draw();
+  gStyle->SetOptStat(0);
 
-    hcount++;
+  c->cd(hcount);
+
+  h_alpha->Sumw2();
+  h_alpha->SetMarkerColor(1);
+  h_alpha->SetMarkerStyle(8);
+  h_alpha->SetMarkerSize(0.8);
+  h_alpha->Divide(h_combine[0][1], h_combine[0][0]); // signal/side
+
+  TF1* f_alphaFit = new TF1("f_alphaFit", 
+			    "([0]*TMath::Exp([1]*x+[2]/x))/([3]*TMath::Exp([4]*x+[5]/x))", 680, 2400);
+
+  f_alphaFit->SetParameter(0, fitCurve[0][1]->GetParameter(0));
+  f_alphaFit->SetParameter(1, fitCurve[0][1]->GetParameter(1));
+  f_alphaFit->SetParameter(2, fitCurve[0][1]->GetParameter(2));
+  f_alphaFit->SetParameter(3, fitCurve[0][0]->GetParameter(0));
+  f_alphaFit->SetParameter(4, fitCurve[0][0]->GetParameter(1));
+  f_alphaFit->SetParameter(5, fitCurve[0][0]->GetParameter(2));
+  f_alphaFit->SetMinimum(0);
+  f_alphaFit->SetMaximum(1);
+  f_alphaFit->SetTitle("Alpha ratio");
+  f_alphaFit->GetXaxis()->SetTitle("Zprime mass");
+  f_alphaFit->GetYaxis()->SetTitle("Alpha Ratio");
+  f_alphaFit->Draw();
+  h_alpha->Draw("same");
+
+  c->cd(hcount+1);
+
+  // alpha*side data compare signal data
+
+  Double_t alphaRatio, sidebandData;
+
+  for(Int_t i = 1; i <= nvarBins; i++){
+
+    alphaRatio = h_alpha->GetBinContent(i);
+    sidebandData = h_combine[1][0]->GetBinContent(i);
+
+    cout << alphaRatio << endl;
+    cout << sidebandData << endl;
+    cout << alphaRatio*sidebandData << endl;
+
+    h_numbkgData->Fill(alphaRatio*sidebandData);
 
   }
 
-  /*
-    c->cd(hcount);
-
-    TF1* f_alphaFit = new TF1("f_alphaFit", "([0]*TMath::Exp([1]*x+[2]/x))/([3]*TMath::Exp([4]*x+[5]/x))", 680, 2400);
-    f_alphaFit->SetParameter(0, fitCurve[0]->GetParameter(0));
-    f_alphaFit->SetParameter(1, fitCurve[0]->GetParameter(1));
-    f_alphaFit->SetParameter(2, fitCurve[0]->GetParameter(2));
-    f_alphaFit->SetParameter(3, fitCurve[1]->GetParameter(0));
-    f_alphaFit->SetParameter(4, fitCurve[1]->GetParameter(1));
-    f_alphaFit->SetParameter(5, fitCurve[1]->GetParameter(2));
-    f_alphaFit->SetMinimum(0);
-    f_alphaFit->SetMaximum(1);
-    f_alphaFit->SetTitle("Fit Alpha ratio");
-    f_alphaFit->GetXaxis()->SetTitle("Zprime mass");
-    f_alphaFit->GetYaxis()->SetTitle("Alpha Ratio");
-    f_alphaFit->Draw();
-    //h_alpha->Draw("same");
-
-    */
+  h_numbkgData->Draw();
 
   c->Print("alphaRatio.png");
 
