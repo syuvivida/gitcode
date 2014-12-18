@@ -28,14 +28,14 @@ const Double_t crossSection_dy70 = 63.5*1000;
 const Double_t crossSection_dy100 = 39.4*1000;
 const Double_t dataLumi_totalDMu = 19671.225;
 // formula: scale = data_luminosity / bkg_luminosity
-Double_t scale_dy70 = dataLumi_totalDMu / (totalNEvent_dy70 / crossSection_dy70);
-Double_t scale_dy100 = dataLumi_totalDMu / (totalNEvent_dy100 / crossSection_dy100);
+const Double_t scale_dy70 = dataLumi_totalDMu / (totalNEvent_dy70 / crossSection_dy70);
+const Double_t scale_dy100 = dataLumi_totalDMu / (totalNEvent_dy100 / crossSection_dy100);
 Double_t fitFunc(Double_t*, Double_t*);
 
 
-void combineCmpAlp(){
+void combineCmpAlpMu(){
 
-  TFile *f = TFile::Open("backgEstimate.root");
+  TFile *f = TFile::Open("sideSigZpMMu.root");
 
   TH1D* h_dy70side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-70To100.root"));
   TH1D* h_dy70sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-70To100.root"));
@@ -123,8 +123,6 @@ void combineCmpAlp(){
 
   }
 
-  gStyle->SetOptStat(0);
-
   c->cd(hcount);
 
   h_alpha->Sumw2();
@@ -152,26 +150,35 @@ void combineCmpAlp(){
 
   c->cd(hcount+1);
 
-  // alpha*side data compare signal data
-
-  Double_t alphaRatio, sidebandData;
+  Double_t alphaRatio, sidebandData, numbkgData;
+  Double_t alphaRatioError, sidebandDataError, numbkgDataError;
 
   for(Int_t i = 1; i <= nvarBins; i++){
 
     alphaRatio = h_alpha->GetBinContent(i);
     sidebandData = h_combine[1][0]->GetBinContent(i);
+    numbkgData = alphaRatio*sidebandData;
+      
+    alphaRatioError = h_alpha->GetBinError(i);
+    sidebandDataError = h_combine[1][0]->GetBinError(i);
 
-    cout << alphaRatio << endl;
-    cout << sidebandData << endl;
-    cout << alphaRatio*sidebandData << endl;
+    if( alphaRatio == 0 || sidebandData == 0 ) continue;
+    numbkgDataError = numbkgData*TMath::Sqrt(pow((alphaRatioError/alphaRatio),2)+pow((sidebandDataError/sidebandData),2));
 
-    h_numbkgData->Fill(alphaRatio*sidebandData);
+    h_numbkgData->SetBinContent(i,numbkgData);
+    h_numbkgData->SetBinError(i,numbkgDataError);
 
   }
 
+  h_numbkgData->SetMarkerColor(1);
+  h_numbkgData->SetMarkerStyle(8);
+  h_numbkgData->SetMarkerSize(0.8);
+  h_numbkgData->SetTitle("Number of Bkg of Data");
+  h_numbkgData->GetXaxis()->SetTitle("Zprime mass");
+  h_numbkgData->GetYaxis()->SetTitle("Number of Bkg of Data");
   h_numbkgData->Draw();
 
-  c->Print("alphaRatio.png");
+  c->Print("alphaRatioMu.jpg");
 
 }
 

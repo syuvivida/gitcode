@@ -7,7 +7,7 @@ fi
 
 ##---------------- Run the analyzer macro ----------------##
 
-DATAAA_DIR=$PWD/../../delpanjTuple_data/totalmuon
+DATAAA_DIR=$PWD/../../delpanjTuple_data/totalelectron
 BACKGR_DIR=$PWD/../../delpanjTuple_background/DY
 #BACKGR_DIR=$PWD/../../delpanjTuple_background/testBkg
 
