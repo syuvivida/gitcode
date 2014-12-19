@@ -305,7 +305,7 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
   std::string sideNameCB = "sideZpMass_constBin_" + outName.substr(11);
   std::string signNameCB = "signZpMass_constBin_" + outName.substr(11);
 
-  TFile* outFile = new TFile("sideBkgMu.root", "update");
+  TFile* outFile = new TFile("sideSigZpMMu.root", "update");
 
   h_sideZprimeMass->Write(sideName.data());
   h_signZprimeMass->Write(signName.data());

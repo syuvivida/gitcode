@@ -1,13 +1,16 @@
 /*
 
-This macro does following selections:
+  v5: vector sorting version
 
-tau21<0.5 for leading jet
-jetPt>30 , fabs(Eta)<2.4
-PrunedJetMass>40 , PrunedJetPt>80 (at least one jet passes this selection)
-jetID>0 (at least one jet passes ID cut)
+  This macro does following selections:
 
-return leading jet index
+  1. b-tagging CSVL cut on subjet or CA8jet (optional, insert mode==1)
+  2. tau21<0.5 for leading jet (optional, insert mode==2)
+  3. remove overlap between jet and leptons if deltaR<1.0
+  jetPt>30 , fabs(Eta)<2.4
+  PrunedJetMass>40 , PrunedJetPt>80
+  jetID>0 
+  4. return leading jet index
 
 */
 
@@ -30,19 +33,18 @@ return leading jet index
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-Bool_t passJetID(TreeReader &data, Int_t *accepted){
+struct myMap{
+  Int_t index;
+  Float_t pt;
+};
+
+Bool_t PtGreater(myMap i, myMap j){ 
+  return (i.pt>j.pt); 
+}
+
+Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
 
   *accepted = -1;
-
-  Int_t    CA8nJet    = data.GetInt("CA8nJet");
-  Float_t* CA8jetPt   = data.GetPtrFloat("CA8jetPt");
-  Float_t* CA8jetEta  = data.GetPtrFloat("CA8jetEta");
-  Float_t* CA8jetPhi  = data.GetPtrFloat("CA8jetPhi");
-  Float_t* CA8jetM    = data.GetPtrFloat("CA8jetMass");
-  Int_t*   CA8jetID   = data.GetPtrInt("CA8jetPassID");
-  Float_t* CA8jetTau1 = data.GetPtrFloat("CA8jetTau1");
-  Float_t* CA8jetTau2 = data.GetPtrFloat("CA8jetTau2");
-  Float_t* CA8jetPrunedM  = data.GetPtrFloat("CA8jetPrunedMass");
 
   Int_t    nEle   = data.GetInt("nEle");
   Float_t* elePt  = data.GetPtrFloat("elePt");
@@ -58,91 +60,174 @@ Bool_t passJetID(TreeReader &data, Int_t *accepted){
   Float_t* muM    = data.GetPtrFloat("muM");
   Int_t*   muID   = data.GetPtrInt("muPassID");
 
-  // determine which channel                                                                                        
-  Bool_t ee = true;
-  Bool_t mm = false;
+  Int_t    CA8nJet    = data.GetInt("CA8nJet");
+  Float_t* CA8jetPt   = data.GetPtrFloat("CA8jetPt");
+  Float_t* CA8jetEta  = data.GetPtrFloat("CA8jetEta");
+  Float_t* CA8jetPhi  = data.GetPtrFloat("CA8jetPhi");
+  Float_t* CA8jetM    = data.GetPtrFloat("CA8jetMass");
+  Int_t*   CA8jetID   = data.GetPtrInt("CA8jetPassID");
+  Float_t* CA8jetTau1 = data.GetPtrFloat("CA8jetTau1");
+  Float_t* CA8jetTau2 = data.GetPtrFloat("CA8jetTau2");
+  Float_t* CA8jetPrunedM  = data.GetPtrFloat("CA8jetPrunedMass");
 
-  if(nEle > 0 && nMu == 0) ee = true;   
-  else if(nEle == 0 && nMu > 0) mm = true;
-  else if(nEle > 0 && nMu > 0 && elePt[0] > muPt[0]) ee = true; 
-  else if(nEle > 0 && nMu > 0 && elePt[0] < muPt[0]) mm = true; 
+
+  // b-tagging
+  Int_t*   nSubjet   = data.GetPtrInt("CA8nSubPrunedJet");
+  Float_t* CA8jetCSV = data.GetPtrFloat("CA8jetCSV");
+  vector<Float_t>* SubjetCSV = data.GetPtrVectorFloat("CA8subjetPrunedCSV");
+  vector<Float_t>* SubjetPt  = data.GetPtrVectorFloat("CA8subjetPrunedPt");
+  vector<Float_t>* SubjetEta = data.GetPtrVectorFloat("CA8subjetPrunedEta");
+  vector<Float_t>* SubjetPhi = data.GetPtrVectorFloat("CA8subjetPrunedPhi");
+  vector<Float_t>* SubjetM   = data.GetPtrVectorFloat("CA8subjetPrunedMass");
+
+
+  // sorting electron
+  vector<myMap> sortElePt;
+  for(Int_t i = 0; i < nEle; i++){
+
+    myMap temp;
+    temp.index = i;
+    temp.pt = elePt[i];
+    sortElePt.push_back(temp);
+
+  }
+  std::sort(sortElePt.begin(),sortElePt.end(),PtGreater);
+
+
+  // sorting muon
+  vector<myMap> sortMuPt;
+  for(Int_t i = 0; i < nMu; i++){
+
+    myMap temp;
+    temp.index = i;
+    temp.pt = muPt[i];
+    sortMuPt.push_back(temp);
+
+  }
+  std::sort(sortMuPt.begin(),sortMuPt.end(),PtGreater);
+
+
+  // determine which channel     
+  Bool_t El = false;
+  Bool_t Mu = false;
+  if(nEle > 0 && nMu == 0) El = true;
+  if(nEle == 0 && nMu > 0) Mu = true;
+  if(sortElePt.size()>0 && sortMuPt.size()>0 && elePt[sortElePt[0].index]>muPt[sortMuPt[0].index]) El = true;
+  if(sortElePt.size()>0 && sortMuPt.size()>0 && elePt[sortElePt[0].index]<muPt[sortMuPt[0].index]) Mu = true;
   
-  // remove overlape for ee channel
+
+  // sorting jet
+  vector<myMap> sortJetPt;
+  for(Int_t i = 0; i < CA8nJet; i++){
+
+    myMap temp;
+    temp.index = i;
+    temp.pt = CA8jetPt[i];
+    sortJetPt.push_back(temp);
+
+  }
+  std::sort(sortJetPt.begin(),sortJetPt.end(),PtGreater);
+  
+
+  // remove overlap
   vector<Int_t> goodJetIndex;
   goodJetIndex.clear();
 
-  for(Int_t jIndex = 0; jIndex < CA8nJet; jIndex++){
+  TLorentzVector lep(0,0,0,0);
+  TLorentzVector alljets(0,0,0,0);
+  Float_t dRjl = -999;
+
+  Int_t nSortJet = sortJetPt.size();
+  Int_t nSortEle = sortElePt.size();
+  Int_t nSortMu = sortMuPt.size();
+
+  for(Int_t k = 0; k < nSortJet; k++){
+
+    Int_t jIndex = sortJetPt[k].index;
 
     Bool_t overlap = false;
     Bool_t basicCuts = (CA8jetPt[jIndex]>30)&&(fabs(CA8jetEta[jIndex])<2.4);
     Bool_t IDcut = (CA8jetID[jIndex]>0);
-    Bool_t prunedJetCuts = CA8jetPt[jIndex]>80 && CA8jetPrunedM[jIndex]>110 && CA8jetPrunedM[jIndex]<140;
-    Bool_t tau21cut = ((CA8jetTau2[jIndex]/CA8jetTau1[jIndex])<0.5);
-    Bool_t signalBand = (CA8jetPrunedM[jIndex]>110&&CA8jetPrunedM[jIndex]<140);
+    Bool_t prunedJetCuts = (CA8jetPt[jIndex]>80)&&(CA8jetPrunedM[jIndex]>40);
+    Bool_t Tau21Cut = ((CA8jetTau2[jIndex]/CA8jetTau1[jIndex])<0.5);
 
-    if(!basicCuts) continue;
-    if(!IDcut) continue;
-    if(!prunedJetCuts) continue;
-    if(!tau21cut) continue;
-    //if(!signalBand) continue;
-
-    TLorentzVector alljets(0,0,0,0);
 
     alljets.SetPtEtaPhiM(CA8jetPt[jIndex],
                          CA8jetEta[jIndex],
 			 CA8jetPhi[jIndex],
 			 CA8jetM[jIndex]);
 
-    if(ee){
+    if(!basicCuts) continue;
+    if(!IDcut) continue;
+    if(!prunedJetCuts) continue;
+    if( (mode==0 || mode==2) && !Tau21Cut) continue;
 
-      for(Int_t i = 0; i<nEle; i++){
+    if(El == true){
 
-	if(eleID[i]>0){
+      for(Int_t i = 0; i < nSortEle; i++){
 
-	  TLorentzVector lep(0,0,0,0);
-	  lep.SetPtEtaPhiM(elePt[i],
-			   eleEta[i],
-			   elePhi[i],
-			   eleM[i]);
+	Int_t eIndex = sortElePt[i].index;
+
+	if(eleID[eIndex]>0){
+	 
+	  lep.SetPtEtaPhiM(elePt[eIndex],eleEta[eIndex],elePhi[eIndex],eleM[eIndex]);
+	  dRjl = alljets.DeltaR(lep);
 	  
-	  Float_t dRjl = alljets.DeltaR(lep);
-	  
-	  if(dRjl < 1.0 && dRjl != -999){
+	  if(dRjl<1.0 && dRjl!=-999){
 	    overlap = true;
 	    break;
-
 	  }
+
 	} // eleID
       } // loop ele
     } // ee
 
-    else if(mm){
-      
-      for(Int_t i = 0; i < nMu; i++){
+    if(Mu == true){
 
-        if(muID[i]>0){
+      for(Int_t i = 0; i < nSortMu; i++){
 
-	  TLorentzVector lep(0,0,0,0);
-          lep.SetPtEtaPhiM(muPt[i],
-                           muEta[i],
-                           muPhi[i],
-                           muM[i]);
+	Int_t muIndex = sortMuPt[i].index;
 
-	  Float_t dRjl = alljets.DeltaR(lep);
+        if(muID[muIndex]>0){
 
-          if(dRjl < 1.0 && dRjl != -999){
+          lep.SetPtEtaPhiM(muPt[muIndex],muEta[muIndex],muPhi[muIndex],muM[muIndex]);
+          dRjl = alljets.DeltaR(lep);
+
+          if(dRjl<1.0 && dRjl!=-999){
 	    overlap = true;
 	    break;
-
 	  }
+
 	} // muID                                                                       
       } // loop muon                                                                             
     } // mm                               
 
     if(overlap) continue;
-    goodJetIndex.push_back(jIndex);    
+ 
+
+    // b-tagging CSVL cut
+    TLorentzVector subjet1(0,0,0,0);
+    TLorentzVector subjet2(0,0,0,0);
+    Float_t dRjj = -999;
+    Bool_t subjetbtag = false;
+    Bool_t fatjetCSV = (CA8jetCSV[jIndex]>0.244);
+
+    if(nSubjet[jIndex] == 2){
+
+      subjet1.SetPtEtaPhiM(SubjetPt[jIndex][0],SubjetEta[jIndex][0],SubjetPhi[jIndex][0],SubjetM[jIndex][0]);
+      subjet2.SetPtEtaPhiM(SubjetPt[jIndex][1],SubjetEta[jIndex][1],SubjetPhi[jIndex][1],SubjetM[jIndex][1]);
+      dRjj = subjet1.DeltaR(subjet2);
+
+      if(SubjetCSV[jIndex][0]>0.244 && SubjetCSV[jIndex][1]>0.244) subjetbtag = true;
+
+    }
+
+    if(mode>0 && dRjj<0.3 && !fatjetCSV) continue;
+    if(mode>0 && dRjj>0.3 && subjetbtag==false) continue;
     
-  } // overlap
+    goodJetIndex.push_back(jIndex);    
+
+  } // loop jets
 
   if(goodJetIndex.size()>0){
 

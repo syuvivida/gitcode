@@ -23,12 +23,12 @@
 #include <TGraphAsymmErrors.h>
 #include "../HEADER/untuplizer.h"
 #include "../HEADER/specificLeptonPt.C"
-#include "../HEADER/passMuonID.C"
+#include "../HEADER/passElectronID.C"
 
 void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
-Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
+Bool_t passElectronID(TreeReader&, Int_t*, Int_t*);
 
-void sideSigZpMMu(std::string inputFile, std::string outName){
+void sideSigZpMEle(std::string inputFile, std::string outName){
 
   TreeReader data(inputFile.data());
 
@@ -78,20 +78,20 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
     Float_t* CA8jetTau1 = data.GetPtrFloat("CA8jetTau1");
     Float_t* CA8jetTau2 = data.GetPtrFloat("CA8jetTau2");
 
-    Int_t    nMu   = data.GetInt("nMu");
-    Int_t*   muPassID = data.GetPtrInt("muPassID");
-    Float_t* muPt  = data.GetPtrFloat("muPt");
-    Float_t* muEta = data.GetPtrFloat("muEta");
-    Float_t* muPhi = data.GetPtrFloat("muPhi");
-    Float_t* muM   = data.GetPtrFloat("muM");
-
+    Int_t    nEle   = data.GetInt("nEle");
+    Int_t*   elePassID = data.GetPtrInt("elePassID");
     Float_t* elePt  = data.GetPtrFloat("elePt");
+    Float_t* eleEta = data.GetPtrFloat("eleEta");
+    Float_t* elePhi = data.GetPtrFloat("elePhi");
+    Float_t* eleM   = data.GetPtrFloat("eleM");
+
+    Float_t* muPt  = data.GetPtrFloat("muPt");
 
 
     //-----------------------------------------------------------------------------------//
     // data trigger cut
 
-    if ( outName.find("DoubleMu") != std::string::npos ){
+    if ( outName.find("DoubleEle") != std::string::npos ){
 
       std::string* trigName = data.GetPtrString("hlt_trigName");
       Int_t* trigResult = data.GetPtrInt("hlt_trigResult");
@@ -103,14 +103,15 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
 
 	std::string thisTrig = trigName[it];
 	Int_t results = trigResult[it];
-
-	// muon channel
-	if( thisTrig.find("HLT_Mu22_TkMu8") != std::string::npos && results == 1 ){
+     
+	// electron channel
+	if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results == 1 ){
 
 	  passTrigger = true;
 	  break;
 
 	}
+
 
       }
    
@@ -120,8 +121,8 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
     
 
     //-----------------------------------------------------------------------------------//
-    // choose the primary muon
-    
+    // choose the primary electron
+
     Int_t stMuPtIndex  = -1;
     Int_t ndMuPtIndex  = -1;
     Int_t stElePtIndex = -1;
@@ -135,64 +136,64 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
   
     if( stMuPtIndex > 0 && stElePtIndex > 0 ){
     
-      if( (muPt[stMuPtIndex] - elePt[stElePtIndex]) < 1e-6 ) 
+      if( (elePt[stElePtIndex] - muPt[stElePtIndex]) < 1e-6 ) 
 	continue;
 
     }
     
     
     //-----------------------------------------------------------------------------------//
-    // sorting muon and pass the muon ID
+    // sorting electron and pass the electron ID
 
-    vector<Int_t> howManyMu;
+    vector<Int_t> howManyEle;
 
-    typedef map<Float_t, Int_t, std::greater<Float_t> > muMap;
-    muMap sortMuPt;
-    typedef muMap::iterator mapMuIter;
+    typedef map<Float_t, Int_t, std::greater<Float_t> > eleMap;
+    eleMap sortElePt;
+    typedef eleMap::iterator mapEleIter;
 
-    for(Int_t i = 0; i < nMu; i++){
+    for(Int_t i = 0; i < nEle; i++){
 
-      sortMuPt.insert(std::pair<Float_t, Int_t>(muPt[i], i));
-
-    }
-
-    for(mapMuIter it_part = sortMuPt.begin(); it_part != sortMuPt.end(); ++it_part){
-
-      Int_t sortMuIndex = it_part->second;
-
-      if( !(muPassID[sortMuIndex] & 4) ) continue;
-      if( muPt[sortMuIndex] <= 20 ) continue; 
-
-      howManyMu.push_back(sortMuIndex);
+      sortElePt.insert(std::pair<Float_t, Int_t>(elePt[i], i));
 
     }
 
-    Int_t stRecoMuIndex, ndRecoMuIndex;
+    for(mapEleIter it_part = sortElePt.begin(); it_part != sortElePt.end(); ++it_part){
 
-    if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
+      Int_t sortEleIndex = it_part->second;
+
+      if( elePassID[sortEleIndex] <= 0 ) continue;
+      if( elePt[sortEleIndex] <= 40 ) continue; 
+
+      howManyEle.push_back(sortEleIndex);
+
+    }
+
+    Int_t stRecoEleIndex, ndRecoEleIndex;
+
+    if( !passElectronID(data, &stRecoEleIndex, &ndRecoEleIndex) )
       continue;
 
 
     //-----------------------------------------------------------------------------------//   
     // reconstruct Z mass
     
-    TLorentzVector stRecoMu, ndRecoMu;  
+    TLorentzVector stRecoEle, ndRecoEle;  
  
-    stRecoMu.SetPtEtaPhiM(muPt[stRecoMuIndex], 
-			  muEta[stRecoMuIndex], 
-			  muPhi[stRecoMuIndex],
-			  muM[stRecoMuIndex]);  
+    stRecoEle.SetPtEtaPhiM(elePt[stRecoEleIndex], 
+			   eleEta[stRecoEleIndex], 
+			   elePhi[stRecoEleIndex],
+			   eleM[stRecoEleIndex]);  
   
-    ndRecoMu.SetPtEtaPhiM(muPt[ndRecoMuIndex], 
-			  muEta[ndRecoMuIndex],
-			  muPhi[ndRecoMuIndex], 
-			  muM[ndRecoMuIndex]); 
+    ndRecoEle.SetPtEtaPhiM(elePt[ndRecoEleIndex], 
+			   eleEta[ndRecoEleIndex],
+			   elePhi[ndRecoEleIndex], 
+			   eleM[ndRecoEleIndex]); 
     
-    TLorentzVector Z = stRecoMu + ndRecoMu;
+    TLorentzVector Z = stRecoEle + ndRecoEle;
     
 
     //-----------------------------------------------------------------------------------//
-    // pass boosted-jet ID, removing overlap muons
+    // pass boosted-jet ID, removing overlap electrons
 
     typedef map<double, int, std::greater<double> > jetMap;
     jetMap sortJetPt;
@@ -205,7 +206,7 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
     }
 
     vector<Int_t> maxJetIndex;
-    TLorentzVector boostedJet, basicMuon;
+    TLorentzVector boostedJet, basicElectron;
 
     for(mapJetIter it_part = sortJetPt.begin(); it_part != sortJetPt.end(); ++it_part){
 
@@ -225,20 +226,20 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
 
 	Bool_t isolatedStats = true; 
 	
-	for(size_t j = 0; j < howManyMu.size(); j++){
+	for(size_t j = 0; j < howManyEle.size(); j++){
 
-	  basicMuon.SetPtEtaPhiM(muPt[howManyMu[j]], 
-				 muEta[howManyMu[j]], 
-				 muPhi[howManyMu[j]],
-				 muM[howManyMu[j]]);
+	  basicElectron.SetPtEtaPhiM(elePt[howManyEle[j]], 
+				     eleEta[howManyEle[j]], 
+				     elePhi[howManyEle[j]],
+				     eleM[howManyEle[j]]);
 
-	  if( basicMuon.DeltaR(boostedJet) < 0.5 ){
+	  if( basicElectron.DeltaR(boostedJet) < 0.5 ){
 	    isolatedStats = false;
 	    break;
 
 	  }
 
-	} // end of howManyMu for loop
+	} // end of howManyEle for loop
 	
 	if( isolatedStats ) 
 	  maxJetIndex.push_back(sortJetIndex);
@@ -305,7 +306,7 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
   std::string sideNameCB = "sideZpMass_constBin_" + outName.substr(11);
   std::string signNameCB = "signZpMass_constBin_" + outName.substr(11);
 
-  TFile* outFile = new TFile("sideBkgMu.root", "update");
+  TFile* outFile = new TFile("sideSigZpMEle.root", "update");
 
   h_sideZprimeMass->Write(sideName.data());
   h_signZprimeMass->Write(signName.data());
