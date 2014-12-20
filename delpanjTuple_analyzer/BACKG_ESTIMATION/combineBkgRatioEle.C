@@ -44,6 +44,8 @@ const Double_t scale_wwptia = dataLumi_totalDEle / (totalNEvent_wwptia / crossSe
 const Double_t scale_wzptia = dataLumi_totalDEle / (totalNEvent_wzptia / crossSection_wzptia);
 const Double_t scale_zzptia = dataLumi_totalDEle / (totalNEvent_zzptia / crossSection_zzptia);
 
+Double_t fitFunc(Double_t*, Double_t*);
+
 void combineBkgRatioEle(){
 
   TFile *f = TFile::Open("sideBkgEle.root");
@@ -118,6 +120,10 @@ void combineBkgRatioEle(){
 
   c->cd(3);
 
+  gStyle->SetOptFit(1111);
+
+  TF1* f_ratioFit = new TF1("f_ratioFit", fitFunc, 680, 2400, 2);
+
   h_bkgRatio->Sumw2();
   h_bkgRatio->SetMarkerColor(1);
   h_bkgRatio->SetMarkerStyle(8);
@@ -125,16 +131,24 @@ void combineBkgRatioEle(){
   h_bkgRatio->GetXaxis()->SetTitle("Mass");
   h_bkgRatio->GetYaxis()->SetTitle("Ratio");
   h_bkgRatio->Divide(h_dybkg, h_allbkg);
+  h_bkgRatio->Fit("f_ratioFit", "", "", 680, 2400);
   h_bkgRatio->SetMinimum(0);
   h_bkgRatio->SetMaximum(2);
   h_bkgRatio->Draw();
 
   TLine* line = new TLine(680,1,2400,1);
   line->SetLineWidth(2);
-  line->SetLineColor(kRed);
+  line->SetLineColor(kBlue);
   line->Draw("same");
   h_bkgRatio->Draw("same");
 	       
   c->Print("bkgRatioEle.gif");
 
+}
+
+Double_t fitFunc(Double_t* v, Double_t* par){
+  
+  Double_t x = v[0];
+  return par[0]*x + par[1];
+  
 }
