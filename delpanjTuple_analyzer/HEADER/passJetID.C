@@ -33,16 +33,16 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-struct myMap{
+struct gMap{
   Int_t index;
   Float_t pt;
 };
 
-Bool_t PtGreater(myMap i, myMap j){ 
+Bool_t gPtGreater(gMap i, gMap j){ 
   return (i.pt>j.pt); 
 }
 
-Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
+Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
 
   *accepted = -1;
 
@@ -82,29 +82,29 @@ Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
 
 
   // sorting electron
-  vector<myMap> sortElePt;
+  vector<gMap> sortElePt;
   for(Int_t i = 0; i < nEle; i++){
 
-    myMap temp;
+    gMap temp;
     temp.index = i;
     temp.pt = elePt[i];
     sortElePt.push_back(temp);
 
   }
-  std::sort(sortElePt.begin(),sortElePt.end(),PtGreater);
+  std::sort(sortElePt.begin(),sortElePt.end(),gPtGreater);
 
 
   // sorting muon
-  vector<myMap> sortMuPt;
+  vector<gMap> sortMuPt;
   for(Int_t i = 0; i < nMu; i++){
 
-    myMap temp;
+    gMap temp;
     temp.index = i;
     temp.pt = muPt[i];
     sortMuPt.push_back(temp);
 
   }
-  std::sort(sortMuPt.begin(),sortMuPt.end(),PtGreater);
+  std::sort(sortMuPt.begin(),sortMuPt.end(),gPtGreater);
 
 
   // determine which channel     
@@ -117,16 +117,16 @@ Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
   
 
   // sorting jet
-  vector<myMap> sortJetPt;
+  vector<gMap> sortJetPt;
   for(Int_t i = 0; i < CA8nJet; i++){
 
-    myMap temp;
+    gMap temp;
     temp.index = i;
     temp.pt = CA8jetPt[i];
     sortJetPt.push_back(temp);
 
   }
-  std::sort(sortJetPt.begin(),sortJetPt.end(),PtGreater);
+  std::sort(sortJetPt.begin(),sortJetPt.end(),gPtGreater);
   
 
   // remove overlap
@@ -160,7 +160,7 @@ Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
     if(!basicCuts) continue;
     if(!IDcut) continue;
     if(!prunedJetCuts) continue;
-    if( (mode==0 || mode==2) && !Tau21Cut) continue;
+    if( mode==2 && !Tau21Cut) continue;
 
     if(El == true){
 
@@ -181,7 +181,7 @@ Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
 	} // eleID
       } // loop ele
     } // ee
-
+    
     if(Mu == true){
 
       for(Int_t i = 0; i < nSortMu; i++){
@@ -201,7 +201,7 @@ Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
 	} // muID                                                                       
       } // loop muon                                                                             
     } // mm                               
-
+    
     if(overlap) continue;
  
 
@@ -222,8 +222,8 @@ Bool_t passJetID(Int_t &mode, TreeReader &data, Int_t *accepted){
 
     }
 
-    if(mode>0 && dRjj<0.3 && !fatjetCSV) continue;
-    if(mode>0 && dRjj>0.3 && subjetbtag==false) continue;
+    if(mode==1 && dRjj<0.3 && !fatjetCSV) continue;
+    if(mode==1 && dRjj>0.3 && subjetbtag==false) continue;
     
     goodJetIndex.push_back(jIndex);    
 

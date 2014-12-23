@@ -17,6 +17,15 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
+struct muMap{
+  Int_t index;
+  Float_t pt;
+};
+
+Bool_t muPtGreater(muMap i, muMap j){ 
+  return (i.pt>j.pt); 
+}
+
 Bool_t passMuonID(TreeReader &data, 
 		  Int_t *stRecoMuIndex, Int_t *ndRecoMuIndex){
 
@@ -26,51 +35,54 @@ Bool_t passMuonID(TreeReader &data,
   Float_t* muPt  = data.GetPtrFloat("muPt");
   Float_t* muCorrTrkIso = data.GetPtrFloat("muCorrTrkIso");
 
-  // sorting muon and pass the muon ID
-
   vector<Int_t> howManyMu;
   vector<Int_t> basicMuIndex;
   vector<Int_t> onlyGlobalIndex;
   vector<Int_t> onlyTightPtIdex;
   vector<Int_t> globalTightPtIndex;
 
-  typedef map<Float_t, Int_t, std::greater<Float_t> > muMap;
-  muMap sortMuPt;
-  typedef muMap::iterator mapMuIter;
+  // sorting muon and pass the muon ID
 
+  vector<muMap> sortMuPt;
   for(Int_t i = 0; i < nMu; i++){
 
-    sortMuPt.insert(std::pair<Float_t, Int_t>(muPt[i], i));
+    muMap temp;
+    temp.index = i;
+    temp.pt = muPt[i];
+    sortMuPt.push_back(temp);
 
   }
+  std::sort(sortMuPt.begin(),sortMuPt.end(),muPtGreater);
 
-  for(mapMuIter it_part = sortMuPt.begin(); it_part != sortMuPt.end(); ++it_part){
+  Int_t nSortMu = sortMuPt.size();
+
+  for(Int_t i = 0; i < nSortMu; i++){
 
     // at least two muons
     // must be tracker mu, at least one is global mu
     // pt must greater than 20, one must greater than 40
 
-    Int_t sortMuIndex = it_part->second;
+    Int_t muIndex = sortMuPt[i].index;
 
-    if( !(muPassID[sortMuIndex] & 4) ) continue;
-    if( muPt[sortMuIndex] <= 20 ) continue; 
-    if( (muCorrTrkIso[sortMuIndex] / muPt[sortMuIndex]) >= 0.1 ) continue;
+    if( !(muPassID[muIndex] & 4) ) continue;
+    if( muPt[muIndex] <= 20 ) continue; 
+    if( (muCorrTrkIso[muIndex] / muPt[muIndex]) >= 0.1 ) continue;
 
-    howManyMu.push_back(sortMuIndex);
+    howManyMu.push_back(muIndex);
 
-    if( !(muPassID[sortMuIndex] & 2) && muPt[sortMuIndex] < 40 )
-      basicMuIndex.push_back(sortMuIndex);
+    if( !(muPassID[muIndex] & 2) && muPt[muIndex] < 40 )
+      basicMuIndex.push_back(muIndex);
 
-    if( (muPassID[sortMuIndex] & 2) && muPt[sortMuIndex] < 40 )
-      onlyGlobalIndex.push_back(sortMuIndex);
+    if( (muPassID[muIndex] & 2) && muPt[muIndex] < 40 )
+      onlyGlobalIndex.push_back(muIndex);
 
-    if( !(muPassID[sortMuIndex] & 2) && muPt[sortMuIndex] > 40 )
-      onlyTightPtIdex.push_back(sortMuIndex);
+    if( !(muPassID[muIndex] & 2) && muPt[muIndex] > 40 )
+      onlyTightPtIdex.push_back(muIndex);
 
-    if( (muPassID[sortMuIndex] & 2) && muPt[sortMuIndex] > 40 )
-      globalTightPtIndex.push_back(sortMuIndex);
+    if( (muPassID[muIndex] & 2) && muPt[muIndex] > 40 )
+      globalTightPtIndex.push_back(muIndex);
 
-  }
+  } // end of for loop
 
   if( howManyMu.size() < 2 ) return false;
 
@@ -84,9 +96,6 @@ Bool_t passMuonID(TreeReader &data,
   if( globalTightPtIndex.size() < 1 && 
       onlyTightPtIdex.size() < 1 ) return false;
     
-
-  //-----------------------------------------------------------------------------------//
-
 
   // filling index 
 

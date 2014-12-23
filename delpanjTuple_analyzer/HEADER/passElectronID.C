@@ -17,6 +17,15 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
+struct eleMap{
+  Int_t index;
+  Float_t pt;
+};
+
+Bool_t elePtGreater(eleMap i, eleMap j){ 
+  return (i.pt>j.pt); 
+}
+
 Bool_t passElectronID(TreeReader &data, 
 		      Int_t *stRecoEleIndex, Int_t *ndRecoEleIndex){
 
@@ -24,69 +33,69 @@ Bool_t passElectronID(TreeReader &data,
   Int_t    nEle   = data.GetInt("nEle"); 
   Int_t*   elePassID = data.GetPtrInt("elePassID");
   Float_t  eleRho = data.GetFloat("eleRho");
-  Float_t* eleEt  = data.GetPtrFloat("eleEt");
+  Float_t* elePt  = data.GetPtrFloat("eleEt");
   Float_t* eleScEta = data.GetPtrFloat("eleScEta");
   Float_t* eleUserTrkIso = data.GetPtrFloat("eleUserTrkIso");
   Float_t* eleUserCalIso = data.GetPtrFloat("eleUserCalIso");
 
-  // sorting electron and pass the electron ID
-
   vector<Int_t> tightEleIndex;
 
-  typedef map<Float_t, Int_t, std::greater<Float_t> > eleMap;
-  eleMap sortEleEt;
-  typedef eleMap::iterator mapEleIter;
+  // sorting electron and pass the electron ID
 
+  vector<eleMap> sortElePt;
   for(Int_t i = 0; i < nEle; i++){
 
-    sortEleEt.insert(std::pair<Float_t, Int_t>(eleEt[i], i));
+    eleMap temp;
+    temp.index = i;
+    temp.pt = elePt[i];
+    sortElePt.push_back(temp);
 
   }
+  std::sort(sortElePt.begin(),sortElePt.end(),elePtGreater);
 
-  for(mapEleIter it_part = sortEleEt.begin(); it_part != sortEleEt.end(); ++it_part){
+  Int_t nSortEle = sortElePt.size();
+
+  for(Int_t i = 0; i < nSortEle; i++){
 
     // at least two electrons
     // pt of these electrons must greater than 40
 
-    Int_t sortEleIndex = it_part->second;
+    Int_t eleIndex = sortElePt[i].index;
 
-    Double_t isoCutValue = 2+(0.03*eleEt[sortEleIndex]);
+    Double_t isoCutValue = 2+(0.03*elePt[eleIndex]);
 
-    if( elePassID[sortEleIndex] <= 0 ) continue;
-    if( eleEt[sortEleIndex] <= 40 ) continue;
-    if( eleUserTrkIso[sortEleIndex] >= 5 ) continue;
+    if( elePassID[eleIndex] <= 0 ) continue;
+    if( elePt[eleIndex] <= 40 ) continue;
+    if( eleUserTrkIso[eleIndex] >= 5 ) continue;
     
     // barrel selection
-    if( fabs(eleScEta[sortEleIndex]) > 0 && fabs(eleScEta[sortEleIndex]) < 1.4442 ){
+    if( fabs(eleScEta[eleIndex]) > 0 && fabs(eleScEta[eleIndex]) < 1.4442 ){
 
-      if( (eleUserCalIso[sortEleIndex]-(0.06205*eleRho)) >= isoCutValue ) 
+      if( (eleUserCalIso[eleIndex]-(0.06205*eleRho)) >= isoCutValue ) 
 	continue;
 
     }
 
     // endcap selection
-    if( fabs(eleScEta[sortEleIndex]) > 1.566 && fabs(eleScEta[sortEleIndex]) < 2.5 ){
+    if( fabs(eleScEta[eleIndex]) > 1.566 && fabs(eleScEta[eleIndex]) < 2.5 ){
 
-      if( eleEt[sortEleIndex] < 50 ){
-	if( (eleUserCalIso[sortEleIndex]-(0.06205*eleRho)) >= 2.5 ) 
+      if( elePt[eleIndex] < 50 ){
+	if( (eleUserCalIso[eleIndex]-(0.06205*eleRho)) >= 2.5 ) 
 	  continue;
       }
 
-      if( eleEt[sortEleIndex] > 50 ){
-	if( (eleUserCalIso[sortEleIndex]-(0.06205*eleRho)) >= (isoCutValue+0.5) ) 
+      if( elePt[eleIndex] > 50 ){
+	if( (eleUserCalIso[eleIndex]-(0.06205*eleRho)) >= (isoCutValue+0.5) ) 
 	  continue;
       }
     
     }
     
-    tightEleIndex.push_back(sortEleIndex);
+    tightEleIndex.push_back(eleIndex);
 
   }
 
   if( tightEleIndex.size() < 2 ) return false;
-    
-
-  //-----------------------------------------------------------------------------------//
 
 
   // filling index 

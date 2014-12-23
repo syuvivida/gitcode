@@ -7,15 +7,18 @@ fi
 
 ##---------------- Run the analyzer macro ----------------##
 
-DATAAA_DIR=$PWD/../../delpanjTuple_background/DY
-BACKGR_DIR=$PWD/../../delpanjTuple_background/minorBkg
+DATAAA_DIR=$PWD/../../../delpanjTuple_data/totalelectron
+BACKGR_DIR=$PWD/../../../delpanjTuple_background/DY
 
+rm -i *root
 
 ls -l $BACKGR_DIR | tail -n+2 | awk '{ print "echo -e \"\n\nProcessing root file --> "$9"\"; root -q -b -l '"$1"'.C++\\(\\\"'"$BACKGR_DIR"'/"$9"\\\",\\\""$9"\\\"\\); echo -e \"\nDone!\n\""}' | bash
 
 ls -l $DATAAA_DIR | tail -n+2 | awk '{ print "echo -e \"\n\nProcessing root file --> "$9"\"; root -q -b -l '"$1"'.C++\\(\\\"'"$DATAAA_DIR"'/"$9"\\\",\\\""$9"\\\"\\); echo -e \"\nDone!\n\""}' | bash
 
-rm -f *.d *.so
+root -q -b -l compareAlpEle.C++\(\)
+
+rm -f *d *so
 echo -e "All jobs done!\n"
 
 exit

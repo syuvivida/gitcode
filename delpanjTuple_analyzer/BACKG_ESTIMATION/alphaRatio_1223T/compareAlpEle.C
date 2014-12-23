@@ -24,16 +24,15 @@
 
 const Int_t totalNEvent_dy70 = 11764538;
 const Int_t totalNEvent_dy100 = 12511326;
-const Double_t crossSection_dy70 = 63.5*1000;
-const Double_t crossSection_dy100 = 39.4*1000;
+const Double_t crossSection_dy70 = 63.5;
+const Double_t crossSection_dy100 = 39.4;
 const Double_t dataLumi_totalDEle = 19712.225;
 // formula: scale = data_luminosity / bkg_luminosity
 const Double_t scale_dy70 = dataLumi_totalDEle / (totalNEvent_dy70 / crossSection_dy70);
 const Double_t scale_dy100 = dataLumi_totalDEle / (totalNEvent_dy100 / crossSection_dy100);
 Double_t fitFunc(Double_t*, Double_t*);
 
-
-void combineCmpAlpEle(){
+void compareAlpEle(){
 
   TFile *f = TFile::Open("sideSigZpMEle.root");
 
@@ -109,12 +108,12 @@ void combineCmpAlpEle(){
       }else if( i > 0 ){
 
 	h_combine[i][j]->Add(h_target[j][2], scale[2]);
-	fitCurve[i][j]->SetParameters(10,-0.005,400);
-
 
       }
-
+      
+      fitCurve[i][j]->SetParameters(10,-0.005,400);
       h_combine[i][j]->Fit(Form("fitCurve%d%d",i,j), "", "", 680, 2400);
+      h_combine[i][j]->SetMinimum(0);
       h_combine[i][j]->Draw();
 
       hcount++;
@@ -176,9 +175,11 @@ void combineCmpAlpEle(){
   h_numbkgData->SetTitle("Number of Bkg of Data");
   h_numbkgData->GetXaxis()->SetTitle("Zprime mass");
   h_numbkgData->GetYaxis()->SetTitle("Number of Bkg of Data");
+  h_numbkgData->SetMinimum(0);
   h_numbkgData->Draw();
 
-  c->Print("alphaRatioEle.jpg");
+  c->Print("alphaRatioEle.gif");
+  c->Print("alphaRatioEle.pdf");
 
 }
 

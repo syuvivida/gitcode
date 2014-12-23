@@ -29,12 +29,12 @@ const Int_t totalNEvent_ttbar = 10783509;
 const Int_t totalNEvent_wwptia = 9959752;
 const Int_t totalNEvent_wzptia = 9910267;
 const Int_t totalNEvent_zzptia = 9769891;
-const Double_t crossSection_dy70 = 63.5*1000;
-const Double_t crossSection_dy100 = 39.4*1000;
-const Double_t crossSection_ttbar = 25.8*1000;
-const Double_t crossSection_wwptia = 56.0*1000;
-const Double_t crossSection_wzptia = 22.4*1000;
-const Double_t crossSection_zzptia = 7.6*1000;
+const Double_t crossSection_dy70 = 63.5;
+const Double_t crossSection_dy100 = 39.4;
+const Double_t crossSection_ttbar = 25.8;
+const Double_t crossSection_wwptia = 56.0;
+const Double_t crossSection_wzptia = 22.4;
+const Double_t crossSection_zzptia = 7.6;
 const Double_t dataLumi_totalDEle = 19712.225;
 // formula: scale = data_luminosity / bkg_luminosity
 const Double_t scale_dy70 = dataLumi_totalDEle / (totalNEvent_dy70 / crossSection_dy70);
@@ -46,9 +46,9 @@ const Double_t scale_zzptia = dataLumi_totalDEle / (totalNEvent_zzptia / crossSe
 
 Double_t fitFunc(Double_t*, Double_t*);
 
-void combineBkgRatioEle(){
+void compareBkgEle(){
 
-  TFile *f = TFile::Open("sideBkgEle.root");
+  TFile *f = TFile::Open("sideSigZpMEle.root");
 
   TH1D* h_dy70side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-70To100.root"));
   TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
@@ -86,8 +86,6 @@ void combineBkgRatioEle(){
 
   c->Divide(2,2);
 
-  gStyle->SetOptStat(0);
-
   c->cd(1);
 
   h_dybkg->Sumw2();
@@ -101,6 +99,7 @@ void combineBkgRatioEle(){
     h_dybkg->Add(h_target[i], scale[i]);
   }
 
+  h_dybkg->SetMinimum(0);
   h_dybkg->Draw();
 
   c->cd(2);
@@ -116,6 +115,7 @@ void combineBkgRatioEle(){
     h_allbkg->Add(h_target[i], scale[i]);
   }
 
+  h_allbkg->SetMinimum(0);
   h_allbkg->Draw();
 
   c->cd(3);
@@ -143,6 +143,7 @@ void combineBkgRatioEle(){
   h_bkgRatio->Draw("same");
 	       
   c->Print("bkgRatioEle.gif");
+  c->Print("bkgRatioEle.pdf");
 
 }
 
