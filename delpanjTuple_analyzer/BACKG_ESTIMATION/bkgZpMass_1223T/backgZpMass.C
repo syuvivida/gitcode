@@ -1,40 +1,31 @@
-#include <map>
 #include <vector>
 #include <string>
 #include <iostream>
-#include <algorithm>
-#include <TF1.h>
 #include <TH1D.h>
-#include <TH1F.h>
 #include <TMath.h>
 #include <TFile.h>
 #include <TList.h>
 #include <TStyle.h>
 #include <TChain.h>
-#include <TLegend.h>
-#include <TCanvas.h>
 #include <TSystem.h>
 #include <TBranch.h>
 #include <TRandom.h>
-#include <TProfile.h>
-#include <TPaveText.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include <TGraphAsymmErrors.h>
-#include "../HEADER/untuplizer.h"
-#include "../HEADER/passMuonID.C"
-#include "../HEADER/passElectronID.C"
-#include "../HEADER/passJetID.C"
+#include "../../HEADER/untuplizer.h"
+#include "../../HEADER/passMuonID.C"
+#include "../../HEADER/passElectronID.C"
+#include "../../HEADER/passJetID.C"
 
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
 Bool_t passElectronID(TreeReader&, Int_t*, Int_t*);
-Bool_t passJetID(TreeReader&, Int_t*);
+Bool_t passJetID(TreeReader&, Int_t&, Int_t*);
 
 void backgZpMass(std::string inputFile, std::string outName){
 
   TreeReader data(inputFile.data());
 
-  TH1D* h_ZprimeMass = new TH1D("h_ZprimeMass", "Signal region Zprime Mass", 66, 680, 2000);
+  TH1D* h_ZprimeMass = new TH1D("h_ZprimeMass", "Signal region Zprime Mass", 100, 0, 2000);
   h_ZprimeMass->GetXaxis()->SetTitle("Zprime mass");
   h_ZprimeMass->GetYaxis()->SetTitle("Event number");
 
@@ -64,7 +55,6 @@ void backgZpMass(std::string inputFile, std::string outName){
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
     data.GetEntry(ev);
 
-
     Int_t    CA8nJet    = data.GetInt("CA8nJet"); 
     Int_t*   CA8jetPassID = data.GetPtrInt("CA8jetPassID");
     Float_t* CA8jetPt   = data.GetPtrFloat("CA8jetPt");
@@ -89,10 +79,7 @@ void backgZpMass(std::string inputFile, std::string outName){
     Float_t* elePhi = data.GetPtrFloat("elePhi");
     Float_t* eleM   = data.GetPtrFloat("eleM");
     
-
-    //-----------------------------------------------------------------------------------//
     // choose the primary lepton
-
     Int_t stMuPtIndex, ndMuPtIndex;
     Int_t stElePtIndex, ndElePtIndex;
 
@@ -120,12 +107,8 @@ void backgZpMass(std::string inputFile, std::string outName){
 
 
     TLorentzVector stRecoLepton(0,0,0,0), ndRecoLepton(0,0,0,0), Z(0,0,0,0); 
-    
-
-    //-----------------------------------------------------------------------------------// 
+     
     // muon event, passMuonID, reconstruct Z, recnstruct Zp in signal region
-
-
     if( muonEvent ){
 
       Int_t stRecoMuIndex, ndRecoMuIndex;
@@ -146,11 +129,7 @@ void backgZpMass(std::string inputFile, std::string outName){
 
     } // end of muon event
 
-
-    //-----------------------------------------------------------------------------------// 
     // electron event, passElectronID, reconstruct Z, recnstruct Zp in signal region
-
-
     else if( electronEvent ){
 
       Int_t stRecoEleIndex, ndRecoEleIndex;
@@ -175,17 +154,11 @@ void backgZpMass(std::string inputFile, std::string outName){
     if( Z.M() <= 70 ) continue;
     if( Z.M() >= 110 ) continue;
     if( Z.Pt() <= 80 ) continue;
-
-
-    //-----------------------------------------------------------------------------------// 
-    // passJetID, reconstruct boosted-jet, Z and boosted-jet cut
-
-
+ 
+    // passJetID, reconstruct Higgs
+    Int_t mode = 2;
     Int_t jetIndex;
-
-    // this passJetID cuts tau21 and also select signal region(cut prunedmass) already
-    if( !passJetID(data, &jetIndex) ) continue;
-
+    if( !passJetID(data, mode, &jetIndex) ) continue;
 
     TLorentzVector Higgs(0,0,0,0);
 
@@ -197,16 +170,19 @@ void backgZpMass(std::string inputFile, std::string outName){
     if( Higgs.E() <= 0 ) continue;
     if( Higgs.Pt() <= 80 ) continue;
 
-    TLorentzVector Zprime = Z + Higgs;
-    h_ZprimeMass->Fill(Zprime.M());
+    // signal region
+    if( CA8jetPrunedMass[jetIndex] > 110 && CA8jetPrunedMass[jetIndex] < 140 ){
 
-    h_ZPt->Fill(Z.Pt());
-    h_ZEta->Fill(Z.Eta());
-    h_HiggsPt->Fill(Higgs.Pt());
-    h_HiggsEta->Fill(Higgs.Eta());
+      TLorentzVector Zprime = Z + Higgs;
+      h_ZprimeMass->Fill(Zprime.M());
+      h_ZPt->Fill(Z.Pt());
+      h_ZEta->Fill(Z.Eta());
+      h_HiggsPt->Fill(Higgs.Pt());
+      h_HiggsEta->Fill(Higgs.Eta());
 
-    count++;
+      count++;
 
+    }
     
   } // end of event loop
 

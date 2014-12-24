@@ -1,32 +1,23 @@
-#include <map>
 #include <vector>
 #include <string>
 #include <iostream>
-#include <algorithm>
-#include <TF1.h>
 #include <TH1D.h>
-#include <TH1F.h>
 #include <TMath.h>
 #include <TFile.h>
 #include <TList.h>
 #include <TStyle.h>
 #include <TChain.h>
-#include <TLegend.h>
-#include <TCanvas.h>
 #include <TSystem.h>
 #include <TBranch.h>
 #include <TRandom.h>
-#include <TProfile.h>
-#include <TPaveText.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include <TGraphAsymmErrors.h>
-#include "../HEADER/untuplizer.h"
-#include "../HEADER/specificLeptonPt.C"
-#include "../HEADER/passMuonID.C"
+#include "../../HEADER/untuplizer.h"
+#include "../../HEADER/passMuonID.C"
+#include "../../HEADER/passElectronID.C"
 
-void specificLeptonPt(TreeReader&, Int_t*, Int_t*, Int_t*, Int_t*);
 Bool_t passMuonID(TreeReader&, Int_t*, Int_t*);
+Bool_t passElectronID(TreeReader&, Int_t*, Int_t*);
 
 void dileptonMassMu(std::string inputFile, std::string outName){
 
@@ -37,13 +28,11 @@ void dileptonMassMu(std::string inputFile, std::string outName){
   h_ZMass->GetYaxis()->SetTitle("Event number");
  
   // begin of event loop
-
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
     if ( ev % 100000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
     data.GetEntry(ev);
-
 
     Int_t    nMu   = data.GetInt("nMu");
     Int_t*   muPassID = data.GetPtrInt("muPassID");
@@ -51,13 +40,10 @@ void dileptonMassMu(std::string inputFile, std::string outName){
     Float_t* muEta = data.GetPtrFloat("muEta");
     Float_t* muPhi = data.GetPtrFloat("muPhi");
     Float_t* muM   = data.GetPtrFloat("muM");
-
+    Int_t    nEle  = data.GetInt("nEle");
     Float_t* elePt  = data.GetPtrFloat("elePt");
-
-
-    //-----------------------------------------------------------------------------------//
+    
     // data trigger cut
-
     if ( outName.find("DoubleMu") != std::string::npos ){
 
       std::string* trigName = data.GetPtrString("hlt_trigName");
@@ -84,66 +70,40 @@ void dileptonMassMu(std::string inputFile, std::string outName){
       if( !passTrigger ) continue;
 
     }
-    
+   
+    // choose muon event and pass muon ID
+    Int_t stMuPtIndex, ndMuPtIndex;
+    Int_t stElePtIndex, ndElePtIndex;
 
-    //-----------------------------------------------------------------------------------//
-    // choose the primary muon
-    
-    Int_t stMuPtIndex  = -1;
-    Int_t ndMuPtIndex  = -1;
-    Int_t stElePtIndex = -1;
-    Int_t ndElePtIndex = -1;
+    passMuonID(data, &stMuPtIndex, &ndMuPtIndex);
+    passElectronID(data, &stElePtIndex, &ndElePtIndex);
 
-    specificLeptonPt(data, &stMuPtIndex, &ndMuPtIndex, 
-		     &stElePtIndex, &ndElePtIndex);
-
-    if( (stMuPtIndex  < 0 || ndMuPtIndex  < 0 ) && 
-	(stElePtIndex < 0 || ndElePtIndex < 0 )  ) continue; 
-  
-    if( stMuPtIndex > 0 && stElePtIndex > 0 ){
+    Bool_t muonEvent = false;
     
-      if( (muPt[stMuPtIndex] - elePt[stElePtIndex]) < 1e-6 ) 
-	continue;
+    if( nMu > 0 && nEle > 0 ){
+
+      if( muPt[stMuPtIndex] > elePt[stElePtIndex] ) 
+	muonEvent = true;
+
+      else if( elePt[stElePtIndex] > muPt[stMuPtIndex] )
+	muonEvent = false;
 
     }
     
+    else if( nEle == 0 && nMu > 0 ) 
+      muonEvent = true;
+
+    else if( nMu == 0 && nEle > 0 )
+      muonEvent = false;
     
-    //-----------------------------------------------------------------------------------//
-    // sorting muon and pass the muon ID
-
-    vector<Int_t> howManyMu;
-
-    typedef map<Float_t, Int_t, std::greater<Float_t> > muMap;
-    muMap sortMuPt;
-    typedef muMap::iterator mapMuIter;
-
-    for(Int_t i = 0; i < nMu; i++){
-
-      sortMuPt.insert(std::pair<Float_t, Int_t>(muPt[i], i));
-
-    }
-
-    for(mapMuIter it_part = sortMuPt.begin(); it_part != sortMuPt.end(); ++it_part){
-
-      Int_t sortMuIndex = it_part->second;
-
-      if( !(muPassID[sortMuIndex] & 4) ) continue;
-      if( muPt[sortMuIndex] <= 20 ) continue; 
-
-      howManyMu.push_back(sortMuIndex);
-
-    }
-
+    if( !muonEvent ) continue;
+    
     Int_t stRecoMuIndex, ndRecoMuIndex;
-
     if( !passMuonID(data, &stRecoMuIndex, &ndRecoMuIndex) )
       continue;
-
-
-    //-----------------------------------------------------------------------------------//   
-    // reconstruct Z mass
     
-    TLorentzVector stRecoMu, ndRecoMu;  
+    // reconstruct Z mass
+    TLorentzVector stRecoMu(0,0,0,0), ndRecoMu(0,0,0,0), Z(0,0,0,0);  
  
     stRecoMu.SetPtEtaPhiM(muPt[stRecoMuIndex], 
 			  muEta[stRecoMuIndex], 
@@ -154,32 +114,21 @@ void dileptonMassMu(std::string inputFile, std::string outName){
 			  muEta[ndRecoMuIndex],
 			  muPhi[ndRecoMuIndex], 
 			  muM[ndRecoMuIndex]); 
-    
-    TLorentzVector Z = stRecoMu + ndRecoMu;
 
-    if(Z.E() <= 1e-6) continue;
-    if(Z.Pt() <= 80) continue;
+    Z = stRecoMu + ndRecoMu;
+
+    if( Z.E() <= 1e-6) continue;
+    if( Z.M() <= 70 ) continue;
+    if( Z.M() >= 110 ) continue;
+    if( Z.Pt() <= 80) continue;
 
     h_ZMass->Fill(Z.M());
-
     
-  }
-   
-  // end of event loop
+  } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
-  // draw results
-
-  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 760);
-  c->Divide(2,2);
-
-  c->cd(1);
-  h_ZMass->Draw();
-
-
   // output file
-
   std::string ZMassName = "ZMass_" + outName.substr(11);
 
   TFile* outFile = new TFile("dileptonMassMu.root", "update");

@@ -60,7 +60,7 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
     Float_t* muPt   = data.GetPtrFloat("muPt");
 
     // data trigger cut
-    if ( outName.find("DoubleEle") != std::string::npos ){
+    if ( outName.find("DoubleEl") != std::string::npos ){
 
       std::string* trigName = data.GetPtrString("hlt_trigName");
       Int_t* trigResult = data.GetPtrInt("hlt_trigResult");

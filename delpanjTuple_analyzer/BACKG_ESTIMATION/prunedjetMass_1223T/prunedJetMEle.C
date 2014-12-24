@@ -19,27 +19,14 @@
 Bool_t passElectronID(TreeReader&, Int_t*, Int_t*);
 Bool_t passJetID(TreeReader&, Int_t&, Int_t*);
 
-void sideSigZpMEle(std::string inputFile, std::string outName){
+void prunedJetMEle(std::string inputFile, std::string outName){
 
   TreeReader data(inputFile.data());
 
-  // variable bin
-  const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
-			      1250,1400,1600,1800,2000,2400};
-
-  Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
-
-  TH1D* h_ZpMass[2]; // [side,signal]
-  std::string htitle[2] = {"Side-band region Zprime Mass","Signal region Zprime Mass"};
-
-  for(Int_t i = 0; i < 2; i++){
-
-    h_ZpMass[i] = new TH1D(Form("h_sideZprimeMass%d",i), "", nvarBins, varBins);
-    h_ZpMass[i]->SetTitle(htitle[i].data());
-    h_ZpMass[i]->GetXaxis()->SetTitle("Zprime mass");
-    h_ZpMass[i]->GetYaxis()->SetTitle("Event number");
-
-  }
+  // Declare the histogram
+  TH1D* h_prunedJetMass = new TH1D("h_prunedJetMass", "Pruned Jet Mass", 100, 40, 240);
+  h_prunedJetMass->GetXaxis()->SetTitle("Pruned jet mass");
+  h_prunedJetMass->GetYaxis()->SetTitle("Event number");
 
   // begin of event loop
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
@@ -72,7 +59,7 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
 
 	std::string thisTrig = trigName[it];
 	Int_t results = trigResult[it];
-     
+
 	// electron channel
 	if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results == 1 ){
 
@@ -86,27 +73,12 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
       if( !passTrigger ) continue;
 
     }
-        
+
     // pass electron ID
     Int_t stRecoEleIndex, ndRecoEleIndex;
     if( !passElectronID(data, &stRecoEleIndex, &ndRecoEleIndex) )
       continue;
-  
-    // reconstruct Z mass
-    TLorentzVector stRecoEle, ndRecoEle;  
- 
-    stRecoEle.SetPtEtaPhiM(elePt[stRecoEleIndex], 
-			   eleEta[stRecoEleIndex], 
-			   elePhi[stRecoEleIndex],
-			   eleM[stRecoEleIndex]);  
-  
-    ndRecoEle.SetPtEtaPhiM(elePt[ndRecoEleIndex], 
-			   eleEta[ndRecoEleIndex],
-			   elePhi[ndRecoEleIndex], 
-			   eleM[ndRecoEleIndex]); 
-    
-    TLorentzVector Z = stRecoEle + ndRecoEle;
-    
+
     // pass boosted-jet ID
     Int_t mode = 2; // 1:b-tagging only, 2:tau21 only
     Int_t maxJetIndex;
@@ -114,46 +86,17 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
     if( !passJetID(data, mode, &maxJetIndex) )
       continue;
 
-    TLorentzVector Higgs;
-    Higgs.SetPtEtaPhiM(CA8jetPt[maxJetIndex],
-		       CA8jetEta[maxJetIndex],
-		       CA8jetPhi[maxJetIndex],
-		       CA8jetMass[maxJetIndex]);
-
-    if( Z.E() <= 1e-6 || Higgs.E() <= 1e-6 ) continue;
-    if( Z.M() <= 70 || Z.M() >= 110 ) continue;
-    if( Z.Pt() <= 80 ) continue;
-
-    // side band region
-    if( CA8jetPrunedMass[maxJetIndex] > 50 && CA8jetPrunedMass[maxJetIndex] < 110 ){
-
-      TLorentzVector Zprime = Z + Higgs; 
-      h_ZpMass[0]->Fill(Zprime.M());
-
-    }
-    
-    // signal region
-    if( CA8jetPrunedMass[maxJetIndex] > 110 && CA8jetPrunedMass[maxJetIndex] < 140 ){
-
-      TLorentzVector Zprime = Z + Higgs; 
-      h_ZpMass[1]->Fill(Zprime.M());
-   
-    }  
+    if( CA8jetPrunedMass[maxJetIndex] > 40 && CA8jetPrunedMass[maxJetIndex] < 240 )
+      h_prunedJetMass->Fill(CA8jetPrunedMass[maxJetIndex]);
 
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
   // output file
-  TFile* outFile = new TFile("sideSigZpMEle.root", "update");
-
-  std::string writeName[2] = {"sideZpMass_"+outName.substr(11),
-			      "signZpMass_"+outName.substr(11)};
-
-  for(Int_t i = 0; i < 2; i++){
-    h_ZpMass[i]->Write(writeName[i].data());
-  }
-
+  TFile* outFile = new TFile("prunedJetMEl.root", "update");
+  std::string sideName = "prunedJetM_" + outName.substr(11);
+  h_prunedJetMass->Write(sideName.data());
   outFile->Write();
   
 }

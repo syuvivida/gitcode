@@ -22,7 +22,7 @@
 #include <TSystemDirectory.h>
 #include <TGraphAsymmErrors.h>
 
-void zpMasstest(){
+void drawZpMasstest(){
 
   gStyle->SetOptStat(0);
 
