@@ -32,7 +32,7 @@ const Double_t scale_dy70 = dataLumi_totalDMu / (totalNEvent_dy70 / crossSection
 const Double_t scale_dy100 = dataLumi_totalDMu / (totalNEvent_dy100 / crossSection_dy100);
 Double_t fitFunc(Double_t*, Double_t*);
 
-void compareAlpMu(){
+void drawAlpMu(){
 
   TFile *f = TFile::Open("sideSigZpMMu.root");
 

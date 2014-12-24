@@ -23,17 +23,17 @@
 #include <TSystemDirectory.h>
 #include <TGraphAsymmErrors.h>
 
-void myRatio(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, /*TH1D* h_ww, TH1D* h_wz, TH1D* h_zz,*/ TH1D* h_data){
+void myRatio(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, TH1D* h_ww, TH1D* h_wz, TH1D* h_zz, TH1D* h_data){
 
   TH1D *h_bkg = (TH1D*)h_data->Clone("h_bkg");
   h_bkg->Reset();
   h_bkg->Sumw2();
   h_bkg->Add(h_dy70, scale_dy70);
   h_bkg->Add(h_dy100, scale_dy100);
-  h_bkg->Add(h_ttbar, scale_ttbar);/*
+  h_bkg->Add(h_ttbar, scale_ttbar);
   h_bkg->Add(h_ww, scale_ww);
   h_bkg->Add(h_wz, scale_wz);
-  h_bkg->Add(h_zz, scale_zz);*/
+  h_bkg->Add(h_zz, scale_zz);
 
   TH1D* h_ratio = (TH1D*)h_data->Clone("h_ratio");
   h_ratio->Reset();

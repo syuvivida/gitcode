@@ -41,6 +41,8 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
 
   }
 
+  Int_t count = 0;
+
   // begin of event loop
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
@@ -108,7 +110,7 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
     TLorentzVector Z = stRecoEle + ndRecoEle;
     
     // pass boosted-jet ID
-    Int_t mode = 2; // 1:b-tagging only, 2:tau21 only
+    Int_t mode = 1; // 1:b-tagging only, 2:tau21 only
     Int_t maxJetIndex;
 
     if( !passJetID(data, mode, &maxJetIndex) )
@@ -123,6 +125,8 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
     if( Z.E() <= 1e-6 || Higgs.E() <= 1e-6 ) continue;
     if( Z.M() <= 70 || Z.M() >= 110 ) continue;
     if( Z.Pt() <= 80 ) continue;
+
+    count++;
 
     // side band region
     if( CA8jetPrunedMass[maxJetIndex] > 50 && CA8jetPrunedMass[maxJetIndex] < 110 ){
@@ -143,6 +147,8 @@ void sideSigZpMEle(std::string inputFile, std::string outName){
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
+
+  cout << "Event number = " << count << endl;
 
   // output file
   TFile* outFile = new TFile("sideSigZpMEle.root", "update");

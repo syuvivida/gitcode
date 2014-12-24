@@ -59,7 +59,7 @@ void drawdiLepMass(){
 
   for(Int_t i = 0; i < 2; i++){
 
-    c->cd(i+1)->SetLogy();
+    c->cd(i+1);
 
     TLegend *leg = new TLegend(0.65, 0.75, 0.9, 0.9);
     h_combine[i] = new TH1D(Form("h_combine%d",i), "", 100, 70, 110);
@@ -68,11 +68,9 @@ void drawdiLepMass(){
 
       if( j < 2 ){
 
-	h_combine[i]->Sumw2();
 	h_combine[i]->Add(h_target[i][j], scale[i][j]);
 	h_combine[i]->SetLineColor(1);
 	h_combine[i]->SetFillColor(kCyan);
-	h_combine[i]->Draw();
 
       } // if bkg
       
@@ -84,7 +82,8 @@ void drawdiLepMass(){
 	h_target[i][j]->SetLineColor(1);
 	h_target[i][j]->SetMarkerStyle(8);
 	h_target[i][j]->SetMarkerSize(0.5);
-	h_target[i][j]->Draw("e1same");
+	h_target[i][j]->Draw();
+	h_combine[i]->Draw("same");
 
       } // if data
 

@@ -29,6 +29,10 @@ void backgZpMass(std::string inputFile, std::string outName){
   h_ZprimeMass->GetXaxis()->SetTitle("Zprime mass");
   h_ZprimeMass->GetYaxis()->SetTitle("Event number");
 
+  TH1D* h_ZMass = new TH1D("h_ZMass", "Z mass by dielectron", 100, 70, 110);
+  h_ZMass->GetXaxis()->SetTitle("Mass");
+  h_ZMass->GetYaxis()->SetTitle("Event number");
+
   TH1D* h_ZPt = new TH1D("h_ZPt", "Signal region Z Pt", 100, 0, 1000);
   h_ZPt->GetXaxis()->SetTitle("Z Pt");
   h_ZPt->GetYaxis()->SetTitle("Event number");
@@ -175,6 +179,7 @@ void backgZpMass(std::string inputFile, std::string outName){
 
       TLorentzVector Zprime = Z + Higgs;
       h_ZprimeMass->Fill(Zprime.M());
+      h_ZMass->Fill(Z.M());
       h_ZPt->Fill(Z.Pt());
       h_ZEta->Fill(Z.Eta());
       h_HiggsPt->Fill(Higgs.Pt());
@@ -193,6 +198,7 @@ void backgZpMass(std::string inputFile, std::string outName){
   // output file
   
   std::string zpmName = "ZpMass_" + outName.substr(11);
+  std::string zmName = "ZMass_" + outName.substr(11);
   std::string zptName = "ZPt_" + outName.substr(11);
   std::string zetaName = "ZEta_" + outName.substr(11);
   std::string hptName = "HiggsPt_" + outName.substr(11);
@@ -201,6 +207,7 @@ void backgZpMass(std::string inputFile, std::string outName){
   TFile* outFile = new TFile("backgZpMass.root", "update");
 
   h_ZprimeMass->Write(zpmName.data());
+  h_ZMass->Write(zmName.data());
   h_ZPt->Write(zptName.data());
   h_ZEta->Write(zetaName.data());
   h_HiggsPt->Write(hptName.data());

@@ -25,8 +25,8 @@
 #include "../HEADER/myPlot.C"
 #include "../HEADER/myRatio.C"
 
-void myPlot(TH1D*, TH1D*, TH1D*, TH1D*/*, TH1D*, TH1D*, TH1D**/);
-void myRatio(TH1D*, TH1D*, TH1D*, TH1D*/*, TH1D*, TH1D*, TH1D**/);
+void myPlot(TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, TH1D*);
+void myRatio(TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, TH1D*);
 
 void stcEleVariable(){
 
@@ -57,10 +57,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_DelEtaIn_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_DelEtaIn_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_DelEtaIn_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_DelEtaIn_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_DelEtaIn_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_DelEtaIn_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_DelEtaIn_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_DelEtaIn_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_DelEtaIn_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_DelEtaIn_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_DelEtaIn_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -69,10 +69,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_DelEtaIn_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_DelEtaIn_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_DelEtaIn_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_DelEtaIn_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_DelEtaIn_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_DelEtaIn_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_DelEtaIn_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_DelEtaIn_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_DelEtaIn_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_DelEtaIn_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_DelEtaIn_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -84,10 +84,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_DelEtaIn_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_DelEtaIn_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_DelEtaIn_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_DelEtaIn_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_DelEtaIn_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_DelEtaIn_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_DelEtaIn_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_DelEtaIn_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_DelEtaIn_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_DelEtaIn_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_DelEtaIn_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -96,10 +96,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_DelEtaIn_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_DelEtaIn_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(endf->Get("endcap_DelEtaIn_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_DelEtaIn_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_DelEtaIn_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_DelEtaIn_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_DelEtaIn_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_DelEtaIn_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_DelEtaIn_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_DelEtaIn_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_DelEtaIn_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -111,10 +111,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_DelPhiIn_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_DelPhiIn_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(barf->Get("barrel_DelPhiIn_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_DelPhiIn_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_DelPhiIn_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_DelPhiIn_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_DelPhiIn_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_DelPhiIn_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_DelPhiIn_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_DelPhiIn_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_DelPhiIn_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -123,10 +123,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_DelPhiIn_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_DelPhiIn_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_DelPhiIn_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_DelPhiIn_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_DelPhiIn_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_DelPhiIn_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_DelPhiIn_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_DelPhiIn_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_DelPhiIn_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_DelPhiIn_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_DelPhiIn_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -138,10 +138,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_DelPhiIn_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_DelPhiIn_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(endf->Get("endcap_DelPhiIn_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_DelPhiIn_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_DelPhiIn_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_DelPhiIn_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_DelPhiIn_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_DelPhiIn_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_DelPhiIn_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_DelPhiIn_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_DelPhiIn_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -150,10 +150,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_DelPhiIn_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_DelPhiIn_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_DelPhiIn_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_DelPhiIn_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_DelPhiIn_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_DelPhiIn_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_DelPhiIn_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_DelPhiIn_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_DelPhiIn_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_DelPhiIn_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_DelPhiIn_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -165,10 +165,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_SigIhIh_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_SigIhIh_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_SigIhIh_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_SigIhIh_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_SigIhIh_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_SigIhIh_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_SigIhIh_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_SigIhIh_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_SigIhIh_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_SigIhIh_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_SigIhIh_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -177,10 +177,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_SigIhIh_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_SigIhIh_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_SigIhIh_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_SigIhIh_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_SigIhIh_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_SigIhIh_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_SigIhIh_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_SigIhIh_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_SigIhIh_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_SigIhIh_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_SigIhIh_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -192,10 +192,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_SigIhIh_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_SigIhIh_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_SigIhIh_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_SigIhIh_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_SigIhIh_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_SigIhIh_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_SigIhIh_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_SigIhIh_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_SigIhIh_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_SigIhIh_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_SigIhIh_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -204,10 +204,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_SigIhIh_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_SigIhIh_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_SigIhIh_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_SigIhIh_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_SigIhIh_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_SigIhIh_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_SigIhIh_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_SigIhIh_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_SigIhIh_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_SigIhIh_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_SigIhIh_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -219,10 +219,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_HoE_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_HoE_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_HoE_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_HoE_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_HoE_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_HoE_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_HoE_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_HoE_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_HoE_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_HoE_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_HoE_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -231,10 +231,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_HoE_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_HoE_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_HoE_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_HoE_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_HoE_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_HoE_ZZ_pythia.root"))),/*
-	   ((TH1D*)(barf->Get("barrel_HoE_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_HoE_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_HoE_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_HoE_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_HoE_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -246,10 +246,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_HoE_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_HoE_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(endf->Get("endcap_HoE_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_HoE_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_HoE_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_HoE_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_HoE_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_HoE_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_HoE_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_HoE_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_HoE_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -258,10 +258,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_HoE_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_HoE_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_HoE_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_HoE_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_HoE_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_HoE_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_HoE_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_HoE_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_HoE_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_HoE_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_HoE_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -273,10 +273,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_Dxy_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_Dxy_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_Dxy_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_Dxy_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Dxy_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Dxy_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_Dxy_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_Dxy_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Dxy_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Dxy_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Dxy_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -285,10 +285,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_Dxy_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_Dxy_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_Dxy_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_Dxy_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Dxy_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Dxy_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_Dxy_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_Dxy_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Dxy_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Dxy_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Dxy_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -300,10 +300,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_Dxy_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_Dxy_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(endf->Get("endcap_Dxy_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_Dxy_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Dxy_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Dxy_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_Dxy_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_Dxy_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Dxy_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Dxy_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Dxy_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -312,10 +312,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_Dxy_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Dxy_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Dxy_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_Dxy_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Dxy_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Dxy_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_Dxy_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_Dxy_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Dxy_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Dxy_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Dxy_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -327,10 +327,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_Dz_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_Dz_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(barf->Get("barrel_Dz_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_Dz_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Dz_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Dz_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_Dz_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_Dz_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Dz_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Dz_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Dz_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -339,10 +339,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_Dz_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_Dz_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_Dz_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_Dz_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Dz_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Dz_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_Dz_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_Dz_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Dz_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Dz_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Dz_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -354,10 +354,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_Dz_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_Dz_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(endf->Get("endcap_Dz_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_Dz_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Dz_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Dz_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_Dz_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_Dz_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Dz_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Dz_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Dz_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -366,10 +366,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_Dz_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Dz_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Dz_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_Dz_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Dz_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Dz_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_Dz_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_Dz_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Dz_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Dz_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Dz_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -381,10 +381,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_EoverP_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_EoverP_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_EoverP_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_EoverP_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_EoverP_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_EoverP_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_EoverP_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_EoverP_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_EoverP_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_EoverP_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_EoverP_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -393,10 +393,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_EoverP_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_EoverP_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_EoverP_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_EoverP_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_EoverP_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_EoverP_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_EoverP_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_EoverP_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_EoverP_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_EoverP_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_EoverP_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -408,10 +408,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_EoverP_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_EoverP_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_EoverP_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_EoverP_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_EoverP_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_EoverP_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_EoverP_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_EoverP_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_EoverP_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_EoverP_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_EoverP_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -420,10 +420,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_EoverP_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_EoverP_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(endf->Get("endcap_EoverP_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_EoverP_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_EoverP_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_EoverP_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_EoverP_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_EoverP_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_EoverP_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_EoverP_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_EoverP_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -435,10 +435,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_PassConv_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_PassConv_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_PassConv_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_PassConv_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_PassConv_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_PassConv_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_PassConv_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_PassConv_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_PassConv_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_PassConv_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_PassConv_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -447,10 +447,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_PassConv_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_PassConv_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_PassConv_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_PassConv_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_PassConv_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_PassConv_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_PassConv_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_PassConv_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_PassConv_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_PassConv_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_PassConv_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -462,10 +462,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_PassConv_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_PassConv_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_PassConv_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_PassConv_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_PassConv_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_PassConv_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_PassConv_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_PassConv_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_PassConv_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_PassConv_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_PassConv_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -474,10 +474,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_PassConv_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_PassConv_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(endf->Get("endcap_PassConv_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_PassConv_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_PassConv_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_PassConv_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_PassConv_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_PassConv_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_PassConv_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_PassConv_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_PassConv_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -489,10 +489,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_MissingHits_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_MissingHits_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(barf->Get("barrel_MissingHits_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_MissingHits_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_MissingHits_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_MissingHits_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_MissingHits_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_MissingHits_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_MissingHits_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_MissingHits_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_MissingHits_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -501,10 +501,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_MissingHits_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_MissingHits_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_MissingHits_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_MissingHits_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_MissingHits_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_MissingHits_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_MissingHits_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_MissingHits_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_MissingHits_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_MissingHits_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_MissingHits_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -516,10 +516,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_MissingHits_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_MissingHits_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_MissingHits_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_MissingHits_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_MissingHits_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_MissingHits_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_MissingHits_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_MissingHits_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_MissingHits_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_MissingHits_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_MissingHits_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -528,10 +528,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_MissingHits_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_MissingHits_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(endf->Get("endcap_MissingHits_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_MissingHits_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_MissingHits_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_MissingHits_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_MissingHits_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_MissingHits_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_MissingHits_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_MissingHits_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_MissingHits_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -543,10 +543,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_Pt_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_Pt_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_Pt_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_Pt_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Pt_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Pt_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_Pt_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_Pt_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Pt_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Pt_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Pt_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -555,10 +555,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_Pt_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_Pt_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_Pt_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_Pt_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Pt_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Pt_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_Pt_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_Pt_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Pt_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Pt_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Pt_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -570,10 +570,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_Pt_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_Pt_DYJetsToLL_PtZ-100.root"))),
 	  ((TH1D*)(endf->Get("endcap_Pt_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_Pt_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Pt_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Pt_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_Pt_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_Pt_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Pt_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Pt_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Pt_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -582,10 +582,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_Pt_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Pt_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Pt_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_Pt_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Pt_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Pt_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_Pt_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_Pt_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Pt_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Pt_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Pt_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -597,10 +597,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_Eta_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_Eta_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_Eta_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_Eta_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Eta_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_Eta_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_Eta_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_Eta_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Eta_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Eta_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_Eta_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -609,10 +609,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_Eta_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_Eta_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_Eta_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_Eta_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Eta_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_Eta_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_Eta_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_Eta_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Eta_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Eta_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_Eta_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -624,10 +624,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_Eta_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_Eta_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_Eta_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_Eta_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Eta_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_Eta_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_Eta_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_Eta_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Eta_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Eta_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_Eta_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -636,10 +636,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_Eta_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Eta_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_Eta_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_Eta_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Eta_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_Eta_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_Eta_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_Eta_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Eta_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Eta_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_Eta_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -651,10 +651,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_UserTrkIso_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_UserTrkIso_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_UserTrkIso_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_UserTrkIso_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_UserTrkIso_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_UserTrkIso_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_UserTrkIso_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_UserTrkIso_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_UserTrkIso_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_UserTrkIso_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_UserTrkIso_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -663,10 +663,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_UserTrkIso_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_UserTrkIso_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_UserTrkIso_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_UserTrkIso_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_UserTrkIso_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_UserTrkIso_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_UserTrkIso_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_UserTrkIso_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_UserTrkIso_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_UserTrkIso_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_UserTrkIso_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -678,10 +678,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_UserTrkIso_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_UserTrkIso_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_UserTrkIso_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_UserTrkIso_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_UserTrkIso_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_UserTrkIso_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_UserTrkIso_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_UserTrkIso_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_UserTrkIso_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_UserTrkIso_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_UserTrkIso_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -690,10 +690,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_UserTrkIso_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_UserTrkIso_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_UserTrkIso_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_UserTrkIso_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_UserTrkIso_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_UserTrkIso_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_UserTrkIso_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_UserTrkIso_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_UserTrkIso_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_UserTrkIso_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_UserTrkIso_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -705,10 +705,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(barf->Get("barrel_UserCalIso_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_UserCalIso_DYJetsToLL_PtZ-100.root"))), 
 	  ((TH1D*)(barf->Get("barrel_UserCalIso_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(barf->Get("barrel_UserCalIso_WW_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_UserCalIso_WZ_pythia.root"))),
-	  ((TH1D*)(barf->Get("barrel_UserCalIso_ZZ_pythia.root"))),*/
-	  ((TH1D*)(barf->Get("barrel_UserCalIso_data_DoubleEl_A.root")))
+	  ((TH1D*)(barf->Get("barrel_UserCalIso_WW_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_UserCalIso_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_UserCalIso_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(barf->Get("barrel_UserCalIso_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -717,10 +717,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(barf->Get("barrel_UserCalIso_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(barf->Get("barrel_UserCalIso_DYJetsToLL_PtZ-100.root"))),
 	   ((TH1D*)(barf->Get("barrel_UserCalIso_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(barf->Get("barrel_UserCalIso_WW_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_UserCalIso_WZ_pythia.root"))),
-	   ((TH1D*)(barf->Get("barrel_UserCalIso_ZZ_pythia.root"))),*/
-	   ((TH1D*)(barf->Get("barrel_UserCalIso_data_DoubleEl_A.root")))
+	   ((TH1D*)(barf->Get("barrel_UserCalIso_WW_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_UserCalIso_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_UserCalIso_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(barf->Get("barrel_UserCalIso_data_DoubleEl.root")))
 	   );
 
   c.Draw();
@@ -732,10 +732,10 @@ void stcEleVariable(){
   myPlot( ((TH1D*)(endf->Get("endcap_UserCalIso_DYJetsToLL_PtZ-70To100.root"))), 
 	  ((TH1D*)(endf->Get("endcap_UserCalIso_DYJetsToLL_PtZ-100.root"))),
  	  ((TH1D*)(endf->Get("endcap_UserCalIso_TTTo2L2Nu2B.root"))),
-	  /*((TH1D*)(endf->Get("endcap_UserCalIso_WW_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_UserCalIso_WZ_pythia.root"))),
-	  ((TH1D*)(endf->Get("endcap_UserCalIso_ZZ_pythia.root"))),*/
-	  ((TH1D*)(endf->Get("endcap_UserCalIso_data_DoubleEl_A.root")))
+	  ((TH1D*)(endf->Get("endcap_UserCalIso_WW_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_UserCalIso_WZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_UserCalIso_ZZ_pythia_filtered.root"))),
+	  ((TH1D*)(endf->Get("endcap_UserCalIso_data_DoubleEl.root")))
 	  );
 
   c_up->RedrawAxis();
@@ -744,10 +744,10 @@ void stcEleVariable(){
   myRatio( ((TH1D*)(endf->Get("endcap_UserCalIso_DYJetsToLL_PtZ-70To100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_UserCalIso_DYJetsToLL_PtZ-100.root"))), 
 	   ((TH1D*)(endf->Get("endcap_UserCalIso_TTTo2L2Nu2B.root"))),
-	   /*((TH1D*)(endf->Get("endcap_UserCalIso_WW_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_UserCalIso_WZ_pythia.root"))),
-	   ((TH1D*)(endf->Get("endcap_UserCalIso_ZZ_pythia.root"))),*/
-	   ((TH1D*)(endf->Get("endcap_UserCalIso_data_DoubleEl_A.root")))
+	   ((TH1D*)(endf->Get("endcap_UserCalIso_WW_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_UserCalIso_WZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_UserCalIso_ZZ_pythia_filtered.root"))),
+	   ((TH1D*)(endf->Get("endcap_UserCalIso_data_DoubleEl.root")))
 	   );
 
   c.Draw();

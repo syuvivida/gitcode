@@ -41,6 +41,8 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
 
   }
 
+  Int_t count = 0;
+
   // begin of event loop
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
@@ -124,6 +126,8 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
     if( Z.M() <= 70 || Z.M() >=110 ) continue;
     if( Z.Pt() <= 80 ) continue;
 
+    count++;
+
     // side band region
     if( CA8jetPrunedMass[maxJetIndex] > 50 && CA8jetPrunedMass[maxJetIndex] < 110 ){
 
@@ -143,6 +147,8 @@ void sideSigZpMMu(std::string inputFile, std::string outName){
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
+
+  cout << "Event number = " << count << endl;
 
   // output file
   TFile* outFile = new TFile("sideSigZpMMu.root", "update");

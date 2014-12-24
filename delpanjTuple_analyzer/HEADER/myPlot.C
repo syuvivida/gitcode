@@ -30,22 +30,22 @@ const Int_t totalNEvent_ww = 9850431;
 const Int_t totalNEvent_wz = 9840283;
 const Int_t totalNEvent_zz = 9594908;
 
-const Double_t crossSection_dy70 = 63.5*1000;
-const Double_t crossSection_dy100 = 39.4*1000;
-const Double_t crossSection_ttbar = 25.8*1000;
-const Double_t crossSection_ww = 56*1000;
-const Double_t crossSection_wz = 22.4*1000;
-const Double_t crossSection_zz = 7.6*1000;
-
+const Double_t crossSection_dy70 = 63.5;
+const Double_t crossSection_dy100 = 39.4;
+const Double_t crossSection_ttbar = 25.8;
+const Double_t crossSection_ww = 56;
+const Double_t crossSection_wz = 22.4;
+const Double_t crossSection_zz = 7.6;
+const Double_t dataLumi_totalDEle = /*19712.225;*/ 19671.225;
 // scale = data_luminosity / bkg_luminosity
-Double_t scale_dy70 = 0.876 / (totalNEvent_dy70 / crossSection_dy70);
-Double_t scale_dy100 = 0.876 / (totalNEvent_dy100 / crossSection_dy100);
-Double_t scale_ttbar = 0.876 / (totalNEvent_ttbar / crossSection_ttbar);
-Double_t scale_ww = 0.876 / (totalNEvent_ww / crossSection_ww);
-Double_t scale_wz = 0.876 / (totalNEvent_wz / crossSection_wz);
-Double_t scale_zz = 0.876 / (totalNEvent_zz / crossSection_zz);
+Double_t scale_dy70 = dataLumi_totalDEle / (totalNEvent_dy70 / crossSection_dy70);
+Double_t scale_dy100 = dataLumi_totalDEle / (totalNEvent_dy100 / crossSection_dy100);
+Double_t scale_ttbar = dataLumi_totalDEle / (totalNEvent_ttbar / crossSection_ttbar);
+Double_t scale_ww = dataLumi_totalDEle / (totalNEvent_ww / crossSection_ww);
+Double_t scale_wz = dataLumi_totalDEle / (totalNEvent_wz / crossSection_wz);
+Double_t scale_zz = dataLumi_totalDEle / (totalNEvent_zz / crossSection_zz);
 
-void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, /*TH1D* h_ww, TH1D* h_wz, TH1D* h_zz,*/ TH1D* h_data){
+void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, TH1D* h_ww, TH1D* h_wz, TH1D* h_zz, TH1D* h_data){
 
   h_data->Sumw2();
 
@@ -60,7 +60,7 @@ void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, /*TH1D* h_ww, TH1D* h_wz
   h_ttbar->Scale(scale_ttbar);
   h_ttbar->SetFillColor(kOrange+10);
   h_ttbar->SetLineColor(kBlack);
-  /*
+  
   h_ww->Scale(scale_ww);
   h_ww->SetFillColor(kMagenta);
   h_ww->SetLineColor(kBlack);
@@ -72,14 +72,14 @@ void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, /*TH1D* h_ww, TH1D* h_wz
   h_zz->Scale(scale_zz);
   h_zz->SetFillColor(kViolet);
   h_zz->SetLineColor(kBlack);
-  */
+  
   THStack *h_stack = new THStack("h_stack", "");
   h_stack->Add(h_dy70);
   h_stack->Add(h_dy100);
-  h_stack->Add(h_ttbar);/*
+  h_stack->Add(h_ttbar);
   h_stack->Add(h_ww);
   h_stack->Add(h_wz);
-  h_stack->Add(h_zz);*/
+  h_stack->Add(h_zz);
 
   h_data->SetLineColor(1);
   h_data->SetMarkerStyle(8);
@@ -98,10 +98,10 @@ void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, /*TH1D* h_ww, TH1D* h_wz
   leg->SetBorderSize(1);
   leg->AddEntry(h_dy70, "DYJetsToLL_PtZ-70To100", "f"); 
   leg->AddEntry(h_dy100,"DYJetsToLL_PtZ-100", "f");
-  leg->AddEntry(h_ttbar,"TTTo2L2Nu2B", "f");/*
+  leg->AddEntry(h_ttbar,"TTTo2L2Nu2B", "f");
   leg->AddEntry(h_ww,"WW_pythia", "f");
   leg->AddEntry(h_wz,"WZ_pythia", "f");
-  leg->AddEntry(h_zz,"ZZ_pythia", "f");*/
+  leg->AddEntry(h_zz,"ZZ_pythia", "f");
   leg->AddEntry(h_data, "Data", "lp");
   leg->Draw();
 
