@@ -36,14 +36,15 @@ const Double_t crossSection_ttbar = 25.8;
 const Double_t crossSection_ww = 56;
 const Double_t crossSection_wz = 22.4;
 const Double_t crossSection_zz = 7.6;
-const Double_t dataLumi_totalDEle = /*19712.225;*/ 19671.225;
+const Double_t dataLumi_totalD = 19712.225;//ele
+//const Double_t dataLumi_totalD = 19671.225;//mu
 // scale = data_luminosity / bkg_luminosity
-Double_t scale_dy70 = dataLumi_totalDEle / (totalNEvent_dy70 / crossSection_dy70);
-Double_t scale_dy100 = dataLumi_totalDEle / (totalNEvent_dy100 / crossSection_dy100);
-Double_t scale_ttbar = dataLumi_totalDEle / (totalNEvent_ttbar / crossSection_ttbar);
-Double_t scale_ww = dataLumi_totalDEle / (totalNEvent_ww / crossSection_ww);
-Double_t scale_wz = dataLumi_totalDEle / (totalNEvent_wz / crossSection_wz);
-Double_t scale_zz = dataLumi_totalDEle / (totalNEvent_zz / crossSection_zz);
+Double_t scale_dy70 = dataLumi_totalD / (totalNEvent_dy70 / crossSection_dy70);
+Double_t scale_dy100 = dataLumi_totalD / (totalNEvent_dy100 / crossSection_dy100);
+Double_t scale_ttbar = dataLumi_totalD / (totalNEvent_ttbar / crossSection_ttbar);
+Double_t scale_ww = dataLumi_totalD / (totalNEvent_ww / crossSection_ww);
+Double_t scale_wz = dataLumi_totalD / (totalNEvent_wz / crossSection_wz);
+Double_t scale_zz = dataLumi_totalD / (totalNEvent_zz / crossSection_zz);
 
 void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, TH1D* h_ww, TH1D* h_wz, TH1D* h_zz, TH1D* h_data){
 
@@ -58,19 +59,19 @@ void myPlot(TH1D* h_dy70, TH1D* h_dy100, TH1D* h_ttbar, TH1D* h_ww, TH1D* h_wz, 
   h_dy100->SetLineColor(kBlack);
 
   h_ttbar->Scale(scale_ttbar);
-  h_ttbar->SetFillColor(kOrange+10);
+  h_ttbar->SetFillColor(kGreen);
   h_ttbar->SetLineColor(kBlack);
   
   h_ww->Scale(scale_ww);
-  h_ww->SetFillColor(kMagenta);
+  h_ww->SetFillColor(kRed);
   h_ww->SetLineColor(kBlack);
 
   h_wz->Scale(scale_wz);
-  h_wz->SetFillColor(kPink);
+  h_wz->SetFillColor(kOrange+4);
   h_wz->SetLineColor(kBlack);
 
   h_zz->Scale(scale_zz);
-  h_zz->SetFillColor(kViolet);
+  h_zz->SetFillColor(kYellow);
   h_zz->SetLineColor(kBlack);
   
   THStack *h_stack = new THStack("h_stack", "");

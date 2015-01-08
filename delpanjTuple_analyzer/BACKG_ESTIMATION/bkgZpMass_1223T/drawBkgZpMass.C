@@ -24,7 +24,7 @@
 
 void drawBkgZpMass(){
 
-  gStyle->SetOptStat(0);
+  gStyle->SetOptStat(11111111);
 
   TFile *f = TFile::Open("backgZpMass.root");
 
@@ -42,7 +42,7 @@ void drawBkgZpMass(){
     h_bkg[] = (TH1D*)(f->Get("ZpMass_ZZJetsTo2L2Q_TuneZ2star_8TeV_filtered.root"));
   */
 
-  TLegend *leg = new TLegend(0.7, 0.7, 0.9, 0.9);
+  TLegend *leg = new TLegend(0.7, 0.4, 0.9, 0.6);
   TCanvas* c = new TCanvas("c", "", 0, 0, 1000, 800);
   c->cd(1);
 
@@ -73,6 +73,6 @@ void drawBkgZpMass(){
   }
 
   c->Print("BkgZpMass.gif");
-  //c->Print("BkgZpMass.pdf");
+  c->Print("BkgZpMass.pdf");
 
 }
