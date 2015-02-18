@@ -45,7 +45,7 @@ void MuonIDeff(){
 
       for(Int_t j = 1; j < 4; j++){
 
-	if( muPt[i] < 40 && fabs(muEta[i]) > etaX[j-1] && fabs(muEta[i]) < etaX[j] )
+	if( muPt[i] > 20 && muPt[i] < 40 && fabs(muEta[i]) > etaX[j-1] && fabs(muEta[i]) < etaX[j] )
 	  h_pass[0][j-1]->Fill(muPt[i]);
 
 	if( muPt[i] > 40 && fabs(muEta[i]) > etaX[j-1] && fabs(muEta[i]) < etaX[j] ) 
