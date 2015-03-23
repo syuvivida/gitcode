@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void MuonIDeff(){
+void uncertainty(){
   
   const Float_t scalefactor[2][3] = {{1.0043, 1.0074, 1.022}, {1.0012, 1.0043, 1.014}};
   const Float_t uncertainty[2][3] = {{0.0004, 0.0005, 0.001}, {0.0004, 0.0004, 0.001}};

@@ -1,12 +1,12 @@
 #!/bin/bash
 
-if [ -z $2 ]; then
-    echo "Usage: $0 [fragment] [comment]"
+if [ -z $1 ]; then
+    echo "Usage: $0 [comment]"
     exit 1
 fi
 
-git add -A $1
-git commit -m "$2"
+git add --all
+git commit -m "$1"
 git pull --rebase upstream master
 git push origin master
 
