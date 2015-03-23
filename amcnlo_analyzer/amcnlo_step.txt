@@ -1,0 +1,65 @@
+*** produce gridpack ***
+
+-- change outputname in run card, change set T in proc card --
+cd /afs/cern.ch/work/h/htong
+git clone https://github.com/cms-sw/genproductions
+cd genproductions/bin/MadGraph5_aMCatNLO/
+
+./submit_gridpack_generation_local.sh 12000 1nd W01J_5F_NLO_FXFX cards/ 1nd ; 
+./submit_gridpack_generation_local.sh 12000 1nd W0J_5F_NLO_Herwig cards/ 1nd ; 
+./submit_gridpack_generation_local.sh 12000 1nd W0J_5F_NLO cards/ 1nd ; 
+./submit_gridpack_generation_local.sh 12000 1nd W01JetLO_5F cards/ 1nd ; 
+./submit_gridpack_generation_local.sh 12000 1nd W0Jet_5F_LO cards/ 1nd
+
+
+*** produce lhe file ***
+
+cd /afs/cern.ch/work/h/htong
+cmsrel CMSSW_7_1_14
+cd CMSSW_7_1_14/src
+cmsenv 
+mkdir produce_lhe/lhe_W01JetLO_5F
+cd lhe_W01JetLO_5F
+mv ../../genproductions/bin/MadGraph5_aMCatNLO/W01JetLO_5F_tarball.tar.xz .
+tar Jxvf W01JetLO_5F_tarball.tar.xz
+./runcmsgrid.sh 100000 1253 1
+rename lhe file!
+
+*** do parton shower ***
+-- cmsgrid_final.lhe includes the weights form PDF and scale variation --
+-- 0 or 1 jet: no matching .py --
+-- 0 and 1 jet: matching .py --
+
+cmsRun Hadronizer_TuneCUEP8M1_matchingNewInterface_13TeV_LO_5F.py inputFiles="file:lhe_W01JetLO_5F.lhe" outputFile="file:pre_W01JetLO_5F.root" >& Log &
+
+*** create flat tuples ***
+
+cd CMSSW_7_1_14/src
+tar xvzf /afs/cern.ch/work/s/syu/public/forJunYi/710pre8.tgz
+cmsenv
+scramv1 b
+-- copy the root file to here --
+-- change the input/output file to options.inputFiles options.outputFile in genOnly.py --
+cmsRun genOnly.py inputFiles="file:pre_W01JetLO_5F.root" outputFile="file:flattp_W01JetLO_5F.root" ; 
+cmsRun genOnly.py inputFiles="file:pre_W0J_5F_NLO.root" outputFile="file:flattp_W0J_5F_NLO.root" ; 
+cmsRun genOnly.py inputFiles="file:pre_W0Jet_5F_LO.root" outputFile="file:flattp_W0Jet_5F_LO.root" ; 
+cmsRun genOnly.py inputFiles="file:pre_W0Jet_5F_LO_Herwig.root" outputFile="file:flattp_W0Jet_5F_LO_Herwig.root" ; 
+cmsRun genOnly.py inputFiles="file:pre_W0J_5F_NLO_Herwig.root" outputFile="file:flattp_W0J_5F_NLO_Herwig.root" ; 
+cmsRun genOnly.py inputFiles="file:pre_W01J_5F_NLO_FXFX.root" outputFile="file:flattp_W01J_5F_NLO_FXFX.root"
+
+*** compare variables of 4 flat tuples ***
+
+*** to produce py file for herwig++ **
+
+cd CMSSW_7_1_14/src
+
+curl https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_5_X/Configuration/Generator/python/Hadronizer_TuneEE5C_generic_LHE_herwigpp_cff.py  --create-dirs -o  Configuration/Generator/python/Hadronizer_TuneEE5C_generic_LHE_herwigpp_cff.py
+
+curl https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_5_X/Configuration/Generator/python/HerwigppDefaults_cfi.py  --create-dirs -o Configuration/Generator/python/HerwigppDefaults_cfi.py
+
+curl https://raw.githubusercontent.com/cms-sw/cmssw/CMSSW_7_5_X/Configuration/Generator/python/HerwigppUE_EE_5C_cfi.py --create-dirs -o Configuration/Generator/python/HerwigppUE_EE_5C_cfi.py
+
+cmsenv
+scramv1 b
+
+cmsDriver.py Configuration/Generator/python/Hadronizer_TuneEE5C_generic_LHE_herwigpp_cff.py --step GEN --conditions auto:mc --pileup NoPileUp --datamix NODATAMIXER --eventcontent RAWSIM --datatier GEN --no_exec 
