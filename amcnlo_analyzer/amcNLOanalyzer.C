@@ -55,14 +55,7 @@ void amcNLOanalyzer(string inputName){
 
   TFile *outFile = new TFile(outputName.data(), "RECREATE");
 
-  TH1F *hJetPt = new TH1F("hJetPt", "pt leading jet", 100, 0, 500);
   TH1F *hnJet  = new TH1F("hnJet", "number of leading jet", 10, 0, 10);
-  TH1F *hlepPt = new TH1F("hlepPt", "hlepPt", 100, 0 , 300);
-  TH1F *hmet   = new TH1F("hmet", "hmet", 100, 0, 350);
-  TH1F *hplusYlepJet  = new TH1F("hplusYlepJet", "hplusYlepJet", 30, -3, 3);
-  TH1F *hminusYlepJet = new TH1F("hminusYlepJet", "hminusYlepJet", 30, -3, 3);
-  TH1F *hplusYWJet  = new TH1F("hplusYWJet", "hplusYWJet", 30, -3, 3);
-  TH1F *hminusYWJet = new TH1F("hminusYWJet", "hminusYWJet", 30, -3, 3);
 
   Int_t   nLep_;
   Float_t LepPt_;
@@ -184,8 +177,6 @@ void amcNLOanalyzer(string inputName){
     LepCh_  = lepcharge;
     LepId_  = genParId[lepIdMax];
 
-    hlepPt->Fill(LepPt_, mcWeight);
-
     // select highest pt MET
     Int_t metIdMax = -1;
     Float_t metPtmax = -999.;
@@ -210,8 +201,6 @@ void amcNLOanalyzer(string inputName){
       neutrino.SetPtEtaPhiE(genParPt[metIdMax], genParEta[metIdMax], genParPhi[metIdMax], genParE[metIdMax]);
 
     metPt_ = metPtmax;
-
-    hmet->Fill(metPt_, mcWeight);
 
     TLorentzVector W = lepton + neutrino;
 
@@ -253,11 +242,6 @@ void amcNLOanalyzer(string inputName){
     plusYW_  = (0.5*(W.Rapidity() + Jet.Rapidity()));
     minusYW_ = (0.5*(W.Rapidity() - Jet.Rapidity()));
 
-    hplusYlepJet->Fill((LepY_ + JetY_)/2, mcWeight);
-    hminusYlepJet->Fill((LepY_ - JetY_)/2, mcWeight);
-    hplusYWJet->Fill((WY_ + JetY_)/2, mcWeight);
-    hminusYWJet->Fill((WY_ - JetY_)/2, mcWeight);
-    hJetPt->Fill(JetPt_, mcWeight);
     tree->Fill();
 
     printProgBar(ev/(Double_t)data.GetEntriesFast()*100);
