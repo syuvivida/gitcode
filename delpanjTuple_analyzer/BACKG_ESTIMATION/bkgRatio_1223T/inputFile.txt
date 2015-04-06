@@ -1,0 +1,6 @@
+sideZpMass_DYJetsToLL_PtZ-70To100.root  11764538  63.5  1177.3  39.3
+sideZpMass_DYJetsToLL_PtZ-100.root      12511326  39.4  1177.3  39.3
+sideZpMass_TTTo2L2Nu2B.root             10783509  25.8  252.9   14.5
+sideZpMass_WW_pythia_filtered.root      9959752   56.0  56.0    3.1
+sideZpMass_WZ_pythia_filtered.root      9910267   22.4  23.7    1.1
+sideZpMass_ZZ_pythia_filtered.root      9769891   7.6   7.6     0.4
