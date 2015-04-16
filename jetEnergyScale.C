@@ -59,7 +59,7 @@ Float_t jetPtEtaUnc(Double_t myPt, Double_t myEta){
 
 }
 
-Float_t jetEnergyScale(Int_t mode){
+TLorentzVector jetEnergyScale(Int_t mode){
 
   TreeReader data("/home/henry/Desktop/work_area/XtoZH_study/delpanjTuple_background/DY/delpanj_v4_DYJetsToLL_PtZ-100.root");
 
@@ -99,6 +99,6 @@ TLorentzVector jet_corr(0,0,0,0);
 
   }
 
-  return jet_corr.M();
+  return jet_corr;
 
 }
