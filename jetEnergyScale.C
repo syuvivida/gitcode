@@ -59,45 +59,16 @@ Float_t jetPtEtaUnc(Double_t myPt, Double_t myEta){
 
 }
 
-TLorentzVector jetEnergyScale(Int_t mode){
+TLorentzVector jetEnergyScale(Int_t mode, Float_t myPt, Float_t myEta, TLorentzVector jet_original){
 
-  TreeReader data("/home/henry/Desktop/work_area/XtoZH_study/delpanjTuple_background/DY/delpanj_v4_DYJetsToLL_PtZ-100.root");
+  TLorentzVector falseVector(0,0,0,0);
 
-TLorentzVector jet_original(0,0,0,0);
-TLorentzVector jet_corr(0,0,0,0);
+  if( mode > 1 || mode < -1 ) return falseVector;
 
- for (Long64_t ev = 0; ev < 10000/*data.GetEntriesFast()*/; ev++){
+  Float_t myUnc = jetPtEtaUnc(myPt, myEta);
+  Float_t corrUnc = (1 + mode*fabs(myUnc));
 
-    if ( ev % 50000 == 0 )
-      fprintf(stderr, "Processing event %lli of %lli\n", ev+1, data.GetEntriesFast());
-
-    data.GetEntry(ev);
-
-    Int_t    CA8nJet   = data.GetInt("CA8nJet");
-    Float_t* CA8jetPt  = data.GetPtrFloat("CA8jetPt");
-    Float_t* CA8jetEta = data.GetPtrFloat("CA8jetEta");
-    Float_t* CA8jetPhi = data.GetPtrFloat("CA8jetPhi");
-    Float_t* CA8jetM   = data.GetPtrFloat("CA8jetMass");
-
-    if( mode > 1 || mode < -1 ) continue;
-
-    for(Int_t ijet = 0; ijet < CA8nJet; ijet++){
-
-      Float_t myPt = CA8jetPt[ijet];
-      Float_t myEta = CA8jetEta[ijet];
-      Float_t myUnc = jetPtEtaUnc(myPt, myEta);
-      Float_t corrUnc = (1 + mode*fabs(myUnc));
-
-      jet_original.SetPtEtaPhiM(CA8jetPt[ijet],
-				CA8jetEta[ijet],
-				CA8jetPhi[ijet],
-				CA8jetM[ijet]);
-
-      jet_corr = corrUnc * jet_original;
-
-    }
-
-  }
+  TLorentzVector jet_corr = corrUnc * jet_original;
 
   return jet_corr;
 
