@@ -45,6 +45,9 @@ Bool_t gPtGreater(gMap i, gMap j){
 
 Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t &scaleMode, Int_t *accepted){
 
+  if( csvlMode < 0 || csvlMode > 2 ) return false;
+  if( scaleMode < -1 || scaleMode > 1 ) return false;
+
   *accepted = -1;
 
   Int_t    nEle   = data.GetInt("nEle");
@@ -106,6 +109,7 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
     sortMuPt.push_back(temp);
 
   }
+
   std::sort(sortMuPt.begin(),sortMuPt.end(),gPtGreater);
 
 
@@ -172,7 +176,7 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
     if( !prunedJetCut ) continue;
     if( csvlMode==2 && !Tau21Cut ) continue;
 
-    if( El == true ){
+    if( El ){
 
       for(Int_t i = 0; i < nSortEle; i++){
 
@@ -192,7 +196,7 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
       } // loop ele
     } // ee
     
-    if( Mu == true ){
+    if( Mu ){
 
       for(Int_t i = 0; i < nSortMu; i++){
 
@@ -212,7 +216,7 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
       } // loop muon                                                                             
     } // mm                               
     
-    if(overlap) continue;
+    if( overlap ) continue;
  
 
     // b-tagging CSVL cut
