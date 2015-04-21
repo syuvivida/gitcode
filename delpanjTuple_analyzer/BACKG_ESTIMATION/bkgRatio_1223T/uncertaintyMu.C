@@ -87,14 +87,16 @@ void uncertaintyMu(){
 
   // Systematic Uncertainty
 
-  Double_t uncertainty[3][nvarBins];
+  Double_t difftemp[3][nvarBins];
   Double_t vy[nvarBins] = {0};
+  Double_t vyUp[nvarBins] = {0};
+  Double_t vyDw[nvarBins] = {0};
 
   for(Int_t i = 0; i < 3; i++){
     for(Int_t j = 0; j < nvarBins; j++){
 
       vy[j] = centerValue[0][j];
-      uncertainty[i][j] = centerValue[i+1][j] - vy[j];
+      difftemp[i][j] = centerValue[i+1][j] - vy[j];
 
     }
   }
@@ -107,7 +109,7 @@ void uncertaintyMu(){
   for(Int_t j = 0; j < nvarBins; j++){
     for(Int_t i = 0; i < 3; i++){
 
-      systemp[j] += TMath::Power(uncertainty[i][j],2);
+      systemp[j] += TMath::Power(difftemp[i][j],2);
 
     }
 
@@ -116,6 +118,16 @@ void uncertaintyMu(){
     ey[j] = TMath::Sqrt(systemp[j]);
 
   }
+
+  for(Int_t i = 0; i < 3; i++){
+    for(Int_t j = 0; j < nvarBins; j++){
+
+      vyUp[j] = centerValue[0][j] + ey[j];
+      vyDw[j] = centerValue[0][j] - ey[j];
+
+    }
+  }
+
 
   // Drawing
 
@@ -126,33 +138,49 @@ void uncertaintyMu(){
   TGraphErrors *g_stat = new TGraphErrors(nvarBins, vx, vy, ex, statUnc);
   g_stat->SetLineColor(kBlack);
 
+  TGraphErrors *g_statUp = new TGraphErrors(nvarBins, vx, vyUp, ex, statUnc);
+  TGraphErrors *g_statDw = new TGraphErrors(nvarBins, vx, vyDw, ex, statUnc);
+
   TGraphErrors *g_syst = new TGraphErrors(nvarBins, vx, vy, ex, ey);
   g_syst->SetMarkerStyle(8);
   g_syst->SetMarkerSize(0);
   g_syst->SetMarkerColor(kBlue);
   g_syst->SetFillColor(kGreen);
-  g_syst->SetFillStyle(3001);
+  g_syst->SetFillStyle(1001);
 
   TCanvas* c = new TCanvas("c", "", 0, 0, 800, 600);
 
   TF1* f_ratioFit = new TF1("f_ratioFit", fitFunc, 680, 2400, 2);
 
-  TH1D* h_ = new TH1D("", "", nvarBins, varBins);
+  TH1D* h_ = new TH1D("h_", "DY MC bkg over all MC bkgs", nvarBins, varBins);
 
   c->cd();
 
+  h_->GetXaxis()->SetTitle("X mass");
   h_->GetYaxis()->SetTitle("Ratio");
-  h_->Fit("f_ratioFit", "", "", 680, 2400);
   h_->SetMinimum(0);
   h_->SetMaximum(2);
   h_->Draw("p");
-
   line->Draw("same");
   h_->Draw("psame");
-  g_stat->Draw("psame");
+  g_stat->Fit("f_ratioFit", "", "", 680, 2400);
+  g_statUp->Fit("f_ratioFit", "", "", 680, 2400);
+  g_statDw->Fit("f_ratioFit", "", "", 680, 2400);
   g_syst->Draw("3psame");
-  
-  c->Print("bkgRatioMu.jpg");
+  g_stat->Draw("psame");
+  g_statUp->Draw("psame");
+  g_statDw->Draw("psame");
+
+  TLegend* leg = new TLegend(0.2, 0.7, 0.6, 0.8);
+  leg->SetFillStyle(0);
+  leg->SetFillColor(0);
+  leg->SetBorderSize(1);
+  leg->AddEntry(g_stat, "central value with statistical uncertainty", "le");
+  leg->AddEntry(g_syst, "band of systematic uncertainty", "f");
+  leg->AddEntry(f_ratioFit, "fitting line");
+  leg->Draw("same");  
+
+  c->Print("bkgRatioMu.pdf");
   
 }
 

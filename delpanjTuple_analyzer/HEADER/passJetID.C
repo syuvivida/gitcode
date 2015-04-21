@@ -7,9 +7,9 @@
   1. b-tagging CSVL cut on subjet or CA8jet (optional, insert mode==1)
   2. tau21<0.5 for leading jet (optional, insert mode==2)
   3. remove overlap between jet and leptons if deltaR<1.0
-  jetPt>30 , fabs(Eta)<2.4
-  PrunedJetMass>40 , PrunedJetPt>80
-  jetID>0 
+     jetPt>30 , fabs(Eta)<2.4
+     PrunedJetMass>40 , PrunedJetPt>80
+     jetID>0 
   4. return leading jet index
 
 */
@@ -31,7 +31,8 @@
 #include <TProfile.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include "untuplizer.h"
+#include <untuplizer.h>
+#include <corrJetVector.C>
 
 struct gMap{
   Int_t index;
@@ -39,10 +40,10 @@ struct gMap{
 };
 
 Bool_t gPtGreater(gMap i, gMap j){ 
-  return (i.pt>j.pt); 
+  return (i.pt > j.pt); 
 }
 
-Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
+Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t &scaleMode, Int_t *accepted){
 
   *accepted = -1;
 
@@ -91,6 +92,7 @@ Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
     sortElePt.push_back(temp);
 
   }
+
   std::sort(sortElePt.begin(),sortElePt.end(),gPtGreater);
 
 
@@ -126,6 +128,7 @@ Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
     sortJetPt.push_back(temp);
 
   }
+
   std::sort(sortJetPt.begin(),sortJetPt.end(),gPtGreater);
   
 
@@ -134,6 +137,7 @@ Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
   goodJetIndex.clear();
 
   TLorentzVector lep(0,0,0,0);
+  TLorentzVector jets_temp(0,0,0,0);
   TLorentzVector alljets(0,0,0,0);
   Float_t dRjl = -999;
 
@@ -146,23 +150,29 @@ Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
     Int_t jIndex = sortJetPt[k].index;
 
     Bool_t overlap = false;
-    Bool_t basicCuts = (CA8jetPt[jIndex]>30)&&(fabs(CA8jetEta[jIndex])<2.4);
+    Bool_t ptCut = (CA8jetPt[jIndex]>30);
+    Bool_t etaCut = (fabs(CA8jetEta[jIndex])<2.4);
     Bool_t IDcut = (CA8jetID[jIndex]>0);
-    Bool_t prunedJetCuts = (CA8jetPt[jIndex]>80)&&(CA8jetPrunedM[jIndex]>40);
+    Bool_t prunedJetCut = (CA8jetPt[jIndex]>80)&&(CA8jetPrunedM[jIndex]>40);
     Bool_t Tau21Cut = ((CA8jetTau2[jIndex]/CA8jetTau1[jIndex])<0.5);
 
+    jets_temp.SetPtEtaPhiM(CA8jetPt[jIndex],
+			   CA8jetEta[jIndex],
+			   CA8jetPhi[jIndex],
+			   CA8jetM[jIndex]);
 
-    alljets.SetPtEtaPhiM(CA8jetPt[jIndex],
-                         CA8jetEta[jIndex],
-			 CA8jetPhi[jIndex],
-			 CA8jetM[jIndex]);
+    if( abs(scaleMode) == 1 )
+      alljets = corrJetVector(unctext.data(), scaleMode, jets_temp);
+    else 
+      alljets = jets_temp;
 
-    if(!basicCuts) continue;
-    if(!IDcut) continue;
-    if(!prunedJetCuts) continue;
-    if( mode==2 && !Tau21Cut) continue;
+    if( !ptCut ) continue;
+    if( !etaCut ) continue;
+    if( !IDcut ) continue;
+    if( !prunedJetCut ) continue;
+    if( csvlMode==2 && !Tau21Cut ) continue;
 
-    if(El == true){
+    if( El == true ){
 
       for(Int_t i = 0; i < nSortEle; i++){
 
@@ -182,7 +192,7 @@ Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
       } // loop ele
     } // ee
     
-    if(Mu == true){
+    if( Mu == true ){
 
       for(Int_t i = 0; i < nSortMu; i++){
 
@@ -212,7 +222,7 @@ Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
     Bool_t subjetbtag = false;
     Bool_t fatjetCSV = (CA8jetCSV[jIndex]>0.244);
 
-    if(nSubjet[jIndex] == 2){
+    if( nSubjet[jIndex] == 2 ){
 
       subjet1.SetPtEtaPhiM(SubjetPt[jIndex][0],SubjetEta[jIndex][0],SubjetPhi[jIndex][0],SubjetM[jIndex][0]);
       subjet2.SetPtEtaPhiM(SubjetPt[jIndex][1],SubjetEta[jIndex][1],SubjetPhi[jIndex][1],SubjetM[jIndex][1]);
@@ -222,14 +232,14 @@ Bool_t passJetID(TreeReader &data, Int_t &mode, Int_t *accepted){
 
     }
 
-    if(mode==1 && dRjj<0.3 && !fatjetCSV) continue;
-    if(mode==1 && dRjj>0.3 && subjetbtag==false) continue;
+    if(csvlMode==1 && dRjj<0.3 && !fatjetCSV) continue;
+    if(csvlMode==1 && dRjj>0.3 && !subjetbtag) continue;
     
     goodJetIndex.push_back(jIndex);    
 
   } // loop jets
 
-  if(goodJetIndex.size()>0){
+  if( goodJetIndex.size() > 0 ){
 
     *accepted = goodJetIndex[0];
     return true;
