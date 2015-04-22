@@ -31,8 +31,8 @@
 #include <TProfile.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include <untuplizer.h>
-#include <corrJetVector.C>
+#include "untuplizer.h"
+#include "corrJetVector.C"
 
 struct gMap{
   Int_t index;
@@ -43,7 +43,7 @@ Bool_t gPtGreater(gMap i, gMap j){
   return (i.pt > j.pt); 
 }
 
-Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t &scaleMode, Int_t *accepted){
+Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t &scaleMode, Int_t *accepted, TLorentzVector *goodJetVector){
 
   if( csvlMode < 0 || csvlMode > 2 ) return false;
   if( scaleMode < -1 || scaleMode > 1 ) return false;
@@ -68,11 +68,11 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
   Float_t* CA8jetPt   = data.GetPtrFloat("CA8jetPt");
   Float_t* CA8jetEta  = data.GetPtrFloat("CA8jetEta");
   Float_t* CA8jetPhi  = data.GetPtrFloat("CA8jetPhi");
-  Float_t* CA8jetM    = data.GetPtrFloat("CA8jetMass");
+  Float_t* CA8jetEn   = data.GetPtrFloat("CA8jetEn");
   Int_t*   CA8jetID   = data.GetPtrInt("CA8jetPassID");
   Float_t* CA8jetTau1 = data.GetPtrFloat("CA8jetTau1");
   Float_t* CA8jetTau2 = data.GetPtrFloat("CA8jetTau2");
-  Float_t* CA8jetPrunedM  = data.GetPtrFloat("CA8jetPrunedMass");
+  Float_t* CA8jetPrunedEn  = data.GetPtrFloat("CA8jetPrunedEn");
 
 
   // b-tagging
@@ -82,7 +82,7 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
   vector<Float_t>* SubjetPt  = data.GetPtrVectorFloat("CA8subjetPrunedPt");
   vector<Float_t>* SubjetEta = data.GetPtrVectorFloat("CA8subjetPrunedEta");
   vector<Float_t>* SubjetPhi = data.GetPtrVectorFloat("CA8subjetPrunedPhi");
-  vector<Float_t>* SubjetM   = data.GetPtrVectorFloat("CA8subjetPrunedMass");
+  vector<Float_t>* SubjetEn   = data.GetPtrVectorFloat("CA8subjetPrunedEn");
 
 
   // sorting electron
@@ -157,13 +157,13 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
     Bool_t ptCut = (CA8jetPt[jIndex]>30);
     Bool_t etaCut = (fabs(CA8jetEta[jIndex])<2.4);
     Bool_t IDcut = (CA8jetID[jIndex]>0);
-    Bool_t prunedJetCut = (CA8jetPt[jIndex]>80)&&(CA8jetPrunedM[jIndex]>40);
+    Bool_t prunedJetCut = (CA8jetPt[jIndex]>80)&&(CA8jetPrunedEn[jIndex]>40);
     Bool_t Tau21Cut = ((CA8jetTau2[jIndex]/CA8jetTau1[jIndex])<0.5);
 
-    jets_temp.SetPtEtaPhiM(CA8jetPt[jIndex],
+    jets_temp.SetPtEtaPhiE(CA8jetPt[jIndex],
 			   CA8jetEta[jIndex],
 			   CA8jetPhi[jIndex],
-			   CA8jetM[jIndex]);
+			   CA8jetEn[jIndex]);
 
     if( abs(scaleMode) == 1 )
       alljets = corrJetVector(unctext.data(), scaleMode, jets_temp);
@@ -228,8 +228,8 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
 
     if( nSubjet[jIndex] == 2 ){
 
-      subjet1.SetPtEtaPhiM(SubjetPt[jIndex][0],SubjetEta[jIndex][0],SubjetPhi[jIndex][0],SubjetM[jIndex][0]);
-      subjet2.SetPtEtaPhiM(SubjetPt[jIndex][1],SubjetEta[jIndex][1],SubjetPhi[jIndex][1],SubjetM[jIndex][1]);
+      subjet1.SetPtEtaPhiE(SubjetPt[jIndex][0],SubjetEta[jIndex][0],SubjetPhi[jIndex][0],SubjetEn[jIndex][0]);
+      subjet2.SetPtEtaPhiE(SubjetPt[jIndex][1],SubjetEta[jIndex][1],SubjetPhi[jIndex][1],SubjetEn[jIndex][1]);
       dRjj = subjet1.DeltaR(subjet2);
 
       if(SubjetCSV[jIndex][0]>0.244 && SubjetCSV[jIndex][1]>0.244) subjetbtag = true;
@@ -246,6 +246,11 @@ Bool_t passJetID(TreeReader &data, std::string &unctext, Int_t &csvlMode, Int_t 
   if( goodJetIndex.size() > 0 ){
 
     *accepted = goodJetIndex[0];
+    goodJetVector->SetPtEtaPhiE(CA8jetPt[*accepted],
+				CA8jetEta[*accepted],
+				CA8jetPhi[*accepted],
+				CA8jetEn[*accepted]);
+
     return true;
 
   }
