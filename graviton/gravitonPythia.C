@@ -45,31 +45,30 @@ void gravitonPythia(){
       if( abs(genParId[i]) == 11 || abs(genParId[i]) == 13 || abs(genParId[i]) == 15 ) chgLepID = i;
       if( abs(genParId[i]) == 12 || abs(genParId[i]) == 14 || abs(genParId[i]) == 16 ) neuLepID = i;
 
-      chgLep.SetPtEtaPhiM(genParPt[chgLepID], 
-			  genParEta[chgLepID], 
-			  genParPhi[chgLepID], 
-			  genParM[chgLepID]);
-
-      neuLep.SetPtEtaPhiM(genParPt[neuLepID], 
-			  genParEta[neuLepID], 
-			  genParPhi[neuLepID], 
-			  genParM[neuLepID]);
-
-      TLorentzVector  Wb = chgLep + neuLep;
-
-      TVector3 WbP = Wb.Vect();
-      TVector3 bv = -Wb.BoostVector();
-
-      chgLep.Boost(bv);
-    
-      TVector3 chgLepP = chgLep.Vect();
-    
-      Double_t cosTh = TMath::Cos(chgLepP.Angle(WbP));
-   
-      h_cosTh->Fill(cosTh);
-
     }
 
+    chgLep.SetPtEtaPhiM(genParPt[chgLepID], 
+			genParEta[chgLepID], 
+			genParPhi[chgLepID], 
+			genParM[chgLepID]);
+
+    neuLep.SetPtEtaPhiM(genParPt[neuLepID], 
+			genParEta[neuLepID], 
+			genParPhi[neuLepID], 
+			genParM[neuLepID]);
+
+    TLorentzVector  Wb = chgLep + neuLep;
+
+    TVector3 WbP = Wb.Vect();
+    TVector3 bv = -Wb.BoostVector();
+
+    chgLep.Boost(bv);
+    
+    TVector3 chgLepP = chgLep.Vect();
+    
+    Double_t cosTh = TMath::Cos(chgLepP.Angle(WbP));
+   
+    h_cosTh->Fill(cosTh);
 
 
     // cos#theta* in the RSG rest frame
@@ -86,35 +85,34 @@ void gravitonPythia(){
       if( genParId[i] == +24 ) WplusID = i;
       if( genParId[i] == -24 ) WminusID = i;
 
-      Wplus.SetPtEtaPhiM(genParPt[WplusID], 
-			 genParEta[WplusID], 
-			 genParPhi[WplusID], 
-			 genParM[WplusID]);
-
-      Wplus.SetPtEtaPhiM(genParPt[WminusID], 
-			 genParEta[WminusID], 
-			 genParPhi[WminusID], 
-			 genParM[WminusID]);
-
-      TLorentzVector RSG = Wplus + Wminus;
-
-      TVector3 RSGP = RSG.Vect();
-      TVector3 gv = -RSG.BoostVector();
-
-      Wplus.Boost(gv);
-
-      TVector3 WplusP = Wplus.Vect();
-
-      Double_t cosThStar = TMath::Cos(WplusP.Angle(RSGP));
-
-      h_cosThStar->Fill(cosThStar);
-
     }
 
+    Wplus.SetPtEtaPhiM(genParPt[WplusID], 
+		       genParEta[WplusID], 
+		       genParPhi[WplusID], 
+		       genParM[WplusID]);
+
+    Wplus.SetPtEtaPhiM(genParPt[WminusID], 
+		       genParEta[WminusID], 
+		       genParPhi[WminusID], 
+		       genParM[WminusID]);
+
+    TLorentzVector RSG = Wplus + Wminus;
+
+    TVector3 RSGP = RSG.Vect();
+    TVector3 gv = -RSG.BoostVector();
+
+    Wplus.Boost(gv);
+
+    TVector3 WplusP = Wplus.Vect();
+
+    Double_t cosThStar = TMath::Cos(WplusP.Angle(RSGP));
+
+    h_cosThStar->Fill(cosThStar);
 
   }
 
-  TCanvas* c = new TCanvas("c","",0,0,1000,600);
+  TCanvas* c = new TCanvas("c","",0,0,1000,500);
   c->Divide(2,1);
 
   c->cd(1); 
