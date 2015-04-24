@@ -81,7 +81,7 @@ void gravitonPythia(){
 
     for(Int_t i = 0; i < nGenPar; i++){
 
-      if( genParSt[i] != 22 ) continue;
+      if( genParSt[i] !=  22 ) continue;
       if( genParId[i] == +24 ) WplusID = i;
       if( genParId[i] == -24 ) WminusID = i;
 
