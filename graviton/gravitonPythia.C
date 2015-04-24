@@ -40,20 +40,20 @@ void gravitonPythia(std::string fileName){
 
     for(Int_t i = 0; i < nGenPar; i++){
 
-      if( abs(genParId[i])==11 || abs(genParId[i])==13 || abs(genParId[i])==15 ) 
+      if( genParSt[i]!=23 && 
+	  (abs(genParId[i])!=11 && abs(genParId[i])!=13 && abs(genParId[i])!=15) ) continue;
 	
-	chgLepID = i;
+      chgLepID = i;
 
-      if( (abs(genParId[i])==11 || abs(genParId[i])==13 || abs(genParId[i])==15 || 
-	   abs(genParId[i])==12 || abs(genParId[i])==14 || abs(genParId[i])==16 ) 
-	  && abs(genMomParId[i])==24 )
+      if( genParSt[genMo1[i]]!=22 && abs(genMomParId[i])==24 &&
+	  (abs(genParId[i])!=12 && abs(genParId[i])!=14 && abs(genParId[i])!=16) ) continue;
 
-	WbID = genMo1[i];
-
-      if( genParSt[chgLepID]!=23 || genParSt[WbID]!=22 ) continue;
+      WbID = genMo1[i];
 
     }
-
+  
+  std:cout << chgLepID << "    " << WbID << std::endl;
+    
     TLorentzVector chgLep;
     TLorentzVector Wb;
 
