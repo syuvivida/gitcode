@@ -112,17 +112,20 @@ void gravitonPythia(){
 
   }
 
-  TCanvas* c = new TCanvas("c","",0,0,1000,500);
-  c->Divide(2,1);
+  TCanvas* c[2];
 
-  c->cd(1); 
+  c[0] = new TCanvas("c0","",0,0,800,600);
+  c[1] = new TCanvas("c1","",0,0,800,600);
+
+  c[0]->cd(); 
   h_cosTh->SetXTitle("cos#theta_1 in the W rest frame");
   h_cosTh->Draw();
 
-  c->cd(2); 
+  c[1]->cd(); 
   h_cosThStar->SetXTitle("cos#theta* in the RSG rest frame");
   h_cosThStar->Draw();
 
-  c->Print("RSgravitonPythia.pdf");
+  c[0]->Print("RSgravitonPythia.pdf(");
+  c[1]->Print("RSgravitonPythia.pdf)");
     
 }
