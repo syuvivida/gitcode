@@ -6,11 +6,11 @@
 #include <TLorentzVector.h>
 #include "untuplizer.h"
 
-void gravitonPythia(std::string fileName){
+void gravitonPythia(){
 
   gStyle->SetOptStat(0);
 
-  TreeReader data(fileName.data());
+  TreeReader data("pythia8_RS_WW.root");
 
   TH1F* h_cosTh = new TH1F("h_cosTh","RS Graviton by Pythia8",100,-1,1);
   
@@ -18,10 +18,7 @@ void gravitonPythia(std::string fileName){
   h_cosTh->SetMinimum(0);
   h_cosTh->Sumw2();
 
-  for (Long64_t ev = 0 ; ev < data.GetEntriesFast(); ev++){
-
-    if ( ev % 50000 == 0 )
-      fprintf(stderr, "Processing event %lli of %lli\n", ev+1, data.GetEntriesFast());
+  for(Long64_t ev = 0 ; ev < data.GetEntriesFast(); ev++){
 
     data.GetEntry(ev);
 
