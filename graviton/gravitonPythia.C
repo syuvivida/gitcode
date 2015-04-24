@@ -26,9 +26,7 @@ void gravitonPythia(std::string fileName){
     data.GetEntry(ev);
 
     Int_t nGenPar = data.GetInt("nGenPar"); 
-    Int_t* genMo1 = data.GetPtrInt("genMo1");
     Int_t* genParId = data.GetPtrInt("genParId");
-    Int_t* genMomParId = data.GetPtrInt("genMomParId");
     Int_t* genParSt = data.GetPtrInt("genParSt");
     Float_t* genParPt = data.GetPtrFloat("genParPt");
     Float_t* genParEta = data.GetPtrFloat("genParEta");
@@ -36,49 +34,41 @@ void gravitonPythia(std::string fileName){
     Float_t* genParM = data.GetPtrFloat("genParM");
       
     Int_t chgLepID = -1;
-    Int_t WbID = -1;
+    Int_t neuLepID = -1;
+
+    TLorentzVector chgLep(0,0,0,0);
+    TLorentzVector neuLep(0,0,0,0);
 
     for(Int_t i = 0; i < nGenPar; i++){
 
-      if( genParSt[i]!=23 && 
-	  (abs(genParId[i])!=11 && abs(genParId[i])!=13 && abs(genParId[i])!=15) ) continue;
-	
-      chgLepID = i;
+      if( genParSt[i] != 23 ) continue; 
+      if( abs(genParId[i]) == 11 || abs(genParId[i]) == 13 || abs(genParId[i]) == 15 ) chgLepID = i;
+      if( abs(genParId[i]) == 12 || abs(genParId[i]) == 14 || abs(genParId[i]) == 16 ) neuLepID = i;
 
-      if( genParSt[genMo1[i]]!=22 && abs(genMomParId[i])==24 &&
-	  (abs(genParId[i])!=12 && abs(genParId[i])!=14 && abs(genParId[i])!=16) ) continue;
+      chgLep.SetPtEtaPhiM(genParPt[chgLepID], 
+			  genParEta[chgLepID], 
+			  genParPhi[chgLepID], 
+			  genParM[chgLepID]);
 
-      WbID = genMo1[i];
+      neuLep.SetPtEtaPhiM(genParPt[neuLepID], 
+			  genParEta[neuLepID], 
+			  genParPhi[neuLepID], 
+			  genParM[neuLepID]);
+
+      TLorentzVector  Wb = chgLep + neuLep;
+
+      TVector3 WbP = Wb.Vect();
+      TVector3 bv = -Wb.BoostVector();
+
+      chgLep.Boost(bv);
+    
+      TVector3 chgLepP = chgLep.Vect();
+    
+      Double_t cosTh = TMath::Cos(chgLepP.Angle(WbP));
+   
+      h_cosTh->Fill(cosTh);
 
     }
-  
-  std:cout << chgLepID << "    " << WbID << std::endl;
-    
-    TLorentzVector chgLep;
-    TLorentzVector Wb;
-
-    chgLep.SetPtEtaPhiM(genParPt[chgLepID], 
-			genParEta[chgLepID], 
-			genParPhi[chgLepID], 
-			genParM[chgLepID]);
-
-    Wb.SetPtEtaPhiM(genParPt[WbID], 
-		    genParEta[WbID], 
-		    genParPhi[WbID], 
-		    genParM[WbID]);
-
-
-    TVector3 WbP = Wb.Vect();
-    TVector3 bv = -Wb.BoostVector();
-
-    Wb.Boost(bv);
-    chgLep.Boost(bv);
-    
-    TVector3 chgLepP = chgLep.Vect();
-    
-    Double_t cosTh = TMath::Cos(chgLepP.Angle(WbP));
-   
-    h_cosTh->Fill(cosTh);
 
   }
 
