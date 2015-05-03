@@ -35,6 +35,8 @@ corrJetV::corrJetV(std::string textFile){
   nPtBins = (nCol-3)/3;
   nEtaBins = nRow;
 
+  if( nPtBins > 999 || nEtaBins > 999 ) return;
+
   ifstream fin;
   fin.open(textFile.data());
 

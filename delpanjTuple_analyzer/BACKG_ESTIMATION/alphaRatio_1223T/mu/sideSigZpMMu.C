@@ -4,7 +4,7 @@
 #include <TLorentzVector.h>
 #include "../../../HEADER/untuplizer.h"
 #include "../../../HEADER/passMuonID.C"
-#include "../../../HEADER/passJetID.C"
+#include "../../../HEADER/passJetID_mod.h"
 #include "../../../HEADER/loadingbar.C"
 
 std::string unctext = "/home/henry/Desktop/work_area/XtoZH_study/delpanjTuple_analyzer/HEADER/START53_V23_Uncertainty_AK7PFchs.txt";
@@ -26,6 +26,8 @@ void sideSigZpMMu(std::string inputFile, Int_t scaleMode){
   h_ZpMass->GetXaxis()->SetTitle("Zprime mass");
   h_ZpMass->GetYaxis()->SetTitle("Event number");
 
+  corrJetV corrJet(unctext);
+  
   // begin of event loop
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
@@ -97,7 +99,7 @@ void sideSigZpMMu(std::string inputFile, Int_t scaleMode){
     Int_t maxJetIndex;
     TLorentzVector tempVector(0,0,0,0);
 
-    if( !passJetID(data, unctext, csvlMode, scaleMode, &maxJetIndex, &tempVector) )
+    if( !passJetID(data, corrJet, csvlMode, scaleMode, &maxJetIndex, &tempVector) )
       continue;
  
     TLorentzVector Higgs = tempVector;
