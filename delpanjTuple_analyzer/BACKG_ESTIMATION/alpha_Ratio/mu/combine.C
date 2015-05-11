@@ -1,52 +1,34 @@
 #include <vector>
-#include <string>
-#include <sstream>
 #include <iostream>
-#include <algorithm>
 #include <TF1.h>
-#include <TPad.h>
-#include <TH1D.h>
-#include <TMath.h>
+#include <TH1.h>
 #include <TFile.h>
-#include <TList.h>
-#include <TGraph.h>
-#include <TLegend.h>
+#include <TMath.h>
 #include <TStyle.h>
-#include <TChain.h>
 #include <TCanvas.h>
-#include <TBranch.h>
-#include <TRandom.h>
-#include <TVectorT.h>
-#include <TProfile.h>
-#include <TLorentzVector.h>
-#include <TSystemDirectory.h>
-#include <TGraphAsymmErrors.h>
 
-const Int_t totalNEvent_dy70 = 11764538;
-const Int_t totalNEvent_dy100 = 12511326;
-const Double_t crossSection_dy70 = 63.5;
-const Double_t crossSection_dy100 = 39.4;
-const Double_t dataLumi_totalDMu = 19671.225;
-// formula: scale = data_luminosity / bkg_luminosity
-const Double_t scale_dy70 = dataLumi_totalDMu / (totalNEvent_dy70 / crossSection_dy70);
-const Double_t scale_dy100 = dataLumi_totalDMu / (totalNEvent_dy100 / crossSection_dy100);
-Double_t fitFunc(Double_t*, Double_t*);
-
-void drawAlpMu(){
-
-  TFile *f = TFile::Open("sideSigZpMMu.root");
-
-  TH1D* h_dy70side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_dy70sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-70To100.root"));
-  TH1D* h_dy100side = (TH1D*)(f->Get("sideZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dy100sign = (TH1D*)(f->Get("signZpMass_DYJetsToLL_PtZ-100.root"));
-  TH1D* h_dataMuside = (TH1D*)(f->Get("sideZpMass_data_DoubleMu.root"));
-  TH1D* h_dataMusign = (TH1D*)(f->Get("signZpMass_data_DoubleMu.root"));
-
-  // [side][signal]
-  TH1D* h_target[2][3] = {{h_dy70side, h_dy100side, h_dataMuside},
-			  {h_dy70sign, h_dy100sign, h_dataMusign}};
+Double_t fitFunc(Double_t* v, Double_t* par){
   
+  Double_t x = v[0];
+  return par[0]*TMath::Exp(par[1]*x + par[2]/x);
+  
+}
+
+void combine(Int_t scaleMode){
+
+  TFile *f_side = TFile::Open("SideZpMMu.root");
+  TFile *f_signal = TFile::Open("SignalZpMMu.root");
+  
+  TH1D* h_target[2][3];  // [side][signal]
+  
+  h_target[0][0] = (TH1D*)(f_side->Get(Form("side_MX_%d_DYJetsToLL_PtZ-70To100",scaleMode)));
+  h_target[0][1] = (TH1D*)(f_side->Get(Form("side_MX_%d_DYJetsToLL_PtZ-100",scaleMode)));
+  h_target[0][2] = (TH1D*)(f_side->Get(Form("side_MX_%d_data_DoubleMu",scaleMode)));
+  
+  h_target[1][0] = (TH1D*)(f_signal->Get(Form("signal_MX_%d_DYJetsToLL_PtZ-70To100",scaleMode)));
+  h_target[1][1] = (TH1D*)(f_signal->Get(Form("signal_MX_%d_DYJetsToLL_PtZ-100",scaleMode)));
+  h_target[1][2] = (TH1D*)(f_signal->Get(Form("signal_MX_%d_data_DoubleMu",scaleMode)));
+
   const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,
 			      1250,1400,1600,1800,2000,2400};
 
@@ -58,39 +40,33 @@ void drawAlpMu(){
   
   for(Int_t i = 0; i < 2; i++){
     for(Int_t j = 0; j < 3; j++){
-
       for(Int_t nb = 0; nb < nvarBins; nb++){
 
 	binRatio.push_back((varBins[nb+1]-varBins[nb])/smallestBin);
 	h_target[i][j]->SetBinContent(nb+1, (h_target[i][j]->GetBinContent(nb+1)/binRatio[nb]));
 
       }
-
     }
   }
 
-  TF1* fitCurve[2][2]; // [bkg,data][side,signal]
-  TH1D* h_combine[2][2]; // [bkg,data][side,signal]
-  TH1D* h_alpha = new TH1D("h_alpha", "", nvarBins, varBins); // bkg only
-  TH1D* h_numbkgData = new TH1D("h_numbkgData", "", nvarBins, varBins);
-  TCanvas* c = new TCanvas("c", "", 0, 0, 1360, 800);
+  // formula: scale = data_luminosity / bkg_luminosity
+  const Double_t scale_dy70 = 19671.225/(11764538/63.5);
+  const Double_t scale_dy100 = 19671.225/(12511326/39.4);
 
-  Int_t hcount = 1;
   Double_t scale[3] = {scale_dy70, scale_dy100, 1};
   std::string htitle[2][2] = {{"Bkg: Side-band Zp Mass","Bkg: Signal-band Zp Mass"},
 			      {"Data: Side-band Zp Mass","Data: Signal-band Zp Mass"}};
 
-  c->Divide(3,2);
+  gStyle->SetOptFit(0);
 
-  gStyle->SetOptFit(1111);
-
+  TF1* fitCurve[2][2]; // [bkg,data][side,signal]
+  TH1D* h_combine[2][2]; // [bkg,data][side,signal]
+  
   for(Int_t i = 0; i < 2; i++){
     for(Int_t j = 0; j < 2; j++){
 
       fitCurve[i][j] = new TF1(Form("fitCurve%d%d",i,j), fitFunc, 680, 2400, 3);
       h_combine[i][j] = new TH1D(Form("h_combine%d%d",i,j), "", nvarBins, varBins);
-
-      c->cd(hcount);
 
       h_combine[i][j]->Sumw2();
       h_combine[i][j]->SetMarkerStyle(8);
@@ -100,39 +76,32 @@ void drawAlpMu(){
       h_combine[i][j]->GetXaxis()->SetTitle("Mass");
       h_combine[i][j]->GetYaxis()->SetTitle("Event Number");
       
-      if( i < 1 ){
-
+      if( i < 1 ){	
 	h_combine[i][j]->Add(h_target[j][0], scale[0]);
 	h_combine[i][j]->Add(h_target[j][1], scale[1]);
-
-      }else if( i > 0 ){
-
-	h_combine[i][j]->Add(h_target[j][2], scale[2]);
-
       }
+
+      else if( i > 0 )
+	h_combine[i][j]->Add(h_target[j][2], scale[2]);
 
       fitCurve[i][j]->SetParameters(10,-0.005,400);
       h_combine[i][j]->Fit(Form("fitCurve%d%d",i,j), "", "", 680, 2400);
       h_combine[i][j]->SetMinimum(0);
       h_combine[i][j]->Draw();
 
-      hcount++;
-
     }
-
   }
 
-  c->cd(hcount);
-
+  TH1D* h_numbkgData = new TH1D("h_numbkgData", "", nvarBins, varBins);
+  TH1D* h_alpha = new TH1D("h_alpha", "", nvarBins, varBins); // bkg only
+  TF1* f_alphaFit = new TF1("f_alphaFit", "([0]*TMath::Exp([1]*x+[2]/x))/([3]*TMath::Exp([4]*x+[5]/x))", 680, 2400);
+  
   h_alpha->Sumw2();
   h_alpha->SetMarkerColor(1);
   h_alpha->SetMarkerStyle(8);
   h_alpha->SetMarkerSize(0.8);
   h_alpha->Divide(h_combine[0][1], h_combine[0][0]); // signal/side
-
-  TF1* f_alphaFit = new TF1("f_alphaFit", 
-			    "([0]*TMath::Exp([1]*x+[2]/x))/([3]*TMath::Exp([4]*x+[5]/x))", 680, 2400);
-
+  
   f_alphaFit->SetParameter(0, fitCurve[0][1]->GetParameter(0));
   f_alphaFit->SetParameter(1, fitCurve[0][1]->GetParameter(1));
   f_alphaFit->SetParameter(2, fitCurve[0][1]->GetParameter(2));
@@ -146,8 +115,6 @@ void drawAlpMu(){
   f_alphaFit->GetYaxis()->SetTitle("Alpha Ratio");
   f_alphaFit->Draw();
   h_alpha->Draw("same");
-
-  c->cd(hcount+1);
 
   Double_t alphaRatio, sidebandData, numbkgData;
   Double_t alphaRatioError, sidebandDataError, numbkgDataError;
@@ -168,7 +135,7 @@ void drawAlpMu(){
     h_numbkgData->SetBinError(i,numbkgDataError);
 
   }
-
+    
   h_numbkgData->SetMarkerColor(1);
   h_numbkgData->SetMarkerStyle(8);
   h_numbkgData->SetMarkerSize(0.8);
@@ -178,14 +145,12 @@ void drawAlpMu(){
   h_numbkgData->SetMinimum(0);
   h_numbkgData->Draw();
 
-  c->Print("alphaRatioMu.gif");
-  c->Print("alphaRatioMu.pdf");
-
-}
-
-Double_t fitFunc(Double_t* v, Double_t* par){
+  TFile* outFile = new TFile("temp.root","update");
   
-  Double_t x = v[0];
-  return par[0]*TMath::Exp(par[1]*x + par[2]/x);
+  f_alphaFit->Write(Form("alphaFit%d",scaleMode));
+  h_alpha->Write(Form("alphaRatio%d",scaleMode));
+  h_numbkgData->Write(Form("numbkdData%d",scaleMode));
   
+  outFile->Write();
+
 }
