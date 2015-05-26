@@ -8,12 +8,10 @@
 #include "../../../HEADER/loadingbar.C"
 
 // csvl=> 0:no b-tag or tau21 cuts, 1:b-tagging only, 2:tau21 only
-// region=> 0:side-band , 1:signal
 
-void sideSigZpMMu(std::string inputFile, Int_t csvlMode, Int_t scaleMode, Int_t region){
+void step1(std::string inputFile, Int_t csvlMode, Int_t scaleMode){
 
   if( abs(scaleMode) > 1 ) return;
-  if( region < 0 || region > 1 ) return;
 
   TreeReader data(inputFile.data());
 
@@ -24,13 +22,14 @@ void sideSigZpMMu(std::string inputFile, Int_t csvlMode, Int_t scaleMode, Int_t 
   const Double_t varBins[] = {680,720,760,800,840,920,1000,1100,1250,1400,1600,1800,2000,2400};
   Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
 
-  TH1D* h_ZpMass = new TH1D("h_ZpMass", "Side-band region Zprime Mass", nvarBins, varBins);
-  h_ZpMass->GetXaxis()->SetTitle("Zprime mass");
-  h_ZpMass->GetYaxis()->SetTitle("Event number");
+  TH1D* h_ZpMass[2]; // [side-band][signal]
+
+  h_ZpMass[0] = new TH1D("h_ZpMass0", "Side-band region Zprime Mass", nvarBins, varBins);
+  h_ZpMass[1] = new TH1D("h_ZpMass1", "Signal region Zprime Mass", nvarBins, varBins);
 
   std::string textFile;
   
-  if( inputFile.find("data") )
+  if( inputFile.find("data") != std::string::npos )
     textFile = "../../../HEADER/FT_53_V21_AN4_Uncertainty_AK7PFchs.txt";
   else
     textFile = "../../../HEADER/START53_V23_Uncertainty_AK7PFchs.txt";
@@ -38,11 +37,11 @@ void sideSigZpMMu(std::string inputFile, Int_t csvlMode, Int_t scaleMode, Int_t 
   corrJetV corrJet(textFile);
   
   // begin of event loop
-  for (Long64_t ev = 0; ev < 10000/*data.GetEntriesFast()*/; ev++){
+  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
     data.GetEntry(ev);
 
-    //printProgBar(ev/(Double_t)data.GetEntriesFast()*100);
+    printProgBar(ev/(Double_t)data.GetEntriesFast()*100);
 
     Float_t* CA8jetPrunedMass = data.GetPtrFloat("CA8jetPrunedMass");
     Float_t* muPt  = data.GetPtrFloat("muPt");
@@ -103,32 +102,25 @@ void sideSigZpMMu(std::string inputFile, Int_t csvlMode, Int_t scaleMode, Int_t 
     if( Z.M() <= 70. || Z.M() >= 110. ) continue;
     if( Z.Pt() <= 80. ) continue;
 
-    if( region == 0 ){
-      if( CA8jetPrunedMass[maxJetIndex] > 50 && CA8jetPrunedMass[maxJetIndex] < 110 )
-	h_ZpMass->Fill(Zprime.M());
-    }
+    if( CA8jetPrunedMass[maxJetIndex] > 50 && CA8jetPrunedMass[maxJetIndex] < 110 )
+      h_ZpMass[0]->Fill(Zprime.M());
 
-    else if( region == 1 ){
-      if( CA8jetPrunedMass[maxJetIndex] > 110 && CA8jetPrunedMass[maxJetIndex] < 140 )
-	h_ZpMass->Fill(Zprime.M());
-    }
+    if( CA8jetPrunedMass[maxJetIndex] > 110 && CA8jetPrunedMass[maxJetIndex] < 140 )
+      h_ZpMass[1]->Fill(Zprime.M());
     
   } // end of event loop
 
   std::cout << "\nProcessed all events\n";
 
-  TFile* outFile;
-
-  if( region == 0 ){
-    outFile = new TFile("SideZpMMu.root", "update");
-    h_ZpMass->Write((Form("side_MX_%d_",scaleMode)+inputFile).data());
-  }
+  TFile* outFile[2];
   
-  else if( region == 1 ){
-    outFile = new TFile("SignalZpMMu.root", "update");
-    h_ZpMass->Write((Form("signal_MX_%d_",scaleMode)+inputFile).data());
-  }
+  outFile[0] = new TFile("SideZpMMu.root", "update");
+  h_ZpMass[0]->Write((Form("side_MX_%d_",scaleMode)+inputFile).data());
 
-  outFile->Write();
+  outFile[1] = new TFile("SignalZpMMu.root", "update");
+  h_ZpMass[1]->Write((Form("signal_MX_%d_",scaleMode)+inputFile).data());
+
+  outFile[0]->Write();
+  outFile[1]->Write();
   
 }
