@@ -272,9 +272,9 @@ void eleVariable(std::string inputFile, int num){
 
   TFile* outFile[2];
   
-  std::string h_name[10] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE","eleSigmaIEtaIEtaFull5x5",
-			   "eleFull5x5E2x5dvE5x5","eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
-			   "eleMiniIso","dilepMass"};
+  std::string h_name[11] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE","eleSigmaIEtaIEtaFull5x5",
+			    "eleFull5x5E2x5dvE5x5","eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
+			    "eleMiniIso","dilepMass","eventWeight"};
 
   std::string region[2] = {"barrel","endcap"};
 
@@ -292,6 +292,7 @@ void eleVariable(std::string inputFile, int num){
     h_eleD0[i]                  ->Write(h_name[7].data());      
     h_eleMiniIso[i]             ->Write(h_name[8].data());
     h_dilepMass[i]              ->Write(h_name[9].data());    
+    h_eventWeight[i]            ->Write(h_name[10].data());
 
     outFile[i]->Write();
 
