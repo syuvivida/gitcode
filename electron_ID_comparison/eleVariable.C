@@ -15,6 +15,8 @@
 
 void eleVariable(std::string inputFile, int num){
 
+  // read the ntuples (in pcncu)
+
   std::vector<string> infiles;
   std::string outputFile[3] = {"SingleElectron_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
 			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
@@ -131,6 +133,7 @@ void eleVariable(std::string inputFile, int num){
     h_eventWeight->Fill(1,eventWeight);
 
     // data trigger cut (electron channel)
+
     std::string* trigName = data.GetPtrString("hlt_trigName");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
     const Int_t nsize = data.GetPtrStringSize();
