@@ -170,7 +170,7 @@ void eleVariable(std::string inputFile, int num){
 
       if( fabs(eleScEta[eleId[ie]]) < 1.4442 ){ // barrel selections and cuts
 
-	for(Int_t flag = 0; flag <= 7; flag++){
+	for(Int_t flag = 0; flag <= 8; flag++){
 
 	  if( fabs(eleEtaseedAtVtx[eleId[ie]])   >= 0.004     && flag != 0 ) continue;
 	  if( fabs(eledPhiAtVtx[eleId[ie]])      >= 0.06      && flag != 1 ) continue;
@@ -179,7 +179,7 @@ void eleVariable(std::string inputFile, int num){
 	  if( fabs(eleD0[eleId[ie]])             >= 0.02      && flag != 4 ) continue;
 	  if( eleMiniIso[eleId[ie]]              >= 0.1       && flag != 5 ) continue;
 	  if( (eleE2x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]] <= 0.94  &&
-	       eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]] <= 0.83) && flag != 8 )
+	       eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]] <= 0.83) && flag != 6 )
 	    continue;
 	  	    
 	  switch(flag){
@@ -187,14 +187,14 @@ void eleVariable(std::string inputFile, int num){
 	  case 0: h_eleEtaseedAtVtx[0]->Fill(eleEtaseedAtVtx[eleId[ie]]); break;
 	  case 1: h_eledPhiAtVtx[0]   ->Fill(eledPhiAtVtx[eleId[ie]]);    break;
 	  case 2: h_eleHoverE[0]      ->Fill(eleHoverE[eleId[ie]]);       break;
-	  case 3: h_eleSigmaIEtaIEtaFull5x5[0]->Fill(eleSigmaIEtaIEtaFull5x5[eleId[ie]]); break;	    
-	  case 4: h_eleMissHits[0]    ->Fill(eleMissHits[eleId[ie]]);     break;
-	  case 5: h_eleD0[0]          ->Fill(eleD0[eleId[ie]]);           break;
-	  case 6: h_eleMiniIso[0]     ->Fill(eleMiniIso[eleId[ie]]);      break;	 
-	  case 7: {
+	  case 3: h_eleMissHits[0]    ->Fill(eleMissHits[eleId[ie]]);     break;
+	  case 4: h_eleD0[0]          ->Fill(eleD0[eleId[ie]]);           break;
+	  case 5: h_eleMiniIso[0]     ->Fill(eleMiniIso[eleId[ie]]);      break;	 
+	  case 6: {
 	    h_eleFull5x5E2x5dvE5x5[0] ->Fill(eleE2x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]]);
 	    h_eleFull5x5E1x5dvE5x5[0] ->Fill(eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]]);
 	  } break;
+	  case 7: h_eleSigmaIEtaIEtaFull5x5[0]->Fill(eleSigmaIEtaIEtaFull5x5[eleId[ie]]); break;
 	  case 8: h_dilepMass[0]      ->Fill(mll);                        break;
 	    
 	  } // end of switch
@@ -206,7 +206,7 @@ void eleVariable(std::string inputFile, int num){
 
       if( fabs(eleScEta[eleId[ie]]) > 1.566 && fabs(eleScEta[eleId[ie]]) < 2.5 ){ // endcap selections and cuts
 
-	for(Int_t flag = 0; flag <= 7; flag++){
+	for(Int_t flag = 0; flag <= 8; flag++){
 
 	  if( fabs(eleEtaseedAtVtx[eleId[ie]])   >= 0.006    && flag != 0 ) continue;
 	  if( fabs(eledPhiAtVtx[eleId[ie]])      >= 0.06     && flag != 1 ) continue;
