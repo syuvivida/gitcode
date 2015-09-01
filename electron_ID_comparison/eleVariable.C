@@ -232,7 +232,7 @@ void eleVariable(std::string inputFile, int num){
       } // end of barrel
 
 
-      if( fabs(eleScEta[eleId[ie]],eventWeight > 1.566 && fabs(eleScEta[eleId[ie]]) < 2.5 ){ // endcap selections and cuts
+      if( fabs(eleScEta[eleId[ie]]) > 1.566 && fabs(eleScEta[eleId[ie]]) < 2.5 ){ // endcap selections and cuts
 
 	for(Int_t flag = 0; flag <= 8; flag++){
 
@@ -264,13 +264,13 @@ void eleVariable(std::string inputFile, int num){
 	} // end of flag loop
 
       } // end of endcap
-    
+	
     } // end of two electrons loop
-
+      
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
-  
+    
   std::cout << "pass events: " << nPass << std::endl;
 
   TFile* outFile[2];
