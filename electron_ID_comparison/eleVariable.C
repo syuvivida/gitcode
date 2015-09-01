@@ -78,7 +78,6 @@ void eleVariable(std::string inputFile, int num){
     h_eleD0[i]                  ->Sumw2();
     h_eleMiniIso[i]             ->Sumw2();
     h_dilepMass[i]              ->Sumw2();
-    h_eventWeight[i]            ->Sumw2();
 
     h_eleEtaseedAtVtx[i]        ->GetXaxis()->SetTitle("eleEtaseedAtVtx"); 
     h_eledPhiAtVtx[i]           ->GetXaxis()->SetTitle("eledPhiAtVtx");   
@@ -107,7 +106,7 @@ void eleVariable(std::string inputFile, int num){
 
     Int_t    nEle                    = data.GetInt("nEle");
     Int_t*   eleMissHits             = data.GetPtrInt("eleMissHits");
-    Float_t  eventWeight             = data.GetFloat("mcWeight");
+    Float_t  mcWeight                = data.GetFloat("mcWeight");
     Float_t* eleSCEn                 = data.GetPtrFloat("eleScEn");
     Float_t* eleScEt                 = data.GetPtrFloat("eleScEt");
     Float_t* eleScEta                = data.GetPtrFloat("eleScEta");
@@ -123,6 +122,7 @@ void eleVariable(std::string inputFile, int num){
     TClonesArray* eleP4              = (TClonesArray*) data.GetPtrTObject("eleP4");
     vector<bool>& eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
 
+    Double_t eventWeight = mcWeight;
     if( num == 1 ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
@@ -130,7 +130,8 @@ void eleVariable(std::string inputFile, int num){
     else if( num == 0 || num == 2 )
       eventWeight = 1;
     
-    h_eventWeight->Fill(1,eventWeight);
+    h_eventWeight[0]->Fill(0.,eventWeight);
+    h_eventWeight[1]->Fill(0.,eventWeight);
 
     // data trigger cut (electron channel)
 

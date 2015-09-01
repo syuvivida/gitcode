@@ -40,11 +40,12 @@ void stcEleVariable(){
   c_dw->SetPad(0,0,1,dw_height);
   c_dw->SetBottomMargin(0.25);
   
-  std::string h_name[9] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE",
-			   "eleSigmaIEtaIEtaFull5x5","eleFull5x5E2x5dvE5x5",
-			   "eleFull5x5E1x5dvE5x5","eleMissHits","eleD0","eleMiniIso"};
+  std::string h_name[11] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE",
+			    "eleSigmaIEtaIEtaFull5x5","eleFull5x5E2x5dvE5x5",
+			    "eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
+			    "eleMiniIso","dilepMass","eventWeight"};
   
-  for(Int_t i = 0; i < 9; i++){
+  for(Int_t i = 0; i < 11; i++){
 
     c_up->cd();
     myPlot(((TH1D*)(file[0]->Get(h_name[i].data()))), 
@@ -68,7 +69,7 @@ void stcEleVariable(){
     
   }
 
-  for(Int_t i = 0; i < 9; i++){
+  for(Int_t i = 0; i < 11; i++){
     
     c_up->cd();
     myPlot(((TH1D*)(file[1]->Get(h_name[i].data()))), 
