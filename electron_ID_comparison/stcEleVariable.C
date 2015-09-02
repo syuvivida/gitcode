@@ -33,13 +33,19 @@ void stcEleVariable(){
   
   Double_t scaleDY = dataLumi/(nEventDY/xSecDY);
   Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
+
+  std::cout << "\nnEventDY: " << nEventDY
+	    << "\nnEventTTbar: " << nEventTTbar
+	    << "\nscaleDY: " << scaleDY
+	    << "\nscaleTTbar: " << scaleTTbar
+	    << "\n" << std::endl;    
   
   gStyle->SetOptStat(0);
   gStyle->SetPadGridY(kTRUE);
   gStyle->SetPadGridX(kTRUE);
 
   Double_t up_height     = 0.8;
-  Double_t dw_correction = 1.3;
+  Double_t dw_correction = 1.35;
   Double_t dw_height     = (1-up_height)*dw_correction;
 
   TCanvas c("c","",0,0,1000,800);
@@ -115,39 +121,37 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
   h_data->Sumw2();
 
   h_DY->Scale(scaleDY);
-  h_DY->SetMarkerStyle(8);
-  h_DY->SetMarkerSize(0.5);
-  h_DY->SetMarkerColor(kRed);
-  h_DY->SetLineColor(kRed);
-    
+  h_DY->SetFillColor(kOrange-3);
+  h_DY->SetLineColor(kBlack);
+  
   h_ttbar->Scale(scaleTTbar);
-  h_ttbar->SetMarkerStyle(8);
-  h_ttbar->SetMarkerSize(0.5);
-  h_ttbar->SetMarkerColor(kBlue);
-  h_ttbar->SetLineColor(kBlue);
-      
+  h_ttbar->SetFillColor(kGreen);
+  h_ttbar->SetLineColor(kBlack);
+   
   THStack *h_stack = new THStack("h_stack", "");
   h_stack->Add(h_DY);
   h_stack->Add(h_ttbar);
 
-  h_data->SetLineColor(1);
+  h_data->SetLineColor(kBlue);
   h_data->SetMarkerStyle(8);
-  h_data->SetMarkerSize(0.5);
+  h_data->SetMarkerSize(0.6);
   h_data->GetXaxis()->SetTitle("");
   h_data->GetXaxis()->SetLabelOffset(999);
   h_data->GetXaxis()->SetLabelSize(0);
   //h_data->Draw("e1"); 
-  h_stack->Draw();
+  h_stack->Draw("histe");
+  h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+  h_stack->GetHistogram()->SetMinimum(0.);
   h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
   h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
   h_data->Draw("e1same");
 
-  TLegend *leg = new TLegend(0.55, 0.8, 0.9, 0.9);
+  TLegend *leg = new TLegend(0.5, 0.8, 0.9, 0.9);
 
   leg->SetFillStyle(0);
   leg->SetBorderSize(1);
   leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
-  leg->AddEntry(h_ttbar,"TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lp");
+  leg->AddEntry(h_ttbar,"TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lpf");
   leg->AddEntry(h_data, "SingleElectron_Run2015C-PromptReco-v1", "lp");
   leg->Draw();
 

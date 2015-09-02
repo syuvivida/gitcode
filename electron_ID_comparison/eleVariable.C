@@ -21,11 +21,11 @@ void eleVariable(std::string inputFile, int num){
 
   std::vector<string> infiles;
   // 50ns
-  std::string outputFile[3] = {"Run2015B/SingleElectron-Run2015B-5p59pbInv","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-                               "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
+  //std::string outputFile[3] = {"Run2015B/SingleElectron-Run2015B-5p59pbInv","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+  //                           "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
   // 25ns
-  // std::string outputFile[3] = {"SingleElectron_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
-  // "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
+  std::string outputFile[3] = {"SingleElectron_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
+			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
 
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -37,7 +37,7 @@ void eleVariable(std::string inputFile, int num){
     std::string fileN = fileH->GetName();
     if( fileH->IsFolder() ) continue;
     if( fileN.find("NCUGlobalTuples") == std::string::npos ) continue;
-    if( num == 1 ) if( fileN.find("363") != std::string::npos ) continue;
+    // if( num == 1 ) if( fileN.find("363") != std::string::npos ) continue;
     fileN = inputFile + "/" + fileN;
     cout << fileN.data() << endl;
     nfile++;
@@ -112,6 +112,7 @@ void eleVariable(std::string inputFile, int num){
 
     data.GetEntry(ev);
 
+    bool     isData                      = data.GetBool("isData");
     Int_t    nEle                    = data.GetInt("nEle");
     Int_t*   eleMissHits             = data.GetPtrInt("eleMissHits");
     Float_t  mcWeight                = data.GetFloat("mcWeight");
@@ -145,15 +146,18 @@ void eleVariable(std::string inputFile, int num){
 
     std::string* trigName = data.GetPtrString("hlt_trigName");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
-    const Int_t nsize = data.GetPtrStringSize();
+    const Int_t nsize = data.GetPtrStringSize();    
     bool passTrigger = false;
+    
     for(Int_t it = 0; it < nsize; it++){
+    
       std::string thisTrig = trigName[it];
       bool results = trigResult[it];
-      if( thisTrig.find("HLT_Ele105")!= std::string::npos && results==1 ){
-	passTrigger = true;
+      if( (isData && thisTrig.find("HLT_Ele23_WPLoose_Gsf") != std::string::npos && results==1) || (!isData) ){
+	passTrigger = true; 
 	break;
       }
+
     }
 
     if( !passTrigger ) continue;
@@ -180,14 +184,8 @@ void eleVariable(std::string inputFile, int num){
 	TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(je);
 	
 	mll = (*thisEle+*thatEle).M();
-	
-	Float_t pt1 = thisEle->Pt();
-	Float_t pt2 = thatEle->Pt();
-	Float_t ptmax = TMath::Max(pt1,pt2);
-	
 	if( mll < 60 || mll > 120 ) continue;
-	if( ptmax < 115 ) continue;
-	
+		
 	eleId[0] = ie;
 	eleId[1] = je;
 	break;
