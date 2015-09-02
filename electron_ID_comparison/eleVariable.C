@@ -153,11 +153,18 @@ void eleVariable(std::string inputFile, int num){
     
       std::string thisTrig = trigName[it];
       bool results = trigResult[it];
+      /*
       if( (isData && thisTrig.find("HLT_Ele23_WPLoose_Gsf") != std::string::npos && results==1) || (!isData) ){
 	passTrigger = true; 
 	break;
       }
+      */
 
+      if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results==1 ){
+	passTrigger = true;
+	break;
+      }
+      
     }
 
     if( !passTrigger ) continue;
