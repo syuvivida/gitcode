@@ -3,25 +3,37 @@
 #include <TPad.h>
 #include <TH1D.h>
 #include <TFile.h>
+#include <TLine.h>
 #include <TStyle.h>
 #include <TCanvas.h>
-#include "myPlot.C"
-#include "myRatio.C"
+#include <THStack.h>
+#include <TLegend.h>
 
-void myPlot(TH1D*, TH1D*, TH1D*);
-void myRatio(TH1D*, TH1D*, TH1D*);
+void myPlot(TH1D*, TH1D*, TH1D*, Double_t, Double_t);
+void myRatio(TH1D*, TH1D*, TH1D*, Double_t, Double_t);
 
 void stcEleVariable(){
 
   TFile *file[6];
 
-  file[0] = TFile::Open("DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_barrel.root");
-  file[1] = TFile::Open("DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_endcap.root");
-  file[2] = TFile::Open("TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_barrel.root");
-  file[3] = TFile::Open("TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_endcap.root");
-  file[4] = TFile::Open("SingleElectron_Run2015C-PromptReco-v1_barrel.root");
-  file[5] = TFile::Open("SingleElectron_Run2015C-PromptReco-v1_endcap.root");
+  file[0] = TFile::Open("output/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_barrel.root");
+  file[1] = TFile::Open("output/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_endcap.root");
+  file[2] = TFile::Open("output/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_barrel.root");
+  file[3] = TFile::Open("output/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_endcap.root");
+  file[4] = TFile::Open("output/SingleElectron_Run2015C-PromptReco-v1_barrel.root");
+  file[5] = TFile::Open("output/SingleElectron_Run2015C-PromptReco-v1_endcap.root");
 
+  TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
+  
+  Int_t nEventDY     = h_eventWeight->Integral();
+  Int_t nEventTTbar  = 19494441;
+  Double_t xSecDY    = 6025.2; //pb
+  Double_t xSecTTbar = 831.76; //pb
+  Double_t dataLumi  = 8.4;    //ele //pb-1
+  
+  Double_t scaleDY = dataLumi/(nEventDY/xSecDY);
+  Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
+  
   gStyle->SetOptStat(0);
   gStyle->SetPadGridY(kTRUE);
   gStyle->SetPadGridX(kTRUE);
@@ -40,57 +52,172 @@ void stcEleVariable(){
   c_dw->SetPad(0,0,1,dw_height);
   c_dw->SetBottomMargin(0.25);
   
-  std::string h_name[11] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE",
-			    "eleSigmaIEtaIEtaFull5x5","eleFull5x5E2x5dvE5x5",
-			    "eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
-			    "eleMiniIso","dilepMass","eventWeight"};
+  std::string h_name[] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE",
+			  "eleSigmaIEtaIEtaFull5x5","eleFull5x5E2x5dvE5x5",
+			  "eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
+			  "eleMiniIso","dilepMass"};
+
+  Int_t size = sizeof(h_name)/sizeof(h_name[0]);
   
-  for(Int_t i = 0; i < 11; i++){
+  for(Int_t i = 0; i < size; i++){
 
     c_up->cd();
     myPlot(((TH1D*)(file[0]->Get(h_name[i].data()))), 
 	   ((TH1D*)(file[2]->Get(h_name[i].data()))), 
-	   ((TH1D*)(file[4]->Get(h_name[i].data())))
-	   );
+	   ((TH1D*)(file[4]->Get(h_name[i].data()))),
+	   scaleDY, scaleTTbar);
 
     c_up->RedrawAxis();
     
     c_dw->cd();
     myRatio(((TH1D*)(file[0]->Get(h_name[i].data()))), 
 	    ((TH1D*)(file[2]->Get(h_name[i].data()))),
-	    ((TH1D*)(file[4]->Get(h_name[i].data())))
-	    );
+	    ((TH1D*)(file[4]->Get(h_name[i].data()))),
+	    scaleDY, scaleTTbar);
 
     c.Draw();
     
     if( i == 0 ) c.Print("eleVariable_barrel.pdf(");
-    else if( i == 8 ) c.Print("eleVariable_barrel.pdf)");
+    else if( i == size-1 ) c.Print("eleVariable_barrel.pdf)");
     else c.Print("eleVariable_barrel.pdf");
     
   }
 
-  for(Int_t i = 0; i < 11; i++){
+  for(Int_t i = 0; i < size; i++){
     
     c_up->cd();
     myPlot(((TH1D*)(file[1]->Get(h_name[i].data()))), 
 	   ((TH1D*)(file[3]->Get(h_name[i].data()))), 
-	   ((TH1D*)(file[5]->Get(h_name[i].data())))
-	   );
+	   ((TH1D*)(file[5]->Get(h_name[i].data()))),
+	   scaleDY,scaleTTbar);
 
     c_up->RedrawAxis();
     
     c_dw->cd();
     myRatio(((TH1D*)(file[1]->Get(h_name[i].data()))), 
 	    ((TH1D*)(file[3]->Get(h_name[i].data()))),
-	    ((TH1D*)(file[5]->Get(h_name[i].data())))
-	    );
+	    ((TH1D*)(file[5]->Get(h_name[i].data()))),
+	    scaleDY,scaleTTbar);
     
     c.Draw();
    
     if( i == 0 ) c.Print("eleVariable_endcap.pdf(");
-    else if( i == 8 ) c.Print("eleVariable_endcap.pdf)");
+    else if( i == size-1 ) c.Print("eleVariable_endcap.pdf)");
     else c.Print("eleVariable_endcap.pdf");
     
   }
+  
+}
+
+
+void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t scaleTTbar){
+
+  h_data->Sumw2();
+
+  h_DY->Scale(scaleDY);
+  h_DY->SetMarkerStyle(8);
+  h_DY->SetMarkerSize(0.5);
+  h_DY->SetMarkerColor(kRed);
+  h_DY->SetLineColor(kRed);
+    
+  h_ttbar->Scale(scaleTTbar);
+  h_ttbar->SetMarkerStyle(8);
+  h_ttbar->SetMarkerSize(0.5);
+  h_ttbar->SetMarkerColor(kBlue);
+  h_ttbar->SetLineColor(kBlue);
+      
+  THStack *h_stack = new THStack("h_stack", "");
+  h_stack->Add(h_DY);
+  h_stack->Add(h_ttbar);
+
+  h_data->SetLineColor(1);
+  h_data->SetMarkerStyle(8);
+  h_data->SetMarkerSize(0.5);
+  h_data->GetXaxis()->SetTitle("");
+  h_data->GetXaxis()->SetLabelOffset(999);
+  h_data->GetXaxis()->SetLabelSize(0);
+  //h_data->Draw("e1"); 
+  h_stack->Draw();
+  h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
+  h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
+  h_data->Draw("e1same");
+
+  TLegend *leg = new TLegend(0.55, 0.8, 0.9, 0.9);
+
+  leg->SetFillStyle(0);
+  leg->SetBorderSize(1);
+  leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
+  leg->AddEntry(h_ttbar,"TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lp");
+  leg->AddEntry(h_data, "SingleElectron_Run2015C-PromptReco-v1", "lp");
+  leg->Draw();
+
+}
+
+
+void myRatio(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t scaleTTbar){
+
+  TH1D *h_bkg = (TH1D*)h_data->Clone("h_bkg");
+  h_bkg->Reset();
+  h_bkg->Sumw2();
+  h_bkg->Add(h_DY, scaleDY);
+  h_bkg->Add(h_ttbar, scaleTTbar);
+
+  TH1D* h_ratio = (TH1D*)h_data->Clone("h_ratio");
+  h_ratio->Reset();
+  h_ratio->Sumw2();
+
+  Int_t nbin = h_ratio->GetNbinsX();
+  Double_t ratio[nbin];
+  Double_t error[nbin];
+  Double_t numer_nbincontent[nbin];
+  Double_t denom_nbincontent[nbin];
+  Double_t numer_binerror[nbin];
+  Double_t denom_binerror[nbin];
+ 
+  for(Int_t i=1; i<=nbin; i++){
+
+    numer_nbincontent[i] = h_data->GetBinContent(i);
+    denom_nbincontent[i] = h_bkg->GetBinContent(i);
+    numer_binerror[i] = h_data->GetBinError(i);
+    denom_binerror[i] = h_bkg->GetBinError(i);
+
+    if( denom_nbincontent[i] <= 0 || numer_nbincontent[i] <= 0 ) continue; 
+    if( denom_binerror[i] <= 0 || numer_binerror[i] <= 0 ) continue;
+
+    ratio[i] = (Double_t)numer_nbincontent[i]/denom_nbincontent[i];
+    error[i] = (ratio[i])*sqrt(pow(numer_binerror[i]/numer_nbincontent[i],2)+pow(denom_binerror[i]/denom_nbincontent[i],2));
+
+    h_ratio->SetBinContent(i,ratio[i]);
+    h_ratio->SetBinError(i,error[i]);
+
+  }
+  
+  Double_t font_size_dw = 0.1; 
+
+  h_ratio->SetMarkerStyle(8);
+  h_ratio->SetMarkerSize(0.6);
+  h_ratio->SetTitle("");
+  h_ratio->GetYaxis()->SetTitle("data/MC");
+  h_ratio->GetYaxis()->SetTitleOffset(0.3);
+  h_ratio->GetXaxis()->SetLabelSize(font_size_dw);
+  h_ratio->GetXaxis()->SetTitleSize(font_size_dw);
+  h_ratio->GetYaxis()->SetLabelSize(font_size_dw);
+  h_ratio->GetYaxis()->SetTitleSize(font_size_dw);
+  h_ratio->GetYaxis()->SetNdivisions(505);
+  h_ratio->GetYaxis()->SetRangeUser(0,2);
+  h_ratio->Draw();
+
+  Double_t x0 = h_bkg->GetXaxis()->GetXmin();
+  Double_t x1 = h_bkg->GetXaxis()->GetXmax();
+  Double_t y0 = 1.; 
+  Double_t y1 = 1.;
+ 
+  TLine* one = new TLine(x0,y0,x1,y1);
+  one->SetLineColor(2);
+  one->SetLineStyle(1);
+  one->SetLineWidth(2);
+  one->Draw("same");
+
+  h_ratio->Draw("same");
 
 }
