@@ -9,7 +9,7 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/SingleElectron_Run2015C-PromptReco-v1/0000\"\,0\)
+// 25ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1\"\,0\)
 // 25ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000\"\,1\)
 // 50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015B/SingleElectron-Run2015B-5p59pbInv\"\,0\)
 // 50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ForEIKO/150729_202330/0000\"\,1\)
@@ -21,10 +21,13 @@ void eleVariable(std::string inputFile, int num){
 
   std::vector<string> infiles;
   // 50ns
-  //std::string outputFile[3] = {"Run2015B/SingleElectron-Run2015B-5p59pbInv","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-  //                           "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
+  /*
+  std::string outputFile[3] = {"SingleElectron-Run2015B-5p59pbInv","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
+  */
+  
   // 25ns
-  std::string outputFile[3] = {"SingleElectron_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
+  std::string outputFile[3] = {"DoubleEG_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
 			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
 
   TSystemDirectory *base = new TSystemDirectory("root","root");
@@ -106,7 +109,7 @@ void eleVariable(std::string inputFile, int num){
 
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
-    if ( ev % 50000 == 0 )
+    if ( ev % 100000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
 
     data.GetEntry(ev);
