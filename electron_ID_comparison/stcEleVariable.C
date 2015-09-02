@@ -20,8 +20,8 @@ void stcEleVariable(){
   file[1] = TFile::Open("output/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_endcap.root");
   file[2] = TFile::Open("output/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_barrel.root");
   file[3] = TFile::Open("output/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_endcap.root");
-  file[4] = TFile::Open("output/SingleElectron_Run2015C-PromptReco-v1_barrel.root");
-  file[5] = TFile::Open("output/SingleElectron_Run2015C-PromptReco-v1_endcap.root");
+  file[4] = TFile::Open("output/DoubleEG_Run2015C-PromptReco-v1_barrel.root");
+  file[5] = TFile::Open("output/DoubleEG_Run2015C-PromptReco-v1_endcap.root");
 
   TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
   
@@ -29,7 +29,7 @@ void stcEleVariable(){
   Int_t nEventTTbar  = 19494441;
   Double_t xSecDY    = 6025.2; //pb
   Double_t xSecTTbar = 831.76; //pb
-  Double_t dataLumi  = 8.4;    //ele //pb-1
+  Double_t dataLumi  = 8.1;    //ele //pb-1
   
   Double_t scaleDY = dataLumi/(nEventDY/xSecDY);
   Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
@@ -67,7 +67,11 @@ void stcEleVariable(){
   
   for(Int_t i = 0; i < size; i++){
 
-    c_up->cd();
+    if( h_name[i]=="eleHoverE" || h_name[i]=="eleMiniIso" )
+      c_up->cd()->SetLogy(1);
+    else
+      c_up->cd()->SetLogy(0);
+    
     myPlot(((TH1D*)(file[0]->Get(h_name[i].data()))), 
 	   ((TH1D*)(file[2]->Get(h_name[i].data()))), 
 	   ((TH1D*)(file[4]->Get(h_name[i].data()))),
@@ -91,7 +95,11 @@ void stcEleVariable(){
 
   for(Int_t i = 0; i < size; i++){
     
-    c_up->cd();
+    if( h_name[i]=="eleHoverE" || h_name[i]=="eleMiniIso" )
+      c_up->cd()->SetLogy(1);
+    else
+      c_up->cd()->SetLogy(0); 
+
     myPlot(((TH1D*)(file[1]->Get(h_name[i].data()))), 
 	   ((TH1D*)(file[3]->Get(h_name[i].data()))), 
 	   ((TH1D*)(file[5]->Get(h_name[i].data()))),
@@ -138,10 +146,8 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
   h_data->GetXaxis()->SetTitle("");
   h_data->GetXaxis()->SetLabelOffset(999);
   h_data->GetXaxis()->SetLabelSize(0);
-  //h_data->Draw("e1"); 
   h_stack->Draw("histe");
   h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
-  h_stack->GetHistogram()->SetMinimum(0.);
   h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
   h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
   h_data->Draw("e1same");
@@ -151,8 +157,8 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
   leg->SetFillStyle(0);
   leg->SetBorderSize(1);
   leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
-  leg->AddEntry(h_ttbar,"TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lpf");
-  leg->AddEntry(h_data, "SingleElectron_Run2015C-PromptReco-v1", "lp");
+  leg->AddEntry(h_ttbar, "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lpf");
+  leg->AddEntry(h_data, "DoubleEG_Run2015C-PromptReco-v1", "lp");
   leg->Draw();
 
 }

@@ -13,7 +13,7 @@
 // 25ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000\"\,1\)
 // 50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015B/SingleElectron-Run2015B-5p59pbInv\"\,0\)
 // 50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ForEIKO/150729_202330/0000\"\,1\)
-// 50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
+// 25/50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
 
 void eleVariable(std::string inputFile, int num){
 
@@ -131,7 +131,7 @@ void eleVariable(std::string inputFile, int num){
     Float_t* eleMiniIso              = data.GetPtrFloat("eleMiniIso");
     TClonesArray* eleP4              = (TClonesArray*) data.GetPtrTObject("eleP4");
     vector<bool>& eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
-    vector<bool>& PassHEEPNoIso      = *((vector<bool>*) data.GetPtr("PassHEEPNoIso"));
+    vector<bool>& eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
 
     Double_t eventWeight = mcWeight;
     if( num == 1 ){
@@ -199,7 +199,7 @@ void eleVariable(std::string inputFile, int num){
         eleId[0] = ie;
 	eleId[1] = je;
 
-	if( !PassHEEPNoIso[ie] || !PassHEEPNoIso[je] ) continue;
+	if( !eleIsPassHEEPNoIso[ie] || !eleIsPassHEEPNoIso[je] ) continue;
 	if( !findTightEPair ) h_dilepMass[1]->Fill(mll); // tight
 
 	findTightEPair = true;
@@ -315,7 +315,7 @@ void eleVariable(std::string inputFile, int num){
     h_eleMissHits[i]            ->Write(h_name[6].data());   
     h_eleD0[i]                  ->Write(h_name[7].data());      
     h_eleMiniIso[i]             ->Write(h_name[8].data());
-    h_dilepMass[i]              ->Write(h_name[9].data());    
+    //h_dilepMass[i]              ->Write(h_name[9].data());    
     h_eventWeight[i]            ->Write(h_name[10].data());
 
     outFile[i]->Write();
