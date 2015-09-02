@@ -37,7 +37,6 @@ void eleVariable(std::string inputFile, int num){
     std::string fileN = fileH->GetName();
     if( fileH->IsFolder() ) continue;
     if( fileN.find("NCUGlobalTuples") == std::string::npos ) continue;
-    // if( num == 1 ) if( fileN.find("363") != std::string::npos ) continue;
     fileN = inputFile + "/" + fileN;
     cout << fileN.data() << endl;
     nfile++;
@@ -188,19 +187,20 @@ void eleVariable(std::string inputFile, int num){
 	TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(je);
 	
 	mll = (*thisEle+*thatEle).M();
-	if( mll < 60 || mll > 120 ) continue;
-		
+
+	if( mll < 60 || mll > 120 ) continue;		
 	if( !findEPair ) h_dilepMass[0]->Fill(mll); // loose
 
 	findEPair = true;
+
+        eleId[0] = ie;
+	eleId[1] = je;
 
 	if( !PassHEEPNoIso[ie] || !PassHEEPNoIso[je] ) continue;
 	if( !findTightEPair ) h_dilepMass[1]->Fill(mll); // tight
 
 	findTightEPair = true;
 
-	eleId[0] = ie;
-	eleId[1] = je;
 	break;
 	
       }
