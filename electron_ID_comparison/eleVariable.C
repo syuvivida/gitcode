@@ -59,7 +59,7 @@ void eleVariable(std::string inputFile, int num){
   TH1D* h_eleMissHits[2]; 
   TH1D* h_eleD0[2];   
   TH1D* h_eleMiniIso[2]; 
-  TH1D* h_dilepMass[2];
+  TH1D* h_dilepMass[2]; // 0: loose; 1: tight
   TH1D* h_eventWeight[2];
 
   for(Int_t i = 0; i < 2; i++){
@@ -112,7 +112,6 @@ void eleVariable(std::string inputFile, int num){
 
     data.GetEntry(ev);
 
-    bool     isData                      = data.GetBool("isData");
     Int_t    nEle                    = data.GetInt("nEle");
     Int_t*   eleMissHits             = data.GetPtrInt("eleMissHits");
     Float_t  mcWeight                = data.GetFloat("mcWeight");
@@ -130,6 +129,7 @@ void eleVariable(std::string inputFile, int num){
     Float_t* eleMiniIso              = data.GetPtrFloat("eleMiniIso");
     TClonesArray* eleP4              = (TClonesArray*) data.GetPtrTObject("eleP4");
     vector<bool>& eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
+    vector<bool>& PassHEEPNoIso      = *((vector<bool>*) data.GetPtr("PassHEEPNoIso"));
 
     Double_t eventWeight = mcWeight;
     if( num == 1 ){
@@ -153,13 +153,7 @@ void eleVariable(std::string inputFile, int num){
     
       std::string thisTrig = trigName[it];
       bool results = trigResult[it];
-      /*
-      if( (isData && thisTrig.find("HLT_Ele23_WPLoose_Gsf") != std::string::npos && results==1) || (!isData) ){
-	passTrigger = true; 
-	break;
-      }
-      */
-
+      
       if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results==1 ){
 	passTrigger = true;
 	break;
@@ -173,6 +167,9 @@ void eleVariable(std::string inputFile, int num){
 
     Int_t eleId[2] = {-1,-1};
     Float_t mll = -1;
+
+    bool findEPair = false;
+    bool findTightEPair = false;
     
     for(Int_t ie = 0; ie < nEle; ie++){
 
@@ -193,6 +190,15 @@ void eleVariable(std::string inputFile, int num){
 	mll = (*thisEle+*thatEle).M();
 	if( mll < 60 || mll > 120 ) continue;
 		
+	if( !findEPair ) h_dilepMass[0]->Fill(mll); // loose
+
+	findEPair = true;
+
+	if( !PassHEEPNoIso[ie] || !PassHEEPNoIso[je] ) continue;
+	if( !findTightEPair ) h_dilepMass[1]->Fill(mll); // tight
+
+	findTightEPair = true;
+
 	eleId[0] = ie;
 	eleId[1] = je;
 	break;
@@ -212,7 +218,7 @@ void eleVariable(std::string inputFile, int num){
 
       if( fabs(eleScEta[eleId[ie]]) < 1.4442 ){ // barrel selections and cuts
 
-	for(Int_t flag = 0; flag <= 8; flag++){
+	for(Int_t flag = 0; flag <= 7; flag++){
 
 	  if( fabs(eleEtaseedAtVtx[eleId[ie]])   >= 0.004     && flag != 0 ) continue;
 	  if( fabs(eledPhiAtVtx[eleId[ie]])      >= 0.06      && flag != 1 ) continue;
@@ -237,7 +243,6 @@ void eleVariable(std::string inputFile, int num){
 	    h_eleFull5x5E1x5dvE5x5[0] ->Fill(eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
 	  } break;
 	  case 7: h_eleSigmaIEtaIEtaFull5x5[0]->Fill(eleSigmaIEtaIEtaFull5x5[eleId[ie]],eventWeight); break;
-	  case 8: h_dilepMass[0]      ->Fill(mll,eventWeight);                        break;
 	    
 	  } // end of switch
     
@@ -248,7 +253,7 @@ void eleVariable(std::string inputFile, int num){
 
       if( fabs(eleScEta[eleId[ie]]) > 1.566 && fabs(eleScEta[eleId[ie]]) < 2.5 ){ // endcap selections and cuts
 
-	for(Int_t flag = 0; flag <= 8; flag++){
+	for(Int_t flag = 0; flag <= 7; flag++){
 
 	  if( fabs(eleEtaseedAtVtx[eleId[ie]])   >= 0.006    && flag != 0 ) continue;
 	  if( fabs(eledPhiAtVtx[eleId[ie]])      >= 0.06     && flag != 1 ) continue;
@@ -271,7 +276,6 @@ void eleVariable(std::string inputFile, int num){
 	    h_eleFull5x5E2x5dvE5x5[1] ->Fill(eleE2x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
 	    h_eleFull5x5E1x5dvE5x5[1] ->Fill(eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
 	  } break;
-	  case 8: h_dilepMass[1]      ->Fill(mll,eventWeight);                        break;
 		    
 	  } // end of switch
 	
