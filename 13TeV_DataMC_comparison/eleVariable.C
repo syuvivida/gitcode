@@ -21,10 +21,8 @@ void eleVariable(std::string inputFile, int num){
 
   std::vector<string> infiles;
   // 50ns
-  /*
-  std::string outputFile[3] = {"SingleElectron-Run2015B-5p59pbInv","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
-			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
-  */
+  /* std::string outputFile[3] = {"SingleElectron-Run2015B-5p59pbInv","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};  */
   
   // 25ns
   std::string outputFile[3] = {"DoubleEG_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
@@ -35,7 +33,7 @@ void eleVariable(std::string inputFile, int num){
   TList *listOfFiles = base->GetListOfFiles();
   TIter fileIt(listOfFiles);
   TFile *fileH = new TFile();
-  int nfile=0;
+  int nfile = 0;
   while((fileH = (TFile*)fileIt())){
     std::string fileN = fileH->GetName();
     if( fileH->IsFolder() ) continue;
