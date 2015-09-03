@@ -12,16 +12,16 @@
 void myPlot(TH1D*, TH1D*, TH1D*, Double_t, Double_t);
 void myRatio(TH1D*, TH1D*, TH1D*, Double_t, Double_t);
 
-void stcEleVariable(){
+void stcMuVariable(){
 
   TFile *file[6];
 
-  file[0] = TFile::Open("outputEle/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_barrel.root");
-  file[1] = TFile::Open("outputEle/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_endcap.root");
-  file[2] = TFile::Open("outputEle/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_barrel.root");
-  file[3] = TFile::Open("outputEle/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_endcap.root");
-  file[4] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_barrel.root");
-  file[5] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_endcap.root");
+  file[0] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_highptMuon.root");
+  file[1] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_customizeTrackerMuon.root");
+  file[2] = TFile::Open("outputMu/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_highptMuon.root");
+  file[3] = TFile::Open("outputMu/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_customizeTrackerMuon.root");
+  file[4] = TFile::Open("outputMu/crab_SingleMuon_Run2015B-PromptReco-v1_0825_highptMuon.root");
+  file[5] = TFile::Open("outputMu/crab_SingleMuon_Run2015B-PromptReco-v1_0825_customizeTrackerMuon.root");
 
   TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
   
@@ -29,7 +29,7 @@ void stcEleVariable(){
   Int_t nEventTTbar  = 19494441;
   Double_t xSecDY    = 6025.2; //pb
   Double_t xSecTTbar = 831.76; //pb
-  Double_t dataLumi  = 8.1;    //ele //pb-1
+  Double_t dataLumi  = 41.61;  //mu //pb-1
   
   Double_t scaleDY = dataLumi/(nEventDY/xSecDY);
   Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
@@ -58,16 +58,14 @@ void stcEleVariable(){
   c_dw->SetPad(0,0,1,dw_height);
   c_dw->SetBottomMargin(0.25);
   
-  std::string h_name[] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE",
-			  "eleSigmaIEtaIEtaFull5x5","eleFull5x5E2x5dvE5x5",
-			  "eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
-			  "eleMiniIso","dilepMass"};
+  std::string h_name[] = {"muMatches","muTrkLayers","muPixelHits","muTrkPtErrdvTrkPt",
+			  "mudxy","mudz","muMiniIso","muHits"};
 
   Int_t size = sizeof(h_name)/sizeof(h_name[0]);
   
   for(Int_t i = 0; i < size; i++){
 
-    if( h_name[i]=="eleHoverE" || h_name[i]=="eleMiniIso" )
+    if( h_name[i] == "muMiniIso" )
       c_up->cd()->SetLogy(1);
     else
       c_up->cd()->SetLogy(0);
@@ -87,15 +85,15 @@ void stcEleVariable(){
 
     c.Draw();
     
-    if( i == 0 ) c.Print("eleVariable_barrel.pdf(");
-    else if( i == size-1 ) c.Print("eleVariable_barrel.pdf)");
-    else c.Print("eleVariable_barrel.pdf");
+    if( i == 0 ) c.Print("muVariable_highptMuon.pdf(");
+    else if( i == size-1 ) c.Print("muVariable_highptMuon.pdf)");
+    else c.Print("muVariable_highptMuon.pdf");
     
   }
 
   for(Int_t i = 0; i < size; i++){
     
-    if( h_name[i]=="eleHoverE" || h_name[i]=="eleMiniIso" )
+    if( h_name[i] == "muMiniIso" )
       c_up->cd()->SetLogy(1);
     else
       c_up->cd()->SetLogy(0); 
@@ -115,9 +113,9 @@ void stcEleVariable(){
     
     c.Draw();
    
-    if( i == 0 ) c.Print("eleVariable_endcap.pdf(");
-    else if( i == size-1 ) c.Print("eleVariable_endcap.pdf)");
-    else c.Print("eleVariable_endcap.pdf");
+    if( i == 0 ) c.Print("muVariable_customizeTrackerMuon.pdf(");
+    else if( i == size-1 ) c.Print("muVariable_customizeTrackerMuon.pdf)");
+    else c.Print("muVariable_customizeTrackerMuon.pdf");
     
   }
   
@@ -156,9 +154,9 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
 
   leg->SetFillStyle(0);
   leg->SetBorderSize(1);
-  leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
+  leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8", "lpf"); 
   leg->AddEntry(h_ttbar, "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lpf");
-  leg->AddEntry(h_data, "DoubleEG_Run2015C-PromptReco-v1", "lp");
+  leg->AddEntry(h_data, "crab_SingleMuon_Run2015B-PromptReco-v1_0825", "lp");
   leg->Draw();
 
 }
