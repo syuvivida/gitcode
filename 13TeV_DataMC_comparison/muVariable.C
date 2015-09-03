@@ -68,14 +68,14 @@ void muVariable(std::string inputFile, int num){
 
   for(Int_t i = 0; i < 2; i++){
     
-    h_muHits[i]      = new TH1D(Form("h_muHits%d",i), "muHits", 70, -10, 60);
-    h_muMatches[i]   = new TH1D(Form("h_muMatches%d",i), "muMatches", 6, 0, 6);
-    h_muTrkLayers[i] = new TH1D(Form("h_muTrkLayers%d",i), "muTrkLayers", 15, 5, 20);
-    h_muPixelHits[i] = new TH1D(Form("h_muPixelHits%d",i), "muPixelHits", 10, 0, 10);
-    h_muTrkPtErrdvTrkPt[i] = new TH1D(Form("h_muTrkPtErrdvTrkPt%d",i), "muTrkPtErrdvTrkPt", 20, 0, 50);
-    h_mudxy[i]       = new TH1D(Form("h_mudxy%d",i), "mudxy", 20, -0.5, 0.5);
-    h_mudz[i]        = new TH1D(Form("h_mudz%d",i), "mudz", 20, -15, 15);  
-    h_muMiniIso[i]   = new TH1D(Form("h_muMiniIso%d",i), "muMiniIso", 20, 0, 0.05);
+    h_muHits[i]      = new TH1D(Form("h_muHits%d",i), "muHits", 60, -0.5, 59.5);
+    h_muMatches[i]   = new TH1D(Form("h_muMatches%d",i), "muMatches", 7, -0.5, 6.5);
+    h_muTrkLayers[i] = new TH1D(Form("h_muTrkLayers%d",i), "muTrkLayers", 18, -0.5, 17.5);
+    h_muPixelHits[i] = new TH1D(Form("h_muPixelHits%d",i), "muPixelHits", 8, -0.5, 7.5);
+    h_muTrkPtErrdvTrkPt[i] = new TH1D(Form("h_muTrkPtErrdvTrkPt%d",i), "muTrkPtErrdvTrkPt", 100, 0, 0.2);
+    h_mudxy[i]       = new TH1D(Form("h_mudxy%d",i), "mudxy", 100, -0.1, 0.1);
+    h_mudz[i]        = new TH1D(Form("h_mudz%d",i), "mudz", 100, -1, 1);  
+    h_muMiniIso[i]   = new TH1D(Form("h_muMiniIso%d",i), "muMiniIso", 100, 0, 0.15);
     h_eventWeight[i] = new TH1D(Form("h_eventWeight%d",i), "eventWeight", 20, -1, 1);
 
     h_muHits[i]     ->Sumw2();
@@ -238,30 +238,37 @@ void muVariable(std::string inputFile, int num){
 	    h_muHits[0] ->Fill(muHits[muId[ie]],eventWeight);
 	    pf_muHits[0]->Fill(nVtx,muHits[muId[ie]],eventWeight);
 	    break;
+
 	  case 1:
 	    h_muMatches[0] ->Fill(muMatches[muId[ie]],eventWeight); 
 	    pf_muMatches[0]->Fill(nVtx,muMatches[muId[ie]],eventWeight);
 	    break;
+
 	  case 2: 
 	    h_muTrkLayers[0] ->Fill(muTrkLayers[muId[ie]],eventWeight);
 	    pf_muTrkLayers[0]->Fill(nVtx,muTrkLayers[muId[ie]],eventWeight);
 	    break;
+
 	  case 3:
 	    h_muPixelHits[0] ->Fill(muPixelHits[muId[ie]],eventWeight);
 	    pf_muPixelHits[0]->Fill(nVtx,muPixelHits[muId[ie]],eventWeight);
 	    break;
+
 	  case 4: 
 	    h_muTrkPtErrdvTrkPt[0] ->Fill(muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight); 
 	    pf_muTrkPtErrdvTrkPt[0]->Fill(nVtx,muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
 	    break;
+
 	  case 5: 
 	    h_mudxy[0] ->Fill(mudxy[muId[ie]],eventWeight);   
 	    pf_mudxy[0]->Fill(nVtx,mudxy[muId[ie]],eventWeight);
 	    break;	 
+
 	  case 6: 
 	    h_mudz[0] ->Fill(mudz[muId[ie]],eventWeight);
 	    pf_mudz[0]->Fill(nVtx,mudz[muId[ie]],eventWeight);
 	    break;
+
 	  case 7: 
 	    h_muMiniIso[0] ->Fill(muMiniIso[muId[ie]],eventWeight); 
 	    pf_muMiniIso[0]->Fill(nVtx,muMiniIso[muId[ie]],eventWeight);
@@ -292,30 +299,37 @@ void muVariable(std::string inputFile, int num){
             h_muMatches[1] ->Fill(muMatches[muId[ie]],eventWeight);
             pf_muMatches[1]->Fill(nVtx,muMatches[muId[ie]],eventWeight);
             break;
+
           case 1:
             h_muTrkLayers[1] ->Fill(muTrkLayers[muId[ie]],eventWeight);
             pf_muTrkLayers[1]->Fill(nVtx,muTrkLayers[muId[ie]],eventWeight);
             break;
+
           case 2:
             h_muPixelHits[1] ->Fill(muPixelHits[muId[ie]],eventWeight);
             pf_muPixelHits[1]->Fill(nVtx,muPixelHits[muId[ie]],eventWeight);
             break;
+
           case 3:
             h_muTrkPtErrdvTrkPt[1] ->Fill(muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
             pf_muTrkPtErrdvTrkPt[1]->Fill(nVtx,muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
             break;
+
           case 4:
             h_mudxy[1] ->Fill(mudxy[muId[ie]],eventWeight);
             pf_mudxy[1]->Fill(nVtx,mudxy[muId[ie]],eventWeight);
             break;
+
           case 5:
             h_mudz[1] ->Fill(mudz[muId[ie]],eventWeight);
             pf_mudz[1]->Fill(nVtx,mudz[muId[ie]],eventWeight);
             break;
+
           case 6:
             h_muMiniIso[1] ->Fill(muMiniIso[muId[ie]],eventWeight);
             pf_muMiniIso[1]->Fill(nVtx,muMiniIso[muId[ie]],eventWeight);
             break;
+
 	  case 7:
             h_muHits[1] ->Fill(muHits[muId[ie]],eventWeight);
             pf_muHits[1]->Fill(nVtx,muHits[muId[ie]],eventWeight);
@@ -337,8 +351,11 @@ void muVariable(std::string inputFile, int num){
 
   TFile* outFile[2];
   
-  std::string h_name[11] = {"muMatches","muTrkLayers","muPixelHits","muTrkPtErrdvTrkPt",
-			    "mudxy","mudz","muMiniIso","muHits","eventWeight"};
+  std::string h_name[9] = {"muMatches","muTrkLayers","muPixelHits","muTrkPtErrdvTrkPt",
+			   "mudxy","mudz","muMiniIso","muHits","eventWeight"};
+
+  std::string pf_name[8] = {"pf_muMatches","pf_muTrkLayers","pf_muPixelHits","pf_muTrkPtErrdvTrkPt",
+			    "pf_mudxy","pf_mudz","pf_muMiniIso","pf_muHits"};
 
   std::string region[2] = {"highptMuon","customizeTrackerMuon"};
 
@@ -356,14 +373,14 @@ void muVariable(std::string inputFile, int num){
     h_muHits[i]           ->Write(h_name[7].data());
     h_eventWeight[i]      ->Write(h_name[8].data());
 
-    pf_muMatches[i]        ->Write(h_name[0].data());
-    pf_muTrkLayers[i]      ->Write(h_name[1].data());
-    pf_muPixelHits[i]      ->Write(h_name[2].data());
-    pf_muTrkPtErrdvTrkPt[i]->Write(h_name[3].data());
-    pf_mudxy[i]            ->Write(h_name[4].data());
-    pf_mudz[i]             ->Write(h_name[5].data());
-    pf_muMiniIso[i]        ->Write(h_name[6].data());
-    pf_muHits[i]           ->Write(h_name[7].data());
+    pf_muMatches[i]        ->Write(pf_name[0].data());
+    pf_muTrkLayers[i]      ->Write(pf_name[1].data());
+    pf_muPixelHits[i]      ->Write(pf_name[2].data());
+    pf_muTrkPtErrdvTrkPt[i]->Write(pf_name[3].data());
+    pf_mudxy[i]            ->Write(pf_name[4].data());
+    pf_mudz[i]             ->Write(pf_name[5].data());
+    pf_muMiniIso[i]        ->Write(pf_name[6].data());
+    pf_muHits[i]           ->Write(pf_name[7].data());
 
     outFile[i]->Write();
 

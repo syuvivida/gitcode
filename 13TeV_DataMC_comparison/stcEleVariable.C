@@ -61,7 +61,7 @@ void stcEleVariable(){
   std::string h_name[] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE",
 			  "eleSigmaIEtaIEtaFull5x5","eleFull5x5E2x5dvE5x5",
 			  "eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
-			  "eleMiniIso","dilepMass"};
+			  "eleMiniIso"};
 
   Int_t size = sizeof(h_name)/sizeof(h_name[0]);
   
