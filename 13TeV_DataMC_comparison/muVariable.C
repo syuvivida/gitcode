@@ -72,7 +72,7 @@ void muVariable(std::string inputFile, int num){
     h_muMatches[i]   = new TH1D(Form("h_muMatches%d",i), "muMatches", 7, -0.5, 6.5);
     h_muTrkLayers[i] = new TH1D(Form("h_muTrkLayers%d",i), "muTrkLayers", 18, -0.5, 17.5);
     h_muPixelHits[i] = new TH1D(Form("h_muPixelHits%d",i), "muPixelHits", 8, -0.5, 7.5);
-    h_muTrkPtErrdvTrkPt[i] = new TH1D(Form("h_muTrkPtErrdvTrkPt%d",i), "muTrkPtErrdvTrkPt", 100, 0, 0.2);
+    h_muTrkPtErrdvTrkPt[i] = new TH1D(Form("h_muTrkPtErrdvTrkPt%d",i), "muTrkPtErrdvTrkPt", 100, 0, 0.4);
     h_mudxy[i]       = new TH1D(Form("h_mudxy%d",i), "mudxy", 100, -0.1, 0.1);
     h_mudz[i]        = new TH1D(Form("h_mudz%d",i), "mudz", 100, -1, 1);  
     h_muMiniIso[i]   = new TH1D(Form("h_muMiniIso%d",i), "muMiniIso", 100, 0, 0.15);

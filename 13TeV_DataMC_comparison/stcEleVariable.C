@@ -23,6 +23,12 @@ void stcEleVariable(){
   file[4] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_barrel.root");
   file[5] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_endcap.root");
 
+  TFile *file0[3];
+
+  file0[0] = TFile::Open("outputEle/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_dilepMass.root");
+  file0[1] = TFile::Open("outputEle/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_dilepMass.root");
+  file0[2] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_dilepMass.root");
+
   TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
   
   Int_t nEventDY     = h_eventWeight->Integral();
@@ -120,7 +126,43 @@ void stcEleVariable(){
     else c.Print("eleVariable_endcap.pdf");
     
   }
-  
+
+  c_up->cd()->SetLogy(0);
+    
+  myPlot(((TH1D*)(file0[0]->Get("dilepMass_loose"))), 
+	 ((TH1D*)(file0[1]->Get("dilepMass_loose"))), 
+	 ((TH1D*)(file0[2]->Get("dilepMass_loose"))),
+	 scaleDY, scaleTTbar);
+
+  c_up->RedrawAxis();
+    
+  c_dw->cd();
+  myRatio(((TH1D*)(file0[0]->Get("dilepMass_loose"))), 
+	  ((TH1D*)(file0[1]->Get("dilepMass_loose"))),
+	  ((TH1D*)(file0[2]->Get("dilepMass_loose"))),
+	  scaleDY, scaleTTbar);
+
+  c.Draw();  
+  c.Print("diEleMass_loose.pdf");
+    
+  c_up->cd()->SetLogy(0);
+
+  myPlot(((TH1D*)(file0[0]->Get("dilepMass_tight"))),
+	 ((TH1D*)(file0[1]->Get("dilepMass_tight"))),
+	 ((TH1D*)(file0[2]->Get("dilepMass_tight"))),
+	 scaleDY, scaleTTbar);
+
+  c_up->RedrawAxis();
+
+  c_dw->cd();
+  myRatio(((TH1D*)(file0[0]->Get("dilepMass_tight"))),
+	  ((TH1D*)(file0[1]->Get("dilepMass_tight"))),
+	  ((TH1D*)(file0[2]->Get("dilepMass_tight"))),
+	  scaleDY, scaleTTbar);
+
+  c.Draw();
+  c.Print("diEleMass_tight.pdf");
+
 }
 
 

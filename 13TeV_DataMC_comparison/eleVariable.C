@@ -60,7 +60,7 @@ void eleVariable(std::string inputFile, int num){
   TH1D* h_eleMissHits[2]; 
   TH1D* h_eleD0[2];   
   TH1D* h_eleMiniIso[2]; 
-  //  TH1D* h_dilepMass[2]; // 0: loose; 1: tight
+  TH1D* h_dilepMass[2]; // 0: loose; 1: tight
   TH1D* h_eventWeight[2];
 
   TProfile* pf_eleEtaseedAtVtx[2];
@@ -84,7 +84,7 @@ void eleVariable(std::string inputFile, int num){
     h_eleMissHits[i]             = new TH1D(Form("h_eleMissHits%d",i), "eleMissHits", 6, -0.5, 5.5);
     h_eleD0[i]                   = new TH1D(Form("h_eleD0%d",i), "eleD0", 100, -0.015, 0.015);  
     h_eleMiniIso[i]              = new TH1D(Form("h_eleMiniIso%d",i), "eleMiniIso", 100, 0, 0.15);
-    // h_dilepMass[i]               = new TH1D(Form("h_dilepMass%d",i), "dilepMass", 100, 50, 150);
+    h_dilepMass[i]               = new TH1D(Form("h_dilepMass%d",i), "dilepMass", 100, 50, 150);
     h_eventWeight[i]             = new TH1D(Form("h_eventWeight%d",i), "eventWeight", 100, -1, 1);
 
     h_eleEtaseedAtVtx[i]        ->Sumw2();
@@ -96,7 +96,7 @@ void eleVariable(std::string inputFile, int num){
     h_eleMissHits[i]            ->Sumw2(); 
     h_eleD0[i]                  ->Sumw2();
     h_eleMiniIso[i]             ->Sumw2();
-    // h_dilepMass[i]              ->Sumw2();
+    h_dilepMass[i]              ->Sumw2();
 
     h_eleEtaseedAtVtx[i]        ->GetXaxis()->SetTitle("eleEtaseedAtVtx"); 
     h_eledPhiAtVtx[i]           ->GetXaxis()->SetTitle("eledPhiAtVtx");   
@@ -107,7 +107,6 @@ void eleVariable(std::string inputFile, int num){
     h_eleMissHits[i]            ->GetXaxis()->SetTitle("eleMissHits"); 
     h_eleD0[i]                  ->GetXaxis()->SetTitle("eleD0");      
     h_eleMiniIso[i]             ->GetXaxis()->SetTitle("eleMiniIso"); 
-    // h_dilepMass[i]              ->GetXaxis()->SetTitle("dilepMass");
     h_eventWeight[i]            ->GetXaxis()->SetTitle("eventWeight");
 
     pf_eleEtaseedAtVtx[i]         = new TProfile(Form("pf_eleEtaseedAtVtx%d",i), "eleEtaseedAtVtx profile", 25, 0.5, 25.5);
@@ -132,6 +131,9 @@ void eleVariable(std::string inputFile, int num){
 
   }
 
+  h_dilepMass[0]->GetXaxis()->SetTitle("dilepMass_loose");
+  h_dilepMass[1]->GetXaxis()->SetTitle("dilepMass_tight");
+
   // begin of event loop
 
   Int_t nPass = 0;
@@ -147,7 +149,7 @@ void eleVariable(std::string inputFile, int num){
     Int_t    nEle                    = data.GetInt("nEle");
     Int_t*   eleMissHits             = data.GetPtrInt("eleMissHits");
     Float_t  mcWeight                = data.GetFloat("mcWeight");
-    Float_t* eleSCEn                 = data.GetPtrFloat("eleScEn");
+    Float_t* eleScEn                 = data.GetPtrFloat("eleScEn");
     Float_t* eleScEt                 = data.GetPtrFloat("eleScEt");
     Float_t* eleScEta                = data.GetPtrFloat("eleScEta");
     Float_t* eleEtaseedAtVtx         = data.GetPtrFloat("eleEtaseedAtVtx");	
@@ -202,8 +204,8 @@ void eleVariable(std::string inputFile, int num){
     Int_t eleId[2] = {-1,-1};
     Float_t mll = -1;
 
-    // bool findEPair = false;
-    // bool findTightEPair = false;
+    bool findEPair = false;
+    bool findTightEPair = false;
     
     for(Int_t ie = 0; ie < nEle; ie++){
 
@@ -224,17 +226,17 @@ void eleVariable(std::string inputFile, int num){
 	mll = (*thisEle+*thatEle).M();
 
 	if( mll < 60 || mll > 120 ) continue;		
-	// if( !findEPair ) h_dilepMass[0]->Fill(mll,eventWeight); // loose
+	if( !findEPair ) h_dilepMass[0]->Fill(mll,eventWeight); // loose
 
-	// findEPair = true;
+	findEPair = true;
 
         eleId[0] = ie;
 	eleId[1] = je;
 
 	if( !eleIsPassHEEPNoIso[ie] || !eleIsPassHEEPNoIso[je] ) continue;
-	// if( !findTightEPair ) h_dilepMass[1]->Fill(mll,eventWeight); // tight
+	if( !findTightEPair ) h_dilepMass[1]->Fill(mll,eventWeight); // tight
 
-	// findTightEPair = true;
+	findTightEPair = true;
 
 	break;
 	
@@ -249,7 +251,7 @@ void eleVariable(std::string inputFile, int num){
 
     for(Int_t ie = 0; ie < 2; ie++){
 
-      Float_t E = eleSCEn[eleId[ie]];
+      Float_t E = eleScEn[eleId[ie]];
 
       if( fabs(eleScEta[eleId[ie]]) < 1.4442 ){ // barrel selections and cuts
 
@@ -385,6 +387,11 @@ void eleVariable(std::string inputFile, int num){
   fprintf(stderr, "Processed all events\n");
     
   std::cout << "pass events: " << nPass << std::endl;
+
+  TFile* outFile0 = new TFile(Form("%s_dilepMass.root",outputFile[num].c_str()), "recreate");
+  h_dilepMass[0]->Write("dilepMass_loose");
+  h_dilepMass[1]->Write("dilepMass_tight");
+  outFile0->Write();
 
   TFile* outFile[2];
   
