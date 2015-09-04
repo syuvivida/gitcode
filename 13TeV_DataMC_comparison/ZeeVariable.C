@@ -48,7 +48,7 @@ void ZeeVariable(std::string inputFile, int num){
   
   TreeReader data(infiles);
   
-  // Declare the histogram (barrel,endcap)
+  // Declare the histogram
      
   TH1D* h_Zmass         = new TH1D("h_Zmass", "Zmass", 100, 50, 130);
   TH1D* h_Zpt           = new TH1D("h_Zpt", "Zpt", 100, 50, 130);
@@ -129,8 +129,10 @@ void ZeeVariable(std::string inputFile, int num){
 
     if( !passTrigger ) continue;
 
-    // choosing electron
+    // select good electrons
         
+    std::vector<Int_t> goodElectrons;
+
     for(Int_t ie = 0; ie < nEle; ie++){
 
       if( !(fabs(eleScEta[ie]) < 1.442 || fabs(eleScEta[ie]) > 1.566) ) continue;
@@ -140,57 +142,63 @@ void ZeeVariable(std::string inputFile, int num){
       if( !eleIsPassHEEPNoIso[ie] ) continue;
       if( eleMiniIso[ie] >= 0.1 ) continue;
 
-      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
-      
-      for(Int_t je = 0; je < ie; je++){
+      goodElectrons.push_back(ie);
 
-	if( !(fabs(eleScEta[je]) < 1.442 || fabs(eleScEta[je]) > 1.566) ) continue;
-	if( fabs(eleScEta[je]) > 2.5 ) continue;
-	if( eleScEt[je] <= 35 ) continue;
-        if( !eleEcalDrivenSeed[je] ) continue;
-	if( !eleIsPassHEEPNoIso[je] ) continue;
-	if( eleMiniIso[je] >= 0.1 ) continue;
+    } // end of ele loop
 
-	TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(je);
-	
-	Float_t	mll   = (*thisEle+*thatEle).M();
-	Float_t ptll  = (*thisEle+*thatEle).Pt();
-	Float_t etall = (*thisEle+*thatEle).Eta();
+    // select good Z boson
 
-	if( mll < 60 || mll > 120 ) continue;		
-	if( eleCharge[ie] != -eleCharge[je] ) continue;
+    bool findEPair = false;
+    TLorentzVector l4_Z(0,0,0,0);
+    TLorentzVector* thisEle, thatEle;
 
-	h_Zmass->Fill(mll);
-	h_Zpt  ->Fill(ptll);
-	h_Zeta ->Fill(etall);
+    for(unsigned int i = 0; i < goodElectrons.size(); i++){
 
-	if( thisEle->Pt() > thatEle->Pt() ){
+      Int_t ie = goodElectrons[i];
+      thisEle = (TLorentzVector*)eleP4->At(ie);
 
-	  h_leadElePt    ->Fill(thisEle->Pt());
-	  h_leadEleEta   ->Fill(thisEle->Eta());
-	  h_subleadElePt ->Fill(thatEle->Pt());
-	  h_subleadEleEta->Fill(thatEle->Eta());
+      for(unsigned int j = 0; j < i; j++){
 
-	}else{
+	Int_t je = goodElectrons[j];
+	thatEle = (TLorentzVector*)eleP4->At(je);
+	Float_t mll = (*thisEle+*thatEle).M();
 
-	  h_leadElePt    ->Fill(thatEle->Pt());
-          h_leadEleEta   ->Fill(thatEle->Eta());
-          h_subleadElePt ->Fill(thisEle->Pt());
-          h_subleadEleEta->Fill(thisEle->Eta());
+	if( eleCharge[ie]*eleCharge[je] > 0 ) continue;   
+	if( mll < 60 || mll > 120 ) continue;
+	if( !findEPair ) l4_Z = (*thisEle+*thatEle);
 
-	}
+	findEPair = true;
 
-	break;
-	
-      } // end of that ele
-  
-    } // end of this ele
+      }
+    }
+
+    if( !findEPair ) continue;
+
+    h_Zmass->Fill(l4_Z.M());
+    h_Zpt  ->Fill(l4_Z.Pt());
+    h_Zeta ->Fill(l4_Z.Eta());
+
+    if( thisEle->Pt() > thatEle->Pt() ){
+
+      h_leadElePt    ->Fill(thisEle->Pt());
+      h_leadEleEta   ->Fill(thisEle->Eta());
+      h_subleadElePt ->Fill(thatEle->Pt());
+      h_subleadEleEta->Fill(thatEle->Eta());
+
+    }else{
+
+      h_leadElePt    ->Fill(thatEle->Pt());
+      h_leadEleEta   ->Fill(thatEle->Eta());
+      h_subleadElePt ->Fill(thisEle->Pt());
+      h_subleadEleEta->Fill(thisEle->Eta());
+
+    }
 
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
-  std::string h_name[8] = {"Zmass","h_Zpt","h_Zeta","h_leadElePt","h_leadEleEta",
+  std::string h_name[8] = {"Zmass","Zpt","Zeta","leadElePt","leadEleEta",
 			   "subleadElePt","subleadEleEta","eventWeight"};
 
   TFile* outFile = new TFile(Form("%s_ZeeVariable.root",outputFile[num].c_str()), "recreate");
@@ -199,7 +207,7 @@ void ZeeVariable(std::string inputFile, int num){
   h_Zpt          ->Write(h_name[1].data());  
   h_Zeta         ->Write(h_name[2].data());    
   h_leadElePt    ->Write(h_name[3].data()); 
-  h_leadEleEta ->Write(h_name[4].data());   
+  h_leadEleEta   ->Write(h_name[4].data());   
   h_subleadElePt ->Write(h_name[5].data());
   h_subleadEleEta->Write(h_name[6].data());    
   h_eventWeight  ->Write(h_name[7].data());

@@ -109,15 +109,15 @@ void eleVariable(std::string inputFile, int num){
     h_eleMiniIso[i]             ->GetXaxis()->SetTitle("eleMiniIso"); 
     h_eventWeight[i]            ->GetXaxis()->SetTitle("eventWeight");
 
-    pf_eleEtaseedAtVtx[i]         = new TProfile(Form("pf_eleEtaseedAtVtx%d",i), "eleEtaseedAtVtx profile", 25, 0.5, 25.5);
-    pf_eledPhiAtVtx[i]            = new TProfile(Form("pf_eledPhiAtVtx%d",i), "eledPhiAtVtx profile", 25, 0.5, 25.5);
-    pf_eleHoverE[i]               = new TProfile(Form("pf_eleHoverE%d",i), "eleHoverE profile", 25, 0.5, 25.5);
-    pf_eleSigmaIEtaIEtaFull5x5[i] = new TProfile(Form("pf_eleSigmaIEtaIEtaFull5x5%d",i), "eleSigmaIEtaIEtaFull5x5 profile", 25, 0.5, 25.5);
-    pf_eleFull5x5E2x5dvE5x5[i]    = new TProfile(Form("pf_eleFull5x5E2x5dvE5x5%d",i), "eleFull5x5E2x5dvE5x5 profile", 25, 0.5, 25.5);
-    pf_eleFull5x5E1x5dvE5x5[i]    = new TProfile(Form("pf_eleFull5x5E1x5dvE5x5%d",i), "eleFull5x5E1x5dvE5x5 profile", 25, 0.5, 25.5);
-    pf_eleMissHits[i]             = new TProfile(Form("pf_eleMissHits%d",i), "eleMissHits profile", 25, 0.5, 25.5);
-    pf_eleD0[i]                   = new TProfile(Form("pf_eleD0%d",i), "eleD0 profile", 25, 0.5, 25.5);
-    pf_eleMiniIso[i]              = new TProfile(Form("pf_eleMiniIso%d",i), "eleMiniIso profile", 25, 0.5, 25.5);
+    pf_eleEtaseedAtVtx[i]         = new TProfile(Form("pf_eleEtaseedAtVtx%d",i), "eleEtaseedAtVtx profile", 10, 0.5, 20.5);
+    pf_eledPhiAtVtx[i]            = new TProfile(Form("pf_eledPhiAtVtx%d",i), "eledPhiAtVtx profile", 10, 0.5, 20.5);
+    pf_eleHoverE[i]               = new TProfile(Form("pf_eleHoverE%d",i), "eleHoverE profile", 10, 0.5, 20.5);
+    pf_eleSigmaIEtaIEtaFull5x5[i] = new TProfile(Form("pf_eleSigmaIEtaIEtaFull5x5%d",i), "eleSigmaIEtaIEtaFull5x5 profile", 10, 0.5, 20.5);
+    pf_eleFull5x5E2x5dvE5x5[i]    = new TProfile(Form("pf_eleFull5x5E2x5dvE5x5%d",i), "eleFull5x5E2x5dvE5x5 profile", 10, 0.5, 20.5);
+    pf_eleFull5x5E1x5dvE5x5[i]    = new TProfile(Form("pf_eleFull5x5E1x5dvE5x5%d",i), "eleFull5x5E1x5dvE5x5 profile", 10, 0.5, 20.5);
+    pf_eleMissHits[i]             = new TProfile(Form("pf_eleMissHits%d",i), "eleMissHits profile", 10, 0.5, 20.5);
+    pf_eleD0[i]                   = new TProfile(Form("pf_eleD0%d",i), "eleD0 profile", 10, 0.5, 20.5);
+    pf_eleMiniIso[i]              = new TProfile(Form("pf_eleMiniIso%d",i), "eleMiniIso profile", 10, 0.5, 20.5);
 
     pf_eleEtaseedAtVtx[i]        ->GetXaxis()->SetTitle("eleEtaseedAtVtx");
     pf_eledPhiAtVtx[i]           ->GetXaxis()->SetTitle("eledPhiAtVtx");
