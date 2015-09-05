@@ -51,11 +51,11 @@ void ZeeVariable(std::string inputFile, int num){
   // Declare the histogram
      
   TH1D* h_Zmass         = new TH1D("h_Zmass", "Zmass", 100, 50, 130);
-  TH1D* h_Zpt           = new TH1D("h_Zpt", "Zpt", 100, 50, 130);
-  TH1D* h_Zeta          = new TH1D("h_Zeta", "Zeta", 100, -5, 5);
-  TH1D* h_leadElePt     = new TH1D("h_leadElePt", "leadElePt", 100, 50, 130);
+  TH1D* h_Zpt           = new TH1D("h_Zpt", "Zpt", 100, 00, 130);
+  TH1D* h_Zeta          = new TH1D("h_Zeta", "Zeta", 100, -10, 10);
+  TH1D* h_leadElePt     = new TH1D("h_leadElePt", "leadElePt", 100, 0, 130);
   TH1D* h_leadEleEta    = new TH1D("h_leadEleEta", "leadEleEta", 100, -5, 5);
-  TH1D* h_subleadElePt  = new TH1D("h_subleadElePt", "subleadElePt", 100, 50, 130);
+  TH1D* h_subleadElePt  = new TH1D("h_subleadElePt", "subleadElePt", 100, 0, 130);
   TH1D* h_subleadEleEta = new TH1D("h_subleadEleEta", "subleadEleEta", 100, -5, 5);
   TH1D* h_eventWeight   = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 

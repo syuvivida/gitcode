@@ -9,9 +9,9 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 50ns: root -q -b muVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015B/SingleMuon/crab_SingleMuon_Run2015B-PromptReco-v1_0825/150825_144712/0000\"\,0\)
-// 50ns: root -q -b muVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ForEIKO/150729_202330/0000\"\,1\)
-// 50ns: root -q -b muVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
+// 50ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015B/SingleMuon/crab_SingleMuon_Run2015B-PromptReco-v1_0825/150825_144712/0000\"\,0\)
+// 50ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ForEIKO/150729_202330/0000\"\,1\)
+// 50ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
 
 void ZmumuVariable(std::string inputFile, int num){
 
@@ -47,11 +47,11 @@ void ZmumuVariable(std::string inputFile, int num){
   // Declare the histogram
      
   TH1D* h_Zmass        = new TH1D("h_Zmass", "Zmass", 100, 50, 130);
-  TH1D* h_Zpt          = new TH1D("h_Zpt", "Zpt", 100, 50, 130);
-  TH1D* h_Zeta         = new TH1D("h_Zeta", "Zeta", 100, -5, 5);
-  TH1D* h_leadMuPt     = new TH1D("h_leadMuPt", "leadMuPt", 100, 50, 130);
+  TH1D* h_Zpt          = new TH1D("h_Zpt", "Zpt", 100, 0, 130);
+  TH1D* h_Zeta         = new TH1D("h_Zeta", "Zeta", 100, -10, 10);
+  TH1D* h_leadMuPt     = new TH1D("h_leadMuPt", "leadMuPt", 100, 0, 130);
   TH1D* h_leadMuEta    = new TH1D("h_leadMuEta", "leadMuEta", 100, -5, 5);
-  TH1D* h_subleadMuPt  = new TH1D("h_subleadMuPt", "subleadMuPt", 100, 50, 130);
+  TH1D* h_subleadMuPt  = new TH1D("h_subleadMuPt", "subleadMuPt", 100, 0, 130);
   TH1D* h_subleadMuEta = new TH1D("h_subleadMuEta", "subleadMuEta", 100, -5, 5);
   TH1D* h_eventWeight  = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 
@@ -123,55 +123,71 @@ void ZmumuVariable(std::string inputFile, int num){
 
     if( !passTrigger ) continue;
 
-    // choosing muon
-        
-    for(Int_t ie = 0; ie < nMu; ie++){
-
-      if( muMiniIso[ie] >= 0.1 ) continue;
-
-      TLorentzVector* thisMu = (TLorentzVector*)muP4->At(ie);
+    // select good muons
       
-      for(Int_t je = 0; je < ie; je++){
-
-	if( muMiniIso[je] >= 0.1 ) continue;
-
-	TLorentzVector* thatMu = (TLorentzVector*)muP4->At(je);
-
-	if( isHighPtMuon[ie] || isCustomTrackerMuon[ie] ) continue;
-
-	
-	Float_t	mll   = (*thisMu+*thatMu).M();
-	Float_t ptll  = (*thisMu+*thatMu).Pt();
-	Float_t etall = (*thisMu+*thatMu).Eta();
-
-	if( mll < 60 || mll > 120 ) continue;		
-	if( muCharge[ie] != -muCharge[je] ) continue;
-
-	h_Zmass->Fill(mll);
-	h_Zpt  ->Fill(ptll);
-	h_Zeta ->Fill(etall);
-
-	if( thisMu->Pt() > thatMu->Pt() ){
-
-	  h_leadMuPt    ->Fill(thisMu->Pt());
-	  h_leadMuEta   ->Fill(thisMu->Eta());
-	  h_subleadMuPt ->Fill(thatMu->Pt());
-	  h_subleadMuEta->Fill(thatMu->Eta());
-
-	}else{
-
-	  h_leadMuPt    ->Fill(thatMu->Pt());
-          h_leadMuEta   ->Fill(thatMu->Eta());
-          h_subleadMuPt ->Fill(thisMu->Pt());
-          h_subleadMuEta->Fill(thisMu->Eta());
-
-	}
-
-	break;
-	
-      } // end of that mu
+    std::vector<Int_t> goodMuons;
   
-    } // end of this mu
+    for(Int_t im = 0; im < nMu; im++){
+
+      if( muMiniIso[im] >= 0.1 ) continue;
+      if( !isHighPtMuon[im] || !isCustomTrackerMuon[im] ) continue;
+
+      goodMuons.push_back(im);
+
+    }	
+
+    // select good Z boson
+
+    bool findMPair = false;
+    TLorentzVector l4_Z(0,0,0,0);
+    TLorentzVector* thisMu = NULL;
+    TLorentzVector* thatMu = NULL;
+
+    for(unsigned int i = 0; i < goodMuons.size(); i++){
+
+      Int_t im = goodMuons[i];
+      thisMu = (TLorentzVector*)muP4->At(im);
+
+      for(unsigned int j = 0; j < i; j++){
+
+	Int_t jm = goodMuons[j];
+	thatMu = (TLorentzVector*)muP4->At(jm);
+	Float_t mll = (*thisMu+*thatMu).M();
+
+	if( muCharge[im]*muCharge[jm] > 0 ) continue;
+	if( mll < 60 || mll > 120 ) continue;
+	if( !((isHighPtMuon[im] && isCustomTrackerMuon[jm]) ||
+	      (isHighPtMuon[jm] && isCustomTrackerMuon[im])
+	      )) continue;
+
+	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
+
+	findMPair = true;
+
+      }
+    }
+
+    if( !findMPair ) continue;
+
+    h_Zmass->Fill(l4_Z.M());
+    h_Zpt  ->Fill(l4_Z.Pt());
+    h_Zeta ->Fill(l4_Z.Eta());
+
+    if( thisMu->Pt() > thatMu->Pt() ){
+
+      h_leadMuPt    ->Fill(thisMu->Pt());
+      h_leadMuEta   ->Fill(thisMu->Eta());
+      h_subleadMuPt ->Fill(thatMu->Pt());
+      h_subleadMuEta->Fill(thatMu->Eta());
+
+    }else{
+
+      h_leadMuPt    ->Fill(thatMu->Pt());
+      h_leadMuEta   ->Fill(thatMu->Eta());
+      h_subleadMuPt ->Fill(thisMu->Pt());
+      h_subleadMuEta->Fill(thisMu->Eta());
+
+    }
 
   } // end of event loop
 
@@ -180,7 +196,7 @@ void ZmumuVariable(std::string inputFile, int num){
   std::string h_name[8] = {"Zmass","Zpt","Zeta","leadMuPt","leadMuEta",
 			   "subleadMuPt","subleadMuEta","eventWeight"};
 
-  TFile* outFile = new TFile(Form("%s_ZeeVariable.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_ZmumuVariable.root",outputFile[num].c_str()), "recreate");
       
   h_Zmass       ->Write(h_name[0].data());  
   h_Zpt         ->Write(h_name[1].data());  
