@@ -9,11 +9,11 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1\"\,0\)
-// 25ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000\"\,1\)
-// 50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015B/SingleElectron-Run2015B-5p59pbInv\"\,0\)
-// 50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ForEIKO/150729_202330/0000\"\,1\)
-// 25/50ns: root -q -b eleVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
+// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1\"\,0\)
+// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000\"\,1\)
+// 50ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015B/SingleElectron-Run2015B-5p59pbInv\"\,0\)
+// 50ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ForEIKO/150729_202330/0000\"\,1\)
+// 25/50ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
 
 void ZeeVariable(std::string inputFile, int num){
 
@@ -150,7 +150,8 @@ void ZeeVariable(std::string inputFile, int num){
 
     bool findEPair = false;
     TLorentzVector l4_Z(0,0,0,0);
-    TLorentzVector* thisEle, thatEle;
+    TLorentzVector* thisEle = NULL;
+    TLorentzVector* thatEle = NULL;
 
     for(unsigned int i = 0; i < goodElectrons.size(); i++){
 
