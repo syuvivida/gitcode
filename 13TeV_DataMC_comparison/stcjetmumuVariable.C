@@ -16,9 +16,9 @@ void stcjetmumuVariable(){
 
   TFile *file[3];
 
-  file[0] = TFile::Open("outputjetmumu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_jetmumuVariable.root");
-  file[1] = TFile::Open("outputjetmumu/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_jetmumuVariable.root");
-  file[2] = TFile::Open("outputjetmumu/crab_SingleMuon-Run2015C-PromptReco-v1_jetmumuVariable.root");
+  file[0] = TFile::Open("outputJetmumu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_jetmumuVariable.root");
+  file[1] = TFile::Open("outputJetmumu/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_jetmumuVariable.root");
+  file[2] = TFile::Open("outputJetmumu/crab_SingleMuon-Run2015C-PromptReco-v1_jetmumuVariable.root");
   
   TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
   

@@ -113,7 +113,7 @@ void jeteeVariable(std::string inputFile, int num){
     vector<float>* FATsubjetSDPx      = data.GetPtrVectorFloat("FATsubjetSDPx", FATnJet);
     vector<float>* FATsubjetSDPy      = data.GetPtrVectorFloat("FATsubjetSDPy", FATnJet);
     vector<float>* FATsubjetSDPz      = data.GetPtrVectorFloat("FATsubjetSDPz", FATnJet);
-    vector<float>* FATsubjetSDE       = data.GetPtrVectorFloat("FATsubjetSDE", FATnJet);
+    vector<float>* FATsubjetSDE       = data.GetPtrVectorFloat("FATsubjetSDCE", FATnJet);
     vector<float>* FATsubjetSDCSV     = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
