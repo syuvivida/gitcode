@@ -9,18 +9,17 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 50ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015B/SingleMuon/crab_SingleMuon_Run2015B-PromptReco-v1_0825/150825_144712/0000\"\,0\)
-// 50ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_ForEIKO/150729_202330/0000\"\,1\)
-// 50ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
+// 25ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000\"\,0\)
+// 25ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000\"\,1\)
+// 25ns/50ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
 
 void ZmumuVariable(std::string inputFile, int num){
 
   // read the ntuples (in pcncu)
 
   std::vector<string> infiles;
-  
-  // 50ns
-  std::string outputFile[3] = {"crab_SingleMuon_Run2015B-PromptReco-v1_0825","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8",
+
+  std::string outputFile[3] = {"crab_SingleMuon-Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
 			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
 
   TSystemDirectory *base = new TSystemDirectory("root","root");
@@ -33,7 +32,6 @@ void ZmumuVariable(std::string inputFile, int num){
     std::string fileN = fileH->GetName();
     if( fileH->IsFolder() ) continue;
     if( fileN.find("NCUGlobalTuples") == std::string::npos ) continue;
-    if(num==1) if(fileN.find("363") != std::string::npos) continue;
     fileN = inputFile + "/" + fileN;
     cout << fileN.data() << endl;
     nfile++;

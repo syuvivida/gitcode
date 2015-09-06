@@ -18,10 +18,10 @@ void pfMuVariable(){
 
   TFile *file[4];
 
-  file[0] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_highptMuon.root");
-  file[1] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_customizeTrackerMuon.root");
-  file[2] = TFile::Open("outputMu/crab_SingleMuon_Run2015B-PromptReco-v1_0825_highptMuon.root");
-  file[3] = TFile::Open("outputMu/crab_SingleMuon_Run2015B-PromptReco-v1_0825_customizeTrackerMuon.root");
+  file[0] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_highptMuon.root");
+  file[1] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_customizeTrackerMuon.root");
+  file[2] = TFile::Open("outputMu/crab_SingleMuon-Run2015C-PromptReco-v1_highptMuon.root");
+  file[3] = TFile::Open("outputMu/crab_SingleMuon-Run2015C-PromptReco-v1_customizeTrackerMuon.root");
    
   gStyle->SetOptStat(0);
 
@@ -83,8 +83,8 @@ void myProfile(TProfile* pf_DY, TProfile* pf_data){
 
   leg->SetFillStyle(0);
   leg->SetBorderSize(1);
-  leg->AddEntry(pf_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8", "lep"); 
-  leg->AddEntry(pf_data, "crab_SingleMuon_Run2015B-PromptReco-v1_0825", "lep");
+  leg->AddEntry(pf_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lep"); 
+  leg->AddEntry(pf_data, "crab_SingleMuon-Run2015C-PromptReco-v1", "lep");
   leg->Draw();
 
 }

@@ -16,12 +16,12 @@ void stcMuVariable(){
 
   TFile *file[6];
 
-  file[0] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_highptMuon.root");
-  file[1] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_customizeTrackerMuon.root");
+  file[0] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_highptMuon.root");
+  file[1] = TFile::Open("outputMu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_customizeTrackerMuon.root");
   file[2] = TFile::Open("outputMu/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_highptMuon.root");
   file[3] = TFile::Open("outputMu/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_customizeTrackerMuon.root");
-  file[4] = TFile::Open("outputMu/crab_SingleMuon_Run2015B-PromptReco-v1_0825_highptMuon.root");
-  file[5] = TFile::Open("outputMu/crab_SingleMuon_Run2015B-PromptReco-v1_0825_customizeTrackerMuon.root");
+  file[4] = TFile::Open("outputMu/crab_SingleMuon-Run2015C-PromptReco-v1_highptMuon.root");
+  file[5] = TFile::Open("outputMu/crab_SingleMuon-Run2015C-PromptReco-v1_customizeTrackerMuon.root");
 
   TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
   
@@ -154,9 +154,9 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
 
   leg->SetFillStyle(0);
   leg->SetBorderSize(1);
-  leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8", "lpf"); 
+  leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
   leg->AddEntry(h_ttbar, "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lpf");
-  leg->AddEntry(h_data, "crab_SingleMuon_Run2015B-PromptReco-v1_0825", "lp");
+  leg->AddEntry(h_data, "crab_SingleMuon-Run2015C-PromptReco-v1", "lp");
   leg->Draw();
 
 }
