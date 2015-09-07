@@ -215,7 +215,7 @@ void jeteeVariable(std::string inputFile, int num){
 	if( FATnSubSDJet[ij] < 2 ) continue;
 	goodsubJetID[is] = is;
 
-	if( goodsubjetID[0] >= 0 && goodsubJetID[1] >= 0 ) 
+	if( goodsubJetID[0] >= 0 && goodsubJetID[1] >= 0 ) 
 	  break;
 
       }
