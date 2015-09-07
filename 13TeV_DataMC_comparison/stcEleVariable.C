@@ -18,26 +18,26 @@ void stcEleVariable(){
 
   file[0] = TFile::Open("outputEle/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_barrel.root");
   file[1] = TFile::Open("outputEle/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_endcap.root");
-  file[2] = TFile::Open("outputEle/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_barrel.root");
-  file[3] = TFile::Open("outputEle/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_endcap.root");
+  file[2] = TFile::Open("outputEle/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_barrel.root");
+  file[3] = TFile::Open("outputEle/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_endcap.root");
   file[4] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_barrel.root");
   file[5] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_endcap.root");
 
   TFile *file0[3];
 
   file0[0] = TFile::Open("outputEle/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_dilepMass.root");
-  file0[1] = TFile::Open("outputEle/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_dilepMass.root");
+  file0[1] = TFile::Open("outputEle/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_dilepMass.root");
   file0[2] = TFile::Open("outputEle/DoubleEG_Run2015C-PromptReco-v1_dilepMass.root");
 
-  TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
-  
-  Int_t nEventDY     = h_eventWeight->Integral();
-  Int_t nEventTTbar  = 19494441;
-  Double_t xSecDY    = 6025.2; //pb
-  Double_t xSecTTbar = 831.76; //pb
-  Double_t dataLumi  = 8.1;    //ele //pb-1
-  
-  Double_t scaleDY = dataLumi/(nEventDY/xSecDY);
+  TH1D* h_eventWeightDY    = (TH1D*)(file[0]->Get("eventWeight"));
+  TH1D* h_eventWeightTTbar = (TH1D*)(file[2]->Get("eventWeight"));  
+
+  Int_t nEventDY      = h_eventWeightDY->Integral();
+  Int_t nEventTTbar   = h_eventWeightTTbar->Integral();
+  Double_t xSecDY     = 6025.2; //pb
+  Double_t xSecTTbar  = 831.76; //pb
+  Double_t dataLumi   = 8.1;    //ele //pb-1
+  Double_t scaleDY    = dataLumi/(nEventDY/xSecDY);
   Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
 
   std::cout << "\nnEventDY: " << nEventDY
@@ -199,7 +199,7 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
   leg->SetFillStyle(0);
   leg->SetBorderSize(1);
   leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
-  leg->AddEntry(h_ttbar, "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lpf");
+  leg->AddEntry(h_ttbar, "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830", "lpf");
   leg->AddEntry(h_data, "DoubleEG_Run2015C-PromptReco-v1", "lp");
   leg->Draw();
 

@@ -9,9 +9,9 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1\"\,0\)
-// 25ns: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000\"\,1\)
-// 25/50ns: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803/150803_175618/0000\"\,2\)
+// 25ns: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
+// 25ns: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\)
+// 25ns: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\)
 
 void jeteeVariable(std::string inputFile, int num){
 
@@ -20,25 +20,41 @@ void jeteeVariable(std::string inputFile, int num){
   std::vector<string> infiles;
 
   std::string outputFile[3] = {"DoubleEG_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
-			       "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803"};
+			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830"};
 
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
   TList *listOfFiles = base->GetListOfFiles();
   TIter fileIt(listOfFiles);
   TFile *fileH = new TFile();
-  int nfile = 0;
-  while((fileH = (TFile*)fileIt())){
+  Long64_t nfiles = 0;
+
+  while( (fileH = (TFile*)fileIt()) ){
+    
     std::string fileN = fileH->GetName();
-    if( fileH->IsFolder() ) continue;
-    if( fileN.find("NCUGlobalTuples") == std::string::npos ) continue;
-    fileN = inputFile + "/" + fileN;
-    cout << fileN.data() << endl;
-    nfile++;
-    infiles.push_back(fileN);
+    std::string baseString = "NCUGlobal";
+    if( fileN.find("fail") != std::string::npos ) continue;
+
+    if( fileH->IsFolder() ){
+    
+      std::string newDir = inputFile+fileN;
+      base->SetDirectory(newDir.data());
+      TList *listOfFiles2 = base->GetListOfFiles();
+      TIter fileIt2(listOfFiles2);
+      TFile *fileH2 = new TFile(); 
+      
+      while( (fileH2 = (TFile*)fileIt2()) ){
+
+	std::string fileN2 = fileH2->GetName();
+	if( fileH2->IsFolder() ) continue;
+	if( fileN2.find("fail") != std::string::npos ) continue;
+	if( fileN2.find(baseString) == std::string::npos ) continue;
+	infiles.push_back(Form("%s/%s",newDir.data(),fileN2.data()));
+	nfiles++;
+
+      }
+    }
   }
-  
-  std::cout << "Opened " << nfile << " files" << std::endl;
   
   TreeReader data(infiles);
   
@@ -84,6 +100,8 @@ void jeteeVariable(std::string inputFile, int num){
     
   // begin of event loop
 
+  Int_t nPass[4] = {0};
+
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
     if ( ev % 100000 == 0 )
@@ -113,7 +131,7 @@ void jeteeVariable(std::string inputFile, int num){
     vector<float>* FATsubjetSDPx      = data.GetPtrVectorFloat("FATsubjetSDPx", FATnJet);
     vector<float>* FATsubjetSDPy      = data.GetPtrVectorFloat("FATsubjetSDPy", FATnJet);
     vector<float>* FATsubjetSDPz      = data.GetPtrVectorFloat("FATsubjetSDPz", FATnJet);
-    vector<float>* FATsubjetSDE       = data.GetPtrVectorFloat("FATsubjetSDCE", FATnJet);
+    vector<float>* FATsubjetSDE       = data.GetPtrVectorFloat("FATsubjetSDE", FATnJet);
     vector<float>* FATsubjetSDCSV     = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
@@ -148,6 +166,8 @@ void jeteeVariable(std::string inputFile, int num){
     }
 
     if( !passTrigger ) continue;
+
+    nPass[0]++;
 
     // select good electrons
         
@@ -196,6 +216,8 @@ void jeteeVariable(std::string inputFile, int num){
 
     if( !findEPair ) continue;
 
+    nPass[1]++;
+
     // select good FATjet
 
     Int_t goodFATJetID = -1;
@@ -209,10 +231,12 @@ void jeteeVariable(std::string inputFile, int num){
       if( thisJet->Pt() < 30 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
+      if( FATnSubSDJet[ij] < 2 ) continue;
+      
+      std::cout << "How many subjets: " << FATnSubSDJet[ij] << std::endl;
 
       for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
 
-	if( FATnSubSDJet[ij] < 2 ) continue;
 	goodsubJetID[is] = is;
 
 	if( goodsubJetID[0] >= 0 && goodsubJetID[1] >= 0 ) 
@@ -226,7 +250,10 @@ void jeteeVariable(std::string inputFile, int num){
     }
 
     if( goodFATJetID < 0 ) continue;
+    nPass[2]++;
+
     if( goodsubJetID[0] < 0 || goodsubJetID[1] < 0 ) continue;
+    nPass[3]++;
 
     h_FATjetPt        ->Fill(thisJet->Pt());
     h_FATjetEta       ->Fill(thisJet->Eta());
@@ -260,6 +287,12 @@ void jeteeVariable(std::string inputFile, int num){
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
+
+  std::cout << "\nnPass[0] = " << nPass[0] 
+	    << "\nnPass[1] = " << nPass[1] 
+	    << "\nnPass[2] = " << nPass[2] 
+	    << "\nnPass[3] = " << nPass[3]
+	    << std::endl;
 
   std::string h_name[12] = {"FATjetPt","FATjetEta","FATjetCISVV2","FATjetSDmass",
 			    "FATjetPRmass","FATjetTau1","FATjetTau2","FATjetTau2dvTau1",

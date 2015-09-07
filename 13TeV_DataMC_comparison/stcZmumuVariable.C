@@ -17,18 +17,18 @@ void stcZmumuVariable(){
   TFile *file[3];
 
   file[0] = TFile::Open("outputZmumu/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_ZmumuVariable.root");
-  file[1] = TFile::Open("outputZmumu/TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803_ZmumuVariable.root");
+  file[1] = TFile::Open("outputZmumu/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_ZmumuVariable.root");
   file[2] = TFile::Open("outputZmumu/crab_SingleMuon-Run2015C-PromptReco-v1_ZmumuVariable.root");
-  
-  TH1D* h_eventWeight = (TH1D*)(file[0]->Get("eventWeight"));
-  
-  Int_t nEventDY     = h_eventWeight->Integral();
-  Int_t nEventTTbar  = 19494441;
-  Double_t xSecDY    = 6025.2; //pb
-  Double_t xSecTTbar = 831.76; //pb
-  Double_t dataLumi  = 41.61;  //mu //pb-1
-  
-  Double_t scaleDY = dataLumi/(nEventDY/xSecDY);
+
+  TH1D* h_eventWeightDY    = (TH1D*)(file[0]->Get("eventWeight"));
+  TH1D* h_eventWeightTTbar = (TH1D*)(file[1]->Get("eventWeight"));  
+
+  Int_t nEventDY      = h_eventWeightDY->Integral();
+  Int_t nEventTTbar   = h_eventWeightTTbar->Integral();
+  Double_t xSecDY     = 6025.2; //pb
+  Double_t xSecTTbar  = 831.76; //pb
+  Double_t dataLumi   = 8.1;    //mu //pb-1
+  Double_t scaleDY    = dataLumi/(nEventDY/xSecDY);
   Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
 
   std::cout << "\nnEventDY: " << nEventDY
@@ -55,7 +55,7 @@ void stcZmumuVariable(){
   c_dw->SetPad(0,0,1,dw_height);
   c_dw->SetBottomMargin(0.25);
   
-  std::string h_name[] = {"Zmass","Zpt","Zeta","leadMuPt","leadMuEta",
+  std::string h_name[] = {"Zmass","Zpt","Zeta","ZRapidity","leadMuPt","leadMuEta",
 			  "subleadMuPt","subleadMuEta"};
 
   Int_t size = sizeof(h_name)/sizeof(h_name[0]);
@@ -121,7 +121,7 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
   leg->SetFillStyle(0);
   leg->SetBorderSize(1);
   leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
-  leg->AddEntry(h_ttbar, "TT_TuneCUETP8M1_13TeV-powheg-pythia8_0803", "lpf");
+  leg->AddEntry(h_ttbar, "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830", "lpf");
   leg->AddEntry(h_data, "crab_SingleMuon-Run2015C-PromptReco-v1", "lp");
   leg->Draw();
 
