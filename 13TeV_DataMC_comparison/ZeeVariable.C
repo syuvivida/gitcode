@@ -163,6 +163,7 @@ void ZeeVariable(std::string inputFile, int num){
 	if( !findEPair ) l4_Z = (*thisEle+*thatEle);
 
 	findEPair = true;
+	break;
 
       }
     }

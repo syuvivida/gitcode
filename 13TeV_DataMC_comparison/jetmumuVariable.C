@@ -154,7 +154,7 @@ void jetmumuVariable(std::string inputFile, int num){
     for(Int_t im = 0; im < nMu; im++){
 
       if( muMiniIso[im] >= 0.1 ) continue;
-      if( !isHighPtMuon[im] || !isCustomTrackerMuon[im] ) continue;
+      if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
 
       goodMuons.push_back(im);
 
@@ -187,6 +187,7 @@ void jetmumuVariable(std::string inputFile, int num){
 	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
 
 	findMPair = true;
+	break;
 
       }
     }
@@ -195,8 +196,8 @@ void jetmumuVariable(std::string inputFile, int num){
 
     // select good FATjet
 
-    Int_t goodFATsubJetID = -1;
     Int_t goodFATJetID = -1;
+    Int_t goodsubJetID[2] = {-1};
     TLorentzVector* thisJet = NULL;
 
     for(Int_t ij = 0; ij < FATnJet; ij++){
@@ -205,17 +206,15 @@ void jetmumuVariable(std::string inputFile, int num){
 
       if( thisJet->Pt() < 30 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
-      if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 145 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
-      if( FATjetCISVV2[ij] < 0.605 ) continue;
-      if( FATjetCISVV2[ij] > 1 ) continue;
 
       for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
 
-	if( FATsubjetSDCSV[ij][is] < 0.605 ) continue;
+	if( FATnSubSDJet[ij] < 2 ) continue;
+	goodsubJetID[is] = is;
 
-	goodFATsubJetID = is;
-	break;
+	if( goodsubjetID[0] >= 0 && goodsubJetID[1] >= 0 ) 
+	  break;
 
       }
 
@@ -224,8 +223,8 @@ void jetmumuVariable(std::string inputFile, int num){
 
     }
 
-    if( goodFATsubJetID < 0 ) continue;
     if( goodFATJetID < 0 ) continue;
+    if( goodsubJetID[0] < 0 || goodsubJetID[1] < 0 ) continue;
 
     h_FATjetPt        ->Fill(thisJet->Pt());
     h_FATjetEta       ->Fill(thisJet->Eta());
@@ -236,16 +235,25 @@ void jetmumuVariable(std::string inputFile, int num){
     h_FATjetTau2      ->Fill(FATjetTau2[goodFATJetID]);
     h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID]);
 
-    TLorentzVector l4_FATsubjet(0,0,0,0);
+    TLorentzVector l4_subjet0(0,0,0,0);
+    TLorentzVector l4_subjet1(0,0,0,0);
 
-    l4_FATsubjet.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodFATsubJetID],
-			    FATsubjetSDPy[goodFATJetID][goodFATsubJetID],
-			    FATsubjetSDPz[goodFATJetID][goodFATsubJetID],
-			    FATsubjetSDE[goodFATJetID][goodFATsubJetID]);
+    l4_subjet0.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[0]],
+			  FATsubjetSDPy[goodFATJetID][goodsubJetID[0]],
+			  FATsubjetSDPz[goodFATJetID][goodsubJetID[0]],
+			  FATsubjetSDE[goodFATJetID][goodsubJetID[0]]);
 
-    h_FATsubjetPt     ->Fill(l4_FATsubjet.Pt());
-    h_FATsubjetEta    ->Fill(l4_FATsubjet.Eta());
-    h_FATsubjetSDCSV  ->Fill(FATsubjetSDCSV[goodFATJetID][goodFATsubJetID]);
+    l4_subjet1.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[1]],
+                          FATsubjetSDPy[goodFATJetID][goodsubJetID[1]],
+                          FATsubjetSDPz[goodFATJetID][goodsubJetID[1]],
+                          FATsubjetSDE[goodFATJetID][goodsubJetID[1]]);
+
+    h_FATsubjetPt   ->Fill(l4_subjet0.Pt());
+    h_FATsubjetPt   ->Fill(l4_subjet1.Pt());
+    h_FATsubjetEta  ->Fill(l4_subjet0.Eta());
+    h_FATsubjetEta  ->Fill(l4_subjet1.Eta());
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[0]]);
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[1]]);
 
   } // end of event loop
 

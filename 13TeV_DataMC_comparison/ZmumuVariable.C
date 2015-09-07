@@ -1,4 +1,4 @@
-#include <vector>
+B1;3803;0c#include <vector>
 #include <string>
 #include <iostream>
 #include <TH1D.h>
@@ -128,7 +128,7 @@ void ZmumuVariable(std::string inputFile, int num){
     for(Int_t im = 0; im < nMu; im++){
 
       if( muMiniIso[im] >= 0.1 ) continue;
-      if( !isHighPtMuon[im] || !isCustomTrackerMuon[im] ) continue;
+      if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
 
       goodMuons.push_back(im);
 
@@ -161,6 +161,7 @@ void ZmumuVariable(std::string inputFile, int num){
 	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
 
 	findMPair = true;
+	break;
 
       }
     }
