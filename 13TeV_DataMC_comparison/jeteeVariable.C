@@ -233,8 +233,6 @@ void jeteeVariable(std::string inputFile, int num){
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] < 2 ) continue;
       
-      std::cout << "How many subjets: " << FATnSubSDJet[ij] << std::endl;
-
       for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
 
 	goodsubJetID[is] = is;

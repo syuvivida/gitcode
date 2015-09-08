@@ -129,7 +129,7 @@ void jetmumuVariable(std::string inputFile, int num){
     vector<float>* FATsubjetSDPx       = data.GetPtrVectorFloat("FATsubjetSDPx", FATnJet);
     vector<float>* FATsubjetSDPy       = data.GetPtrVectorFloat("FATsubjetSDPy", FATnJet);
     vector<float>* FATsubjetSDPz       = data.GetPtrVectorFloat("FATsubjetSDPz", FATnJet);
-    vector<float>* FATsubjetSDE        = data.GetPtrVectorFloat("FATsubjetSDCE", FATnJet);
+    vector<float>* FATsubjetSDE        = data.GetPtrVectorFloat("FATsubjetSDE", FATnJet);
     vector<float>* FATsubjetSDCSV      = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
@@ -230,8 +230,6 @@ void jetmumuVariable(std::string inputFile, int num){
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] < 2 ) continue;
-
-      std::cout << "How many subjets: " << FATnSubSDJet[ij] << std::endl;
 
       for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
 

@@ -63,7 +63,7 @@ void ZmumuVariable(std::string inputFile, int num){
   TH1D* h_Zmass        = new TH1D("h_Zmass", "Zmass", 100, 50, 130);
   TH1D* h_Zpt          = new TH1D("h_Zpt", "Zpt", 100, 0, 130);
   TH1D* h_Zeta         = new TH1D("h_Zeta", "Zeta", 100, -10, 10);
-  TH1D* h_ZRapidity    = new TH1D("h_ZRapidity", "ZRapidity", 100, 0, 50);
+  TH1D* h_ZRapidity    = new TH1D("h_ZRapidity", "ZRapidity", 100, -10, 10);
   TH1D* h_leadMuPt     = new TH1D("h_leadMuPt", "leadMuPt", 100, 0, 130);
   TH1D* h_leadMuEta    = new TH1D("h_leadMuEta", "leadMuEta", 100, -5, 5);
   TH1D* h_subleadMuPt  = new TH1D("h_subleadMuPt", "subleadMuPt", 100, 0, 130);
