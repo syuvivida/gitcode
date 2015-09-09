@@ -172,13 +172,17 @@ void jetmumuVariable(std::string inputFile, int num){
     std::vector<Int_t> goodMuons;
   
     for(Int_t im = 0; im < nMu; im++){
+      
+      TLorentzVector* myMu = (TLorentzVector*)muP4->At(im);
 
+      if( fabs(myMu->Eta()) > 2.1 ) continue;
+      if( myMu->Pt() < 20 ) continue;
       if( muMiniIso[im] >= 0.1 ) continue;
       if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
 
       goodMuons.push_back(im);
 
-    }	
+    }
 
     // select good Z boson
 
@@ -200,10 +204,8 @@ void jetmumuVariable(std::string inputFile, int num){
 
 	if( muCharge[im]*muCharge[jm] > 0 ) continue;
 	if( mll < 60 || mll > 120 ) continue;
-	if( !((isHighPtMuon[im] && isCustomTrackerMuon[jm]) ||
-	      (isHighPtMuon[jm] && isCustomTrackerMuon[im])
-	      )) continue;
-
+	if( !( (thisMu->Pt() > 50 && thatMu->Pt() > 20) || (thisMu->Pt() > 20 && thatMu->Pt() > 50) ) ) continue;
+	if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
 	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
 
 	findMPair = true;
