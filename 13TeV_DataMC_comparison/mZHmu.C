@@ -60,42 +60,33 @@ void mZHmu(std::string inputFile, int num){
   
   // Declare the histogram
      
+  TH1D* h_mZprime          = new TH1D("h_mZprime", "mZprime", 100, 400, 5000);
+  TH1D* h_mZ               = new TH1D("h_mZ", "mZ", 100, 50, 150);
+  TH1D* h_ptZ              = new TH1D("h_ptZ", "ptZ", 100, 0, 20);
   TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", 100, 100, 1000);
-  TH1D* h_FATjetEta        = new TH1D("h_FATjetEta", "FATjetEta", 100, -4, 4);
-  TH1D* h_FATjetCISVV2     = new TH1D("h_FATjetCISVV2", "FATjetCISVV2", 100, 0, 2);
   TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", 100, 50, 200);
   TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", 100, 50, 200);
-  TH1D* h_FATjetTau1       = new TH1D("h_FATjetTau1", "FATjetTau1", 100, 0, 1);
-  TH1D* h_FATjetTau2       = new TH1D("h_FATjetTau2", "FATjetTau2", 100, 0, 1);
   TH1D* h_FATjetTau2dvTau1 = new TH1D("h_FATjetTau2dvTau1", "FATjetTau2dvTau1", 100, 0, 1);
-  TH1D* h_FATsubjetPt      = new TH1D("h_FATsubjetPt", "FATsubjetPt", 100, 40, 800);
-  TH1D* h_FATsubjetEta     = new TH1D("h_FATsubjetEta", "FATsubjetEta", 100, -4, 4);
-  TH1D* h_FATsubjetSDCSV   = new TH1D("h_FATsubjetSDCSV", "FATsubjetSDCSV", 100, 0, 2);
+  TH1D* h_cutFlow          = new TH1D("h_cutFlow", "cutFlow", 5, -0.5, 4.5);
   TH1D* h_eventWeight      = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 
+  h_mZprime         ->Sumw2();
+  h_mZ              ->Sumw2();
+  h_ptZ             ->Sumw2();
   h_FATjetPt        ->Sumw2();   
-  h_FATjetEta       ->Sumw2();
-  h_FATjetCISVV2    ->Sumw2();
   h_FATjetSDmass    ->Sumw2();
   h_FATjetPRmass    ->Sumw2();
-  h_FATjetTau1      ->Sumw2();
-  h_FATjetTau2      ->Sumw2();
   h_FATjetTau2dvTau1->Sumw2();
-  h_FATsubjetPt     ->Sumw2();
-  h_FATsubjetEta    ->Sumw2();
-  h_FATsubjetSDCSV  ->Sumw2();
+  h_cutFlow         ->Sumw2();  
 
+  h_mZprime         ->GetXaxis()->SetTitle("mZprime");
+  h_mZ              ->GetXaxis()->SetTitle("mZ");
+  h_ptZ             ->GetXaxis()->SetTitle("ptZ");
   h_FATjetPt        ->GetXaxis()->SetTitle("FATjetPt");
-  h_FATjetEta       ->GetXaxis()->SetTitle("FATjetEta");
-  h_FATjetCISVV2    ->GetXaxis()->SetTitle("FATjetCISVV2");
   h_FATjetSDmass    ->GetXaxis()->SetTitle("FATjetSDmass");
   h_FATjetPRmass    ->GetXaxis()->SetTitle("FATjetPRmass");
-  h_FATjetTau1      ->GetXaxis()->SetTitle("FATjetTau1");
-  h_FATjetTau2      ->GetXaxis()->SetTitle("FATjetTau2");
   h_FATjetTau2dvTau1->GetXaxis()->SetTitle("FATjetTau2dvTau1");
-  h_FATsubjetPt     ->GetXaxis()->SetTitle("FATsubjetPt");
-  h_FATsubjetEta    ->GetXaxis()->SetTitle("FATsubjetEta");
-  h_FATsubjetSDCSV  ->GetXaxis()->SetTitle("FATsubjetSDCSV");
+  h_cutFlow         ->GetXaxis()->SetTitle("cutFlow");  
   h_eventWeight     ->GetXaxis()->SetTitle("eventWeight");  
     
   // begin of event loop
@@ -126,10 +117,6 @@ void mZHmu(std::string inputFile, int num){
     Float_t*       FATjetTau2          = data.GetPtrFloat("FATjetTau2");
     TClonesArray*  FATjetP4            = (TClonesArray*) data.GetPtrTObject("FATjetP4");
     vector<bool>&  FATjetPassIDLoose   = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
-    vector<float>* FATsubjetSDPx       = data.GetPtrVectorFloat("FATsubjetSDPx", FATnJet);
-    vector<float>* FATsubjetSDPy       = data.GetPtrVectorFloat("FATsubjetSDPy", FATnJet);
-    vector<float>* FATsubjetSDPz       = data.GetPtrVectorFloat("FATsubjetSDPz", FATnJet);
-    vector<float>* FATsubjetSDE        = data.GetPtrVectorFloat("FATsubjetSDE", FATnJet);
     vector<float>* FATsubjetSDCSV      = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
@@ -172,13 +159,17 @@ void mZHmu(std::string inputFile, int num){
     std::vector<Int_t> goodMuons;
   
     for(Int_t im = 0; im < nMu; im++){
+      
+      TLorentzVector* myMu = (TLorentzVector*)muP4->At(im);
 
+      if( fabs(myMu->Eta()) > 2.1 ) continue;
+      if( myMu->Pt() < 20 ) continue;
       if( muMiniIso[im] >= 0.1 ) continue;
       if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
 
       goodMuons.push_back(im);
 
-    }	
+    }
 
     // select good Z boson
 
@@ -200,10 +191,8 @@ void mZHmu(std::string inputFile, int num){
 
 	if( muCharge[im]*muCharge[jm] > 0 ) continue;
 	if( mll < 60 || mll > 120 ) continue;
-	if( !((isHighPtMuon[im] && isCustomTrackerMuon[jm]) ||
-	      (isHighPtMuon[jm] && isCustomTrackerMuon[im])
-	      )) continue;
-
+	if( !( (thisMu->Pt() > 50 && thatMu->Pt() > 20) || (thisMu->Pt() > 20 && thatMu->Pt() > 50) ) ) continue;
+	if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
 	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
 
 	findMPair = true;
@@ -215,11 +204,16 @@ void mZHmu(std::string inputFile, int num){
     if( !findMPair ) continue;
 
     nPass[1]++;
+ 
+    Float_t mll  = (*thisMu+*thatMu).M();
+    Float_t ptll = (*thisMu+*thatMu).Pt();
+
+    h_mZ ->Fill(mll);
+    h_ptZ->Fill(ptll);
 
     // select good FATjet
 
     Int_t goodFATJetID = -1;
-    Int_t goodsubJetID[2] = {-1};
     TLorentzVector* thisJet = NULL;
 
     for(Int_t ij = 0; ij < FATnJet; ij++){
@@ -228,15 +222,14 @@ void mZHmu(std::string inputFile, int num){
 
       if( thisJet->Pt() < 30 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
+      if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
+      if( FatjetCISVV2[ij] < 0.605 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] < 2 ) continue;
 
       for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
 
-	goodsubJetID[is] = is;
-
-	if( goodsubJetID[0] >= 0 && goodsubJetID[1] >= 0 ) 
-	  break;
+	if( FATsubjetSDCSV[ij][is] < 0.605 ) continue;
 
       }
 
@@ -248,66 +241,35 @@ void mZHmu(std::string inputFile, int num){
     if( goodFATJetID < 0 ) continue;
     nPass[2]++;
 
-    if( goodsubJetID[0] < 0 || goodsubJetID[1] < 0 ) continue;
-    nPass[3]++;
-
     h_FATjetPt        ->Fill(thisJet->Pt());
-    h_FATjetEta       ->Fill(thisJet->Eta());
-    h_FATjetCISVV2    ->Fill(FATjetCISVV2[goodFATJetID]);
     h_FATjetSDmass    ->Fill(FATjetSDmass[goodFATJetID]);
     h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID]);
-    h_FATjetTau1      ->Fill(FATjetTau1[goodFATJetID]);
-    h_FATjetTau2      ->Fill(FATjetTau2[goodFATJetID]);
     h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID]);
 
-    TLorentzVector l4_subjet0(0,0,0,0);
-    TLorentzVector l4_subjet1(0,0,0,0);
+    Float mZll = (*thisMu+*thatMu+*thisJet).M();
 
-    l4_subjet0.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDPy[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDPz[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDE[goodFATJetID][goodsubJetID[0]]);
-
-    l4_subjet1.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDPy[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDPz[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDE[goodFATJetID][goodsubJetID[1]]);
-
-    h_FATsubjetPt   ->Fill(l4_subjet0.Pt());
-    h_FATsubjetPt   ->Fill(l4_subjet1.Pt());
-    h_FATsubjetEta  ->Fill(l4_subjet0.Eta());
-    h_FATsubjetEta  ->Fill(l4_subjet1.Eta());
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[0]]);
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[1]]);
+    h_Zprime->Fill(mZll);
 
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
-  std::cout << "\nnPass[0] = " << nPass[0] 
-	    << "\nnPass[1] = " << nPass[1] 
-	    << "\nnPass[2] = " << nPass[2] 
-	    << "\nnPass[3] = " << nPass[3]
-	    << std::endl;
+  h_eventFlow->Fill(0);
 
-  std::string h_name[12] = {"FATjetPt","FATjetEta","FATjetCISVV2","FATjetSDmass",
-			    "FATjetPRmass","FATjetTau1","FATjetTau2","FATjetTau2dvTau1",
-			    "FATsubjetPt","FATsubjetEta","FATsubjetSDCSV","eventWeight"};
+  std::string h_name[9] = {"mZprime","mZ","ptZ","FATjetPt","FATjetSDmass",
+			    "FATjetPRmass","FATjetTau2dvTau1","cutFlow","eventWeight"};
 
-  TFile* outFile = new TFile(Form("%s_jetmumuVariable.root",outputFile[num].c_str()), "recreate");
-  
-  h_FATjetPt        ->Write(h_name[0].data());
-  h_FATjetEta       ->Write(h_name[1].data());
-  h_FATjetCISVV2    ->Write(h_name[2].data());
-  h_FATjetSDmass    ->Write(h_name[3].data());
-  h_FATjetPRmass    ->Write(h_name[4].data());
-  h_FATjetTau1      ->Write(h_name[5].data());
-  h_FATjetTau2      ->Write(h_name[6].data());
-  h_FATjetTau2dvTau1->Write(h_name[7].data());
-  h_FATsubjetPt     ->Write(h_name[8].data());
-  h_FATsubjetEta    ->Write(h_name[9].data());
-  h_FATsubjetSDCSV  ->Write(h_name[10].data());
-  h_eventWeight     ->Write(h_name[11].data());
+  TFile* outFile = new TFile(Form("%s_mZHmu.root",outputFile[num].c_str()), "recreate");
+
+  h_mZprime         ->Write(h_name[0].data());
+  h_mZ              ->Write(h_name[1].data());
+  h_ptZ             ->Write(h_name[2].data());
+  h_FATjetPt        ->Write(h_name[3].data());
+  h_FATjetSDmass    ->Write(h_name[4].data());
+  h_FATjetPRmass    ->Write(h_name[5].data());
+  h_FATjetTau2dvTau1->Write(h_name[6].data());
+  h_cutFlow         ->Write(h_name[7].data());
+  h_eventWeight     ->Write(h_name[8].data());
 
   outFile->Write();
   
