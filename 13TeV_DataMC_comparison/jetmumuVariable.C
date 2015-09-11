@@ -200,11 +200,15 @@ void jetmumuVariable(std::string inputFile, int num){
 
 	Int_t jm = goodMuons[j];
 	thatMu = (TLorentzVector*)muP4->At(jm);
-	Float_t mll = (*thisMu+*thatMu).M();
+
+	Float_t pt1   = thisMu->Pt();
+	Float_t pt2   = thatMu->Pt();
+	Float_t ptMax = TMath::Max(pt1,pt2);
+	Float_t mll   = (*thisMu+*thatMu).M();
 
 	if( muCharge[im]*muCharge[jm] > 0 ) continue;
 	if( mll < 60 || mll > 120 ) continue;
-	if( !( (thisMu->Pt() > 50 && thatMu->Pt() > 20) || (thisMu->Pt() > 20 && thatMu->Pt() > 50) ) ) continue;
+	if( ptMax < 50 ) continue;
 	if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
 	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
 

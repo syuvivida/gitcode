@@ -93,13 +93,11 @@ void ZmumuVariable(std::string inputFile, int num){
 
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
-    if ( ev % 100000 == 0 )
+    if ( ev % 1000000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
 
     data.GetEntry(ev);
 
-    Int_t    runId     = data.GetInt("runId");
-    Int_t    eventId   = data.GetInt("eventId");
     Int_t    nVtx      = data.GetInt("nVtx");
     Int_t    nMu       = data.GetInt("nMu");
     Int_t*   muCharge  = data.GetPtrInt("muCharge");
@@ -175,11 +173,15 @@ void ZmumuVariable(std::string inputFile, int num){
 
 	Int_t jm = goodMuons[j];
 	thatMu = (TLorentzVector*)muP4->At(jm);
-	Float_t mll = (*thisMu+*thatMu).M();
+
+	Float_t pt1   = thisMu->Pt();
+	Float_t pt2   = thatMu->Pt();
+	Float_t ptMax = TMath::Max(pt1,pt2);
+	Float_t mll   = (*thisMu+*thatMu).M();
 
 	if( muCharge[im]*muCharge[jm] > 0 ) continue;
 	if( mll < 60 || mll > 120 ) continue;
-	if( !( (thisMu->Pt() > 50 && thatMu->Pt() > 20) || (thisMu->Pt() > 20 && thatMu->Pt() > 50) ) ) continue;
+	if( ptMax < 50 ) continue;
 	if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
 	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
 
@@ -195,15 +197,6 @@ void ZmumuVariable(std::string inputFile, int num){
     h_Zpt      ->Fill(l4_Z.Pt());
     h_Zeta     ->Fill(l4_Z.Eta());
     h_ZRapidity->Fill(l4_Z.Rapidity());
-
-    if( fabs(l4_Z.Eta()) > 6.5 ){
-
-      std::cout << "runId:   " << runId   << std::endl;
-      std::cout << "eventId: " << eventId << std::endl;
-      thisMu->Print();
-      thatMu->Print();
-
-    }
 
     if( thisMu->Pt() > thatMu->Pt() ){
 
