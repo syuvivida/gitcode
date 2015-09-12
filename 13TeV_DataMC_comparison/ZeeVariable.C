@@ -196,15 +196,6 @@ void ZeeVariable(std::string inputFile, int num){
     h_Zeta     ->Fill(l4_Z.Eta());
     h_ZRapidity->Fill(l4_Z.Rapidity());
 
-    if( fabs(l4_Z.Eta()) > 6.5 ){
-
-      std::cout << "runId:   " << runId   << std::endl;
-      std::cout << "eventId: " << eventId << std::endl; 
-      thisEle->Print();
-      thatEle->Print();
-
-    }
-
     if( thisEle->Pt() > thatEle->Pt() ){
 
       h_leadElePt    ->Fill(thisEle->Pt());
