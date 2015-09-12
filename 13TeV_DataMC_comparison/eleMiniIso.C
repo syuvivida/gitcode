@@ -58,14 +58,14 @@ void eleMiniIso(std::string inputFile, int num){
   
   // Declare the histogram
 
-  TProfile* p_miniIsonVtx = new TProfile("p_miniIsonVtx", "miniIso vs nVtx", 10, 0, 2, 0, 1);
-  TProfile* p_corrIsonVtx = new TProfile("p_corrIsonVtx", "corrIso vs nVtx", 10, 0, 2, 0, 1);
+  TProfile* p_miniIsonVtx = new TProfile("p_miniIsonVtx", "miniIso vs nVtx", 50, 0, 50, 0, 1);
+  TProfile* p_corrIsonVtx = new TProfile("p_corrIsonVtx", "corrIso vs nVtx", 50, 0, 50, 0, 1);
      
-  TH1D* h_nVtxPassHEEPIso = new TH1D("h_nVtxPassHEEPIso", "nVtxPassHEEPIso", 30, -0.5, 29.5);
-  TH1D* h_nVtxPassMiniIso = new TH1D("h_nVtxPassMiniIso", "nVtxPassMiniIso", 30, -0.5, 29.5);
-  TH1D* h_nVtxPassCorrIso = new TH1D("h_nVtxPassCorrIso", "nVtxPassCorrIso", 30, -0.5, 29.5);
-  TH1D* h_EffHEEPMini     = new TH1D("h_EffHEEPMini", "EffHEEPMini", 30, -0.5, 29.5);
-  TH1D* h_EffHEEPCorr     = new TH1D("h_EffHEEPCorr", "EffHEEPCorr", 30, -0.5, 29.5);
+  TH1D* h_nVtxPassHEEPIso = new TH1D("h_nVtxPassHEEPIso", "nVtxPassHEEPIso", 50, 0, 50);
+  TH1D* h_nVtxPassMiniIso = new TH1D("h_nVtxPassMiniIso", "nVtxPassMiniIso", 50, 0, 50);
+  TH1D* h_nVtxPassCorrIso = new TH1D("h_nVtxPassCorrIso", "nVtxPassCorrIso", 50, 0, 50);
+  TH1D* h_EffHEEPMini     = new TH1D("h_EffHEEPMini", "EffHEEPMini", 50, 0, 50);
+  TH1D* h_EffHEEPCorr     = new TH1D("h_EffHEEPCorr", "EffHEEPCorr", 50, 0, 50);
 
   h_nVtxPassHEEPIso->Sumw2();
   h_nVtxPassMiniIso->Sumw2();
