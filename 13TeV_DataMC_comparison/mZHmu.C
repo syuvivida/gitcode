@@ -10,8 +10,6 @@
 #include "untuplizer.h"
 
 // 25ns: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,0\)
-// 25ns: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\)
-// 25ns: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\)
 
 void mZHmu(std::string inputFile, int num){
 
@@ -224,18 +222,15 @@ void mZHmu(std::string inputFile, int num){
 
       thisJet = (TLorentzVector*)FATjetP4->At(ij);
 
-      if( thisJet->Pt() < 30 ) continue;
+      if( thisJet->Pt() < 200 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
       if( FATjetCISVV2[ij] < 0.605 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] < 2 ) continue;
 
-      for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
-
+      for(Int_t is = 0; is < FATnSubSDJet[ij]; is++)
 	if( FATsubjetSDCSV[ij][is] < 0.605 ) continue;
-
-      }
 
       goodFATJetID = ij;
       break;

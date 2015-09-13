@@ -8,6 +8,7 @@
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
+#include <TGraphAsymmErrors.h>
 #include "untuplizer.h"
 
 // 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
@@ -64,14 +65,13 @@ void eleMiniIso(std::string inputFile, int num){
   TH1D* h_nVtxPassHEEPIso = new TH1D("h_nVtxPassHEEPIso", "nVtxPassHEEPIso", 50, 0, 50);
   TH1D* h_nVtxPassMiniIso = new TH1D("h_nVtxPassMiniIso", "nVtxPassMiniIso", 50, 0, 50);
   TH1D* h_nVtxPassCorrIso = new TH1D("h_nVtxPassCorrIso", "nVtxPassCorrIso", 50, 0, 50);
-  TH1D* h_EffHEEPMini     = new TH1D("h_EffHEEPMini", "EffHEEPMini", 50, 0, 50);
-  TH1D* h_EffHEEPCorr     = new TH1D("h_EffHEEPCorr", "EffHEEPCorr", 50, 0, 50);
+
+  TGraphAsymmErrors* h_EffHEEPMini = new TGraphAsymmErrors();
+  TGraphAsymmErrors* h_EffHEEPCorr = new TGraphAsymmErrors();
 
   h_nVtxPassHEEPIso->Sumw2();
   h_nVtxPassMiniIso->Sumw2();
   h_nVtxPassCorrIso->Sumw2();
-  h_EffHEEPMini    ->Sumw2();
-  h_EffHEEPCorr    ->Sumw2();
   
   h_nVtxPassHEEPIso->GetXaxis()->SetTitle("nVtxPassHEEPIso"); 
   h_nVtxPassMiniIso->GetXaxis()->SetTitle("nVtxPassMiniIso");   
@@ -94,7 +94,7 @@ void eleMiniIso(std::string inputFile, int num){
     Float_t* eleScEt    = data.GetPtrFloat("eleScEt");
     Float_t* eleScEta   = data.GetPtrFloat("eleScEta");
     Float_t* eleMiniIso = data.GetPtrFloat("eleMiniIso");
-    //TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
+    TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     vector<bool>& eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
     vector<bool>& eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
 
@@ -123,10 +123,29 @@ void eleMiniIso(std::string inputFile, int num){
 
     // select good electrons
 
-    Float_t EA = 1.0;
-    Float_t dR = 0.3;
-        
     for(Int_t ie = 0; ie < nEle; ie++){
+
+      TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(ie);
+
+      Float_t effectiveArea = 0.0;
+
+      if( fabs(eleScEta[ie]) > 0.0 && fabs(eleScEta[ie]) < 1.0 )
+        effectiveArea = 0.1752;
+      else if( fabs(eleScEta[ie]) > 1.0 && fabs(eleScEta[ie]) < 1.479 )
+        effectiveArea = 0.1862;
+      else if( fabs(eleScEta[ie]) > 1.479 && fabs(eleScEta[ie]) < 2.0 )
+        effectiveArea = 0.1411;
+      else if( fabs(eleScEta[ie]) > 2.0 && fabs(eleScEta[ie]) < 2.2 )
+        effectiveArea = 0.1534;
+      else if( fabs(eleScEta[ie]) > 2.2 && fabs(eleScEta[ie]) < 2.3 )
+        effectiveArea = 0.1903;
+      else if( fabs(eleScEta[ie]) > 2.3 && fabs(eleScEta[ie]) < 2.4 )
+        effectiveArea = 0.2243;
+      else if( fabs(eleScEta[ie]) > 2.4 && fabs(eleScEta[ie]) < 2.5 )
+        effectiveArea = 0.2687;
+
+      Float_t deltaR = TMath::Max(0.05,TMath::Min(0.2,(10.0/thisEle->Pt())));
+      Float_t eleCorrIso = eleMiniIso[ie]-eleRho*effectiveArea*TMath::Power((deltaR/0.3),2);
 
       if( !(fabs(eleScEta[ie]) < 1.442 || fabs(eleScEta[ie]) > 1.566) ) continue;
       if( fabs(eleScEta[ie]) > 2.5 ) continue;
@@ -134,29 +153,25 @@ void eleMiniIso(std::string inputFile, int num){
       if( !eleEcalDrivenSeed[ie] ) continue;
       if( !eleIsPassHEEPNoIso[ie] ) continue;
 
-      h_nVtxPassHEEPIso->Fill(nVtx);
-
-      if( eleMiniIso[ie] >= 0.1 ) continue;
-
-      h_nVtxPassMiniIso->Fill(nVtx);
-
-      Float_t eleCorrIso = eleMiniIso[ie]-eleRho*EA*TMath::Power((dR/0.3),2);
-
       p_miniIsonVtx->Fill(eleMiniIso[ie], nVtx);
       p_corrIsonVtx->Fill(eleCorrIso, nVtx);
 
-      if( eleCorrIso >= 0.1 ) continue;
+      h_nVtxPassHEEPIso->Fill(nVtx);
 
-      h_nVtxPassCorrIso->Fill(nVtx);
+      if( eleMiniIso[ie] < 0.1 )
+	h_nVtxPassMiniIso->Fill(nVtx);
+
+      if( eleCorrIso < 0.1 )
+	h_nVtxPassCorrIso->Fill(nVtx);
 
     } // end of ele loop
-
-    h_EffHEEPMini->Divide(h_nVtxPassMiniIso, h_nVtxPassHEEPIso, 1, 1, "B");
-    h_EffHEEPCorr->Divide(h_nVtxPassCorrIso, h_nVtxPassHEEPIso, 1, 1, "B");
 
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
+
+  h_EffHEEPMini->Divide(h_nVtxPassMiniIso, h_nVtxPassHEEPIso);
+  h_EffHEEPCorr->Divide(h_nVtxPassCorrIso, h_nVtxPassHEEPIso);
 
   TFile* outFile = new TFile(Form("%s_eleMiniIso.root",outputFile[num].c_str()), "recreate");
   
