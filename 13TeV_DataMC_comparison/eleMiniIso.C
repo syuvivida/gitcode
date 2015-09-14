@@ -11,15 +11,19 @@
 #include <TGraphAsymmErrors.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
+// 25ns: root -q -b eleMiniIso.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
+// signal: root -q -b eleMiniIso.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/\"\,1\)
 
 void eleMiniIso(std::string inputFile, int num){
 
   // read the ntuples (in pcncu)
 
+  bool isSignal = false;
+  if( num == 1 ) isSignal = true;
+
   std::vector<string> infiles;
  
-  std::string outputFile[3] = {"DoubleEG_Run2015C-PromptReco-v1"};
+  std::string outputFile[2] = {"DoubleEG_Run2015C-PromptReco-v1","ZprimeToZhToZlephbb"};
 
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -31,7 +35,8 @@ void eleMiniIso(std::string inputFile, int num){
   while( (fileH = (TFile*)fileIt()) ){
     
     std::string fileN = fileH->GetName();
-    std::string baseString = "NCUGlobal";
+    std::string baseString = isSignal ? "Zprime" : "NCUGlobal";
+
     if( fileN.find("fail") != std::string::npos ) continue;
 
     if( fileH->IsFolder() ){
@@ -65,6 +70,11 @@ void eleMiniIso(std::string inputFile, int num){
   TH1D* h_nVtxPassHEEPIso = new TH1D("h_nVtxPassHEEPIso", "nVtxPassHEEPIso", 50, 0, 50);
   TH1D* h_nVtxPassMiniIso = new TH1D("h_nVtxPassMiniIso", "nVtxPassMiniIso", 50, 0, 50);
   TH1D* h_nVtxPassCorrIso = new TH1D("h_nVtxPassCorrIso", "nVtxPassCorrIso", 50, 0, 50);
+  TH1D* h_deltaR          = new TH1D("h_deltaR", "deltaR", 100, 0, 0.4);
+  TH1D* h_eleRho          = new TH1D("h_eleRho", "eleRho", 100, 0, 100);
+  TH1D* h_eleMiniIso      = new TH1D("h_eleMiniIso", "eleMiniIso", 100, -1, 1);
+  TH1D* h_eleCorrIso      = new TH1D("h_eleCorrIso", "eleCorrIso", 100, -2, 2);
+  TH1D* h_effectiveArea   = new TH1D("h_effectiveArea", "effectiveArea", 100, 0, 0.4);
 
   TGraphAsymmErrors* h_EffHEEPMini = new TGraphAsymmErrors();
   TGraphAsymmErrors* h_EffHEEPCorr = new TGraphAsymmErrors();
@@ -76,6 +86,11 @@ void eleMiniIso(std::string inputFile, int num){
   h_nVtxPassHEEPIso->GetXaxis()->SetTitle("nVtxPassHEEPIso"); 
   h_nVtxPassMiniIso->GetXaxis()->SetTitle("nVtxPassMiniIso");   
   h_nVtxPassCorrIso->GetXaxis()->SetTitle("nVtxPassCorrIso");    
+  h_deltaR         ->GetXaxis()->SetTitle("deltaR");
+  h_eleRho         ->GetXaxis()->SetTitle("eleRho");
+  h_eleMiniIso     ->GetXaxis()->SetTitle("eleMiniIso");
+  h_eleCorrIso     ->GetXaxis()->SetTitle("eleCorrIso");
+  h_effectiveArea  ->GetXaxis()->SetTitle("effectiveArea");
   h_EffHEEPMini    ->GetXaxis()->SetTitle("EffHEEPMini");
   h_EffHEEPCorr    ->GetXaxis()->SetTitle("EffHEEPCorr");  
     
@@ -153,8 +168,14 @@ void eleMiniIso(std::string inputFile, int num){
       if( !eleEcalDrivenSeed[ie] ) continue;
       if( !eleIsPassHEEPNoIso[ie] ) continue;
 
-      p_miniIsonVtx->Fill(eleMiniIso[ie], nVtx);
-      p_corrIsonVtx->Fill(eleCorrIso, nVtx);
+      h_deltaR       ->Fill(deltaR);
+      h_eleRho       ->Fill(eleRho);
+      h_eleMiniIso   ->Fill(eleMiniIso[ie]);
+      h_eleCorrIso   ->Fill(eleCorrIso);
+      h_effectiveArea->Fill(effectiveArea);
+
+      p_miniIsonVtx->Fill(nVtx, eleMiniIso[ie]);
+      p_corrIsonVtx->Fill(nVtx, eleCorrIso);
 
       h_nVtxPassHEEPIso->Fill(nVtx);
 
@@ -173,15 +194,20 @@ void eleMiniIso(std::string inputFile, int num){
   h_EffHEEPMini->Divide(h_nVtxPassMiniIso, h_nVtxPassHEEPIso);
   h_EffHEEPCorr->Divide(h_nVtxPassCorrIso, h_nVtxPassHEEPIso);
 
+  h_EffHEEPMini->SetTitle("passMiniIso dv passHEEPIso");
+  h_EffHEEPCorr->SetTitle("passCorrIso dv passHEEPIso");
+
   TFile* outFile = new TFile(Form("%s_eleMiniIso.root",outputFile[num].c_str()), "recreate");
   
-  p_miniIsonVtx    ->Write("miniIsonVtx");
-  p_corrIsonVtx    ->Write("corrIsonVtx");
-  h_nVtxPassHEEPIso->Write("nVtxPassHEEPIso");
-  h_nVtxPassMiniIso->Write("nVtxPassMiniIso");
-  h_nVtxPassCorrIso->Write("nVtxPassCorrIso");
-  h_EffHEEPMini    ->Write("EffHEEPMini");
-  h_EffHEEPCorr    ->Write("EffHEEPCorr");
+  p_miniIsonVtx  ->Write("miniIsonVtx");
+  p_corrIsonVtx  ->Write("corrIsonVtx");
+  h_EffHEEPMini  ->Write("EffHEEPMini");
+  h_EffHEEPCorr  ->Write("EffHEEPCorr");
+  h_deltaR       ->Write("deltaR");
+  h_eleRho       ->Write("eleRho");
+  h_eleMiniIso   ->Write("eleMiniIso");
+  h_eleCorrIso   ->Write("eleCorrIso");
+  h_effectiveArea->Write("effectiveArea");
 
   outFile->Write();
   
