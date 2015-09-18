@@ -11,7 +11,7 @@
 
 // 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
 // 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\)
-// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\)
+// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,2\)
 
 void ZeeVariable(std::string inputFile, int num){
 
@@ -98,8 +98,6 @@ void ZeeVariable(std::string inputFile, int num){
 
     data.GetEntry(ev);
 
-    Int_t    runId      = data.GetInt("runId");
-    Int_t    eventId    = data.GetInt("eventId");
     Int_t    nVtx       = data.GetInt("nVtx");
     Int_t    nEle       = data.GetInt("nEle");
     Int_t*   eleCharge  = data.GetPtrInt("eleCharge");

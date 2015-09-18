@@ -13,6 +13,7 @@
 
 // 25ns: root -q -b eleMiniIso.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
 // signal: root -q -b eleMiniIso.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/\"\,1\)
+// 25ns: root -q -b eleMiniIso.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\)
 
 void eleMiniIso(std::string inputFile, int num){
 
@@ -23,7 +24,7 @@ void eleMiniIso(std::string inputFile, int num){
 
   std::vector<string> infiles;
  
-  std::string outputFile[2] = {"DoubleEG_Run2015C-PromptReco-v1","ZprimeToZhToZlephbb"};
+  std::string outputFile[3] = {"DoubleEG_Run2015C-PromptReco-v1","ZprimeToZhToZlephbb","TT_TuneCUETP8M1_13TeV-powheg-pythia8"};
 
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -112,6 +113,7 @@ void eleMiniIso(std::string inputFile, int num){
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
     vector<bool>& eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
     vector<bool>& eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
+    vector<bool>& eleIsPassLoose     = *((vector<bool>*) data.GetPtr("eleIsPassLoose"));
 
     if( nVtx < 1 ) continue;
 
@@ -166,7 +168,8 @@ void eleMiniIso(std::string inputFile, int num){
       if( fabs(eleScEta[ie]) > 2.5 ) continue;
       if( eleScEt[ie] <= 35 ) continue;
       if( !eleEcalDrivenSeed[ie] ) continue;
-      if( !eleIsPassHEEPNoIso[ie] ) continue;
+      //if( !eleIsPassHEEPNoIso[ie] ) continue;
+      if( !eleIsPassLoose[ie]) continue;
 
       h_deltaR       ->Fill(deltaR);
       h_eleRho       ->Fill(eleRho);
@@ -197,7 +200,7 @@ void eleMiniIso(std::string inputFile, int num){
   h_EffHEEPMini->SetTitle("passMiniIso dv passHEEPIso");
   h_EffHEEPCorr->SetTitle("passCorrIso dv passHEEPIso");
 
-  TFile* outFile = new TFile(Form("%s_eleMiniIso.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_eleMiniIsoLoose.root",outputFile[num].c_str()), "recreate");
   
   p_miniIsonVtx  ->Write("miniIsonVtx");
   p_corrIsonVtx  ->Write("corrIsonVtx");

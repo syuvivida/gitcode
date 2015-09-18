@@ -15,8 +15,8 @@ void drawMiniIso(){
 
   TFile *file[2];
 
-  file[0] = TFile::Open("outputMiniIso/ZprimeToZhToZlephbb_eleMiniIso.root");
-  file[1] = TFile::Open("outputMiniIso/DoubleEG_Run2015C-PromptReco-v1_eleMiniIso.root");
+  file[0] = TFile::Open("outputMiniIso/loose/ZprimeToZhToZlephbb_eleMiniIsoLoose.root");
+  file[1] = TFile::Open("outputMiniIso/loose/DoubleEG_Run2015C-PromptReco-v1_eleMiniIsoLoose.root");
    
   gStyle->SetOptStat(0);
 
@@ -27,24 +27,24 @@ void drawMiniIso(){
   c->cd();    
   myProfile(((TProfile*)(file[0]->Get(h_name[0].data()))), 
 	    ((TProfile*)(file[1]->Get(h_name[0].data()))));
-  c->Print("eleMiniIso.pdf(");
+  c->Print("eleMiniIsoLoose.pdf(");
 
   c->cd();
   myProfile(((TProfile*)(file[0]->Get(h_name[1].data()))),
 	    ((TProfile*)(file[1]->Get(h_name[1].data()))));
-  c->Print("eleMiniIso.pdf");
+  c->Print("eleMiniIsoLoose.pdf");
 
   TCanvas* d = new TCanvas("d","",0,0,1000,800);
 
   d->cd();
   myAsymm(((TGraphAsymmErrors*)(file[0]->Get(h_name[2].data()))),
 	  ((TGraphAsymmErrors*)(file[1]->Get(h_name[2].data()))));
-  d->Print("eleMiniIso.pdf");
+  d->Print("eleMiniIsoLoose.pdf");
 
   d->cd();
   myAsymm(((TGraphAsymmErrors*)(file[0]->Get(h_name[3].data()))),
           ((TGraphAsymmErrors*)(file[1]->Get(h_name[3].data()))));
-  d->Print("eleMiniIso.pdf)");  
+  d->Print("eleMiniIsoLoose.pdf)");  
 
 }
 
