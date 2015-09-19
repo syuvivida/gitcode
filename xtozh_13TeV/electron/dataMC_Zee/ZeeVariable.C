@@ -9,9 +9,9 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
-// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\)
-// 25ns: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,2\)
+// 25ns data: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\);
+// 25ns DY: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
+// 25ns TTbar: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,2\);
 
 void ZeeVariable(std::string inputFile, int num){
 
@@ -189,24 +189,24 @@ void ZeeVariable(std::string inputFile, int num){
 
     if( !findEPair ) continue;
 
-    h_Zmass    ->Fill(l4_Z.M());
-    h_Zpt      ->Fill(l4_Z.Pt());
-    h_Zeta     ->Fill(l4_Z.Eta());
-    h_ZRapidity->Fill(l4_Z.Rapidity());
+    h_Zmass    ->Fill(l4_Z.M(),eventWeight);
+    h_Zpt      ->Fill(l4_Z.Pt(),eventWeight);
+    h_Zeta     ->Fill(l4_Z.Eta(),eventWeight);
+    h_ZRapidity->Fill(l4_Z.Rapidity(),eventWeight);
 
     if( thisEle->Pt() > thatEle->Pt() ){
 
-      h_leadElePt    ->Fill(thisEle->Pt());
-      h_leadEleEta   ->Fill(thisEle->Eta());
-      h_subleadElePt ->Fill(thatEle->Pt());
-      h_subleadEleEta->Fill(thatEle->Eta());
+      h_leadElePt    ->Fill(thisEle->Pt(),eventWeight);
+      h_leadEleEta   ->Fill(thisEle->Eta(),eventWeight);
+      h_subleadElePt ->Fill(thatEle->Pt(),eventWeight);
+      h_subleadEleEta->Fill(thatEle->Eta(),eventWeight);
 
     }else{
 
-      h_leadElePt    ->Fill(thatEle->Pt());
-      h_leadEleEta   ->Fill(thatEle->Eta());
-      h_subleadElePt ->Fill(thisEle->Pt());
-      h_subleadEleEta->Fill(thisEle->Eta());
+      h_leadElePt    ->Fill(thatEle->Pt(),eventWeight);
+      h_leadEleEta   ->Fill(thatEle->Eta(),eventWeight);
+      h_subleadElePt ->Fill(thisEle->Pt(),eventWeight);
+      h_subleadEleEta->Fill(thisEle->Eta(),eventWeight);
 
     }
 

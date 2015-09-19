@@ -14,52 +14,83 @@
 // DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
 // DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
 // ttbar:  root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,4\);
-// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/\"\,5\);
-// data:   root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,6\); 
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-600_13TeV-madgraph.root"\,5\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-800_13TeV-madgraph.root"\,6\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-1000_13TeV-madgraph.root"\,7\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-1200_13TeV-madgraph.root"\,8\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-1400_13TeV-madgraph.root"\,9\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-1600_13TeV-madgraph.root"\,10\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-1800_13TeV-madgraph.root"\,11\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-2000_13TeV-madgraph.root"\,12\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-2500_13TeV-madgraph.root"\,13\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-3000_13TeV-madgraph.root"\,14\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-3500_13TeV-madgraph.root"\,15\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-4000_13TeV-madgraph.root"\,16\);
+// signal: root -q -b mZHmu.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-4500_13TeV-madgraph.root"\,17\);
 
-void mZHmu(std::string inputFile, int num){
+void mZHmuSignal(std::string inputFile, int num){
 
   // read the ntuples (in pcncu)
 
   std::vector<string> infiles;
 
-  std::string outputFile[7] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
-			       "ZprimeToZhToZlephbb","crab_SingleMuon-Run2015C-PromptReco-v1"};
+  std::string outputFile[18] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+				"DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+				"DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+				"DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+				"crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
+				"ZprimeToZhToZlephbb_narrow_M-600_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-800_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-1000_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-1200_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-1400_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-1600_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-1800_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-2000_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-2500_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-3000_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-3500_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-4000_13TeV-madgraph",
+				"ZprimeToZhToZlephbb_narrow_M-4500_13TeV-madgraph"};
 
-  TSystemDirectory *base = new TSystemDirectory("root","root");
-  base->SetDirectory(inputFile.data());
-  TList *listOfFiles = base->GetListOfFiles();
-  TIter fileIt(listOfFiles);
-  TFile *fileH = new TFile();
-  Long64_t nfiles = 0;
-
-  while( (fileH = (TFile*)fileIt()) ){
+  if( inputFile.find(".root") != std::string::npos ){ 
     
-    std::string fileN = fileH->GetName();
-    std::string baseString = "NCUGlobal";
-    if( fileN.find("fail") != std::string::npos ) continue;
+    infiles.push_back(inputFile.data());
+  
+  }else{
 
-    if( fileH->IsFolder() ){
+    TSystemDirectory *base = new TSystemDirectory("root","root");
+    base->SetDirectory(inputFile.data());
+    TList *listOfFiles = base->GetListOfFiles();
+    TIter fileIt(listOfFiles);
+    TFile *fileH = new TFile();
+    Long64_t nfiles = 0;
+
+    while( (fileH = (TFile*)fileIt()) ){
     
-      std::string newDir = inputFile+fileN;
-      base->SetDirectory(newDir.data());
-      TList *listOfFiles2 = base->GetListOfFiles();
-      TIter fileIt2(listOfFiles2);
-      TFile *fileH2 = new TFile(); 
+      std::string fileN = fileH->GetName();
+      std::string baseString = "NCUGlobal";
+
+      if( fileN.find("fail") != std::string::npos ) continue;
+
+      if( fileH->IsFolder() ){
+    
+	std::string newDir = inputFile+fileN;
+	base->SetDirectory(newDir.data());
+	TList *listOfFiles2 = base->GetListOfFiles();
+	TIter fileIt2(listOfFiles2);
+	TFile *fileH2 = new TFile(); 
       
-      while( (fileH2 = (TFile*)fileIt2()) ){
+	while( (fileH2 = (TFile*)fileIt2()) ){
 
-	std::string fileN2 = fileH2->GetName();
-	if( fileH2->IsFolder() ) continue;
-	if( fileN2.find("fail") != std::string::npos ) continue;
-	if( fileN2.find(baseString) == std::string::npos ) continue;
-	infiles.push_back(Form("%s/%s",newDir.data(),fileN2.data()));
-	nfiles++;
+	  std::string fileN2 = fileH2->GetName();
+	  if( fileH2->IsFolder() ) continue;
+	  if( fileN2.find("fail") != std::string::npos ) continue;
+	  if( fileN2.find(baseString) == std::string::npos ) continue;
+	  infiles.push_back(Form("%s/%s",newDir.data(),fileN2.data()));
+	  nfiles++;
 
+	}
       }
     }
   }
@@ -69,37 +100,12 @@ void mZHmu(std::string inputFile, int num){
   // Declare the histogram
      
   TH1D* h_mZprime          = new TH1D("h_mZprime", "mZprime", 100, 400, 5000);
-  TH1D* h_mZ               = new TH1D("h_mZ", "mZ", 100, 50, 150);
-  TH1D* h_ptZ              = new TH1D("h_ptZ", "ptZ", 100, 0, 20);
-  TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", 100, 100, 1000);
-  TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", 100, 50, 200);
-  TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", 100, 50, 200);
-  TH1D* h_FATjetTau2dvTau1 = new TH1D("h_FATjetTau2dvTau1", "FATjetTau2dvTau1", 100, 0, 1);
-  TH1D* h_cutFlow          = new TH1D("h_cutFlow", "cutFlow", 5, 0, 5);
   TH1D* h_eventWeight      = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 
-  h_mZprime         ->Sumw2();
-  h_mZ              ->Sumw2();
-  h_ptZ             ->Sumw2();
-  h_FATjetPt        ->Sumw2();   
-  h_FATjetSDmass    ->Sumw2();
-  h_FATjetPRmass    ->Sumw2();
-  h_FATjetTau2dvTau1->Sumw2();
-  h_cutFlow         ->Sumw2();  
-
-  h_mZprime         ->GetXaxis()->SetTitle("mZprime");
-  h_mZ              ->GetXaxis()->SetTitle("mZ");
-  h_ptZ             ->GetXaxis()->SetTitle("ptZ");
-  h_FATjetPt        ->GetXaxis()->SetTitle("FATjetPt");
-  h_FATjetSDmass    ->GetXaxis()->SetTitle("FATjetSDmass");
-  h_FATjetPRmass    ->GetXaxis()->SetTitle("FATjetPRmass");
-  h_FATjetTau2dvTau1->GetXaxis()->SetTitle("FATjetTau2dvTau1");
-  h_cutFlow         ->GetXaxis()->SetTitle("cutFlow");  
-  h_eventWeight     ->GetXaxis()->SetTitle("eventWeight");  
-    
+  h_mZprime->Sumw2();
+  h_mZprime->GetXaxis()->SetTitle("mZprime");
+      
   // begin of event loop
-
-  Int_t nPass[10] = {0};
 
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
@@ -120,22 +126,18 @@ void mZHmu(std::string inputFile, int num){
     Int_t*         FATnSubSDJet        = data.GetPtrInt("FATnSubSDJet");
     Float_t*       FATjetCISVV2        = data.GetPtrFloat("FATjetCISVV2");
     Float_t*       FATjetSDmass        = data.GetPtrFloat("FATjetSDmass");
-    Float_t*       FATjetPRmass        = data.GetPtrFloat("FATjetPRmass");
-    Float_t*       FATjetTau1          = data.GetPtrFloat("FATjetTau1");
-    Float_t*       FATjetTau2          = data.GetPtrFloat("FATjetTau2");
     TClonesArray*  FATjetP4            = (TClonesArray*) data.GetPtrTObject("FATjetP4");
     vector<bool>&  FATjetPassIDLoose   = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
     vector<float>* FATsubjetSDCSV      = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
-    nPass[0]++;
-
+  
     Double_t eventWeight = mcWeight;
-    if( num == 1 ){
+    if( num==0 || num==1 || num==2 || num==3 ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
     }
-    else if( num == 0 || num == 2 )
+    else 
       eventWeight = 1;
     
     h_eventWeight->Fill(0.,eventWeight);
@@ -160,8 +162,7 @@ void mZHmu(std::string inputFile, int num){
     }
 
     if( !passTrigger ) continue;
-    nPass[1]++;
-
+  
     // select good muons
       
     std::vector<Int_t> goodMuons;
@@ -215,14 +216,6 @@ void mZHmu(std::string inputFile, int num){
 
     if( !findMPair ) continue;
 
-    nPass[2]++;
- 
-    Float_t mll  = (*thisMu+*thatMu).M();
-    Float_t ptll = (*thisMu+*thatMu).Pt();
-
-    h_mZ ->Fill(mll);
-    h_ptZ->Fill(ptll);
-
     // select good FATjet
 
     Int_t goodFATJetID = -1;
@@ -248,45 +241,21 @@ void mZHmu(std::string inputFile, int num){
     }
 
     if( goodFATJetID < 0 ) continue;
-    nPass[3]++;
-
-    h_FATjetPt        ->Fill(thisJet->Pt());
-    h_FATjetSDmass    ->Fill(FATjetSDmass[goodFATJetID]);
-    h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID]);
-    h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID]);
-
+    
     Float_t mZll = (*thisMu+*thatMu+*thisJet).M();
 
-    h_mZprime->Fill(mZll);
+    h_mZprime->Fill(mZll,eventWeight);
 
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
-  std::string cutName[3] = {"Vertex","MuPair","FATjet"};
-
-  for(Int_t i = 1; i <= 3; i++){
-
-    if( i==1 ) h_cutFlow->SetBinContent(i,((Int_t)data.GetEntriesFast()));
-    else h_cutFlow->SetBinContent(i,nPass[i-2]);
-    h_cutFlow->GetXaxis()->SetBinLabel(i,cutName[i-1].data()); 
-
-  }
-
-  std::string h_name[9] = {"mZprime","mZ","ptZ","FATjetPt","FATjetSDmass",
-			   "FATjetPRmass","FATjetTau2dvTau1","cutFlow","eventWeight"};
+  std::string h_name[2] = {"mZprime","eventWeight"};
 
   TFile* outFile = new TFile(Form("%s_mZHmu.root",outputFile[num].c_str()), "recreate");
 
   h_mZprime         ->Write(h_name[0].data());
-  h_mZ              ->Write(h_name[1].data());
-  h_ptZ             ->Write(h_name[2].data());
-  h_FATjetPt        ->Write(h_name[3].data());
-  h_FATjetSDmass    ->Write(h_name[4].data());
-  h_FATjetPRmass    ->Write(h_name[5].data());
-  h_FATjetTau2dvTau1->Write(h_name[6].data());
-  h_cutFlow         ->Write(h_name[7].data());
-  h_eventWeight     ->Write(h_name[8].data());
+  h_eventWeight     ->Write(h_name[1].data());
 
   outFile->Write();
   

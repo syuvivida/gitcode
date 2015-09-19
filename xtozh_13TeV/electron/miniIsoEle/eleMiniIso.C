@@ -11,9 +11,9 @@
 #include <TGraphAsymmErrors.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b eleMiniIso.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\)
-// signal: root -q -b eleMiniIso.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/\"\,1\)
-// 25ns: root -q -b eleMiniIso.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\)
+// 25ns data: root -q -b eleMiniIso.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\);
+// signal: root -q -b eleMiniIso.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/\"\,1\);
+// 25ns TTbar: root -q -b eleMiniIso.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\);
 
 void eleMiniIso(std::string inputFile, int num){
 
@@ -76,6 +76,7 @@ void eleMiniIso(std::string inputFile, int num){
   TH1D* h_eleMiniIso      = new TH1D("h_eleMiniIso", "eleMiniIso", 100, -1, 1);
   TH1D* h_eleCorrIso      = new TH1D("h_eleCorrIso", "eleCorrIso", 100, -2, 2);
   TH1D* h_effectiveArea   = new TH1D("h_effectiveArea", "effectiveArea", 100, 0, 0.4);
+  TH1D* h_eventWeight     = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 
   TGraphAsymmErrors* h_EffHEEPMini = new TGraphAsymmErrors();
   TGraphAsymmErrors* h_EffHEEPCorr = new TGraphAsymmErrors();
@@ -94,6 +95,7 @@ void eleMiniIso(std::string inputFile, int num){
   h_effectiveArea  ->GetXaxis()->SetTitle("effectiveArea");
   h_EffHEEPMini    ->GetXaxis()->SetTitle("EffHEEPMini");
   h_EffHEEPCorr    ->GetXaxis()->SetTitle("EffHEEPCorr");  
+  h_eventWeight    ->GetXaxis()->SetTitle("eventWeight");
     
   // begin of event loop
 
@@ -106,7 +108,8 @@ void eleMiniIso(std::string inputFile, int num){
 
     Int_t    nVtx       = data.GetInt("nVtx");
     Int_t    nEle       = data.GetInt("nEle");
-    Float_t  eleRho      = data.GetFloat("eleRho");
+    Float_t  mcWeight   = data.GetFloat("mcWeight");
+    Float_t  eleRho     = data.GetFloat("eleRho");
     Float_t* eleScEt    = data.GetPtrFloat("eleScEt");
     Float_t* eleScEta   = data.GetPtrFloat("eleScEta");
     Float_t* eleMiniIso = data.GetPtrFloat("eleMiniIso");
@@ -116,6 +119,16 @@ void eleMiniIso(std::string inputFile, int num){
     vector<bool>& eleIsPassLoose     = *((vector<bool>*) data.GetPtr("eleIsPassLoose"));
 
     if( nVtx < 1 ) continue;
+
+    Double_t eventWeight = mcWeight;
+    if( num > 2 ){
+      if( eventWeight > 0 ) eventWeight = 1;
+      else if( eventWeight < 0 ) eventWeight = -1;
+    }
+    else 
+      eventWeight = 1;
+    
+    h_eventWeight->Fill(0.,eventWeight);
 
     // data trigger cut (electron channel)
 
@@ -171,22 +184,22 @@ void eleMiniIso(std::string inputFile, int num){
       //if( !eleIsPassHEEPNoIso[ie] ) continue;
       if( !eleIsPassLoose[ie]) continue;
 
-      h_deltaR       ->Fill(deltaR);
-      h_eleRho       ->Fill(eleRho);
-      h_eleMiniIso   ->Fill(eleMiniIso[ie]);
-      h_eleCorrIso   ->Fill(eleCorrIso);
-      h_effectiveArea->Fill(effectiveArea);
+      h_deltaR       ->Fill(deltaR,eventWeight);
+      h_eleRho       ->Fill(eleRho,eventWeight);
+      h_eleMiniIso   ->Fill(eleMiniIso[ie],eventWeight);
+      h_eleCorrIso   ->Fill(eleCorrIso,eventWeight);
+      h_effectiveArea->Fill(effectiveArea,eventWeight);
 
       p_miniIsonVtx->Fill(nVtx, eleMiniIso[ie]);
       p_corrIsonVtx->Fill(nVtx, eleCorrIso);
 
-      h_nVtxPassHEEPIso->Fill(nVtx);
+      h_nVtxPassHEEPIso->Fill(nVtx,eventWeight);
 
       if( eleMiniIso[ie] < 0.1 )
-	h_nVtxPassMiniIso->Fill(nVtx);
+	h_nVtxPassMiniIso->Fill(nVtx,eventWeight);
 
       if( eleCorrIso < 0.1 )
-	h_nVtxPassCorrIso->Fill(nVtx);
+	h_nVtxPassCorrIso->Fill(nVtx,eventWeight);
 
     } // end of ele loop
 

@@ -9,9 +9,9 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,0\)
-// 25ns: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\)
-// 25ns: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\)
+// 25ns data: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,0\);
+// 25ns DY: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
+// 25ns TTbar: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\);
 
 void jetmumuVariable(std::string inputFile, int num){
 
@@ -257,14 +257,14 @@ void jetmumuVariable(std::string inputFile, int num){
     if( goodsubJetID[0] < 0 || goodsubJetID[1] < 0 ) continue;
     nPass[3]++;
 
-    h_FATjetPt        ->Fill(thisJet->Pt());
-    h_FATjetEta       ->Fill(thisJet->Eta());
-    h_FATjetCISVV2    ->Fill(FATjetCISVV2[goodFATJetID]);
-    h_FATjetSDmass    ->Fill(FATjetSDmass[goodFATJetID]);
-    h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID]);
-    h_FATjetTau1      ->Fill(FATjetTau1[goodFATJetID]);
-    h_FATjetTau2      ->Fill(FATjetTau2[goodFATJetID]);
-    h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID]);
+    h_FATjetPt        ->Fill(thisJet->Pt(),eventWeight);
+    h_FATjetEta       ->Fill(thisJet->Eta(),eventWeight);
+    h_FATjetCISVV2    ->Fill(FATjetCISVV2[goodFATJetID],eventWeight);
+    h_FATjetSDmass    ->Fill(FATjetSDmass[goodFATJetID],eventWeight);
+    h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID],eventWeight);
+    h_FATjetTau1      ->Fill(FATjetTau1[goodFATJetID],eventWeight);
+    h_FATjetTau2      ->Fill(FATjetTau2[goodFATJetID],eventWeight);
+    h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID],eventWeight);
 
     TLorentzVector l4_subjet0(0,0,0,0);
     TLorentzVector l4_subjet1(0,0,0,0);
@@ -279,12 +279,12 @@ void jetmumuVariable(std::string inputFile, int num){
                           FATsubjetSDPz[goodFATJetID][goodsubJetID[1]],
                           FATsubjetSDE[goodFATJetID][goodsubJetID[1]]);
 
-    h_FATsubjetPt   ->Fill(l4_subjet0.Pt());
-    h_FATsubjetPt   ->Fill(l4_subjet1.Pt());
-    h_FATsubjetEta  ->Fill(l4_subjet0.Eta());
-    h_FATsubjetEta  ->Fill(l4_subjet1.Eta());
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[0]]);
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[1]]);
+    h_FATsubjetPt   ->Fill(l4_subjet0.Pt(),eventWeight);
+    h_FATsubjetPt   ->Fill(l4_subjet1.Pt(),eventWeight);
+    h_FATsubjetEta  ->Fill(l4_subjet0.Eta(),eventWeight);
+    h_FATsubjetEta  ->Fill(l4_subjet1.Eta(),eventWeight);
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[0]],eventWeight);
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[1]],eventWeight);
 
   } // end of event loop
 

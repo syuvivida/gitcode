@@ -9,9 +9,9 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// 25ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,0\)
-// 25ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\)
-// 25ns: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,2\)
+// 25ns data: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,0\);
+// 25ns DY: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
+// 25ns TTbar: root -q -b ZmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,2\);
 
 void ZmumuVariable(std::string inputFile, int num){
 
@@ -193,24 +193,24 @@ void ZmumuVariable(std::string inputFile, int num){
 
     if( !findMPair ) continue;
 
-    h_Zmass    ->Fill(l4_Z.M());
-    h_Zpt      ->Fill(l4_Z.Pt());
-    h_Zeta     ->Fill(l4_Z.Eta());
-    h_ZRapidity->Fill(l4_Z.Rapidity());
+    h_Zmass    ->Fill(l4_Z.M(),eventWeight);
+    h_Zpt      ->Fill(l4_Z.Pt(),eventWeight);
+    h_Zeta     ->Fill(l4_Z.Eta(),eventWeight);
+    h_ZRapidity->Fill(l4_Z.Rapidity(),eventWeight);
 
     if( thisMu->Pt() > thatMu->Pt() ){
 
-      h_leadMuPt    ->Fill(thisMu->Pt());
-      h_leadMuEta   ->Fill(thisMu->Eta());
-      h_subleadMuPt ->Fill(thatMu->Pt());
-      h_subleadMuEta->Fill(thatMu->Eta());
+      h_leadMuPt    ->Fill(thisMu->Pt(),eventWeight);
+      h_leadMuEta   ->Fill(thisMu->Eta(),eventWeight);
+      h_subleadMuPt ->Fill(thatMu->Pt(),eventWeight);
+      h_subleadMuEta->Fill(thatMu->Eta(),eventWeight);
 
     }else{
 
-      h_leadMuPt    ->Fill(thatMu->Pt());
-      h_leadMuEta   ->Fill(thatMu->Eta());
-      h_subleadMuPt ->Fill(thisMu->Pt());
-      h_subleadMuEta->Fill(thisMu->Eta());
+      h_leadMuPt    ->Fill(thatMu->Pt(),eventWeight);
+      h_leadMuEta   ->Fill(thatMu->Eta(),eventWeight);
+      h_subleadMuPt ->Fill(thisMu->Pt(),eventWeight);
+      h_subleadMuEta->Fill(thisMu->Eta(),eventWeight);
 
     }
 
