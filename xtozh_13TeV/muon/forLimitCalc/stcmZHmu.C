@@ -1,9 +1,8 @@
 #include <string>
 #include <iostream>
-#include <TPad.h>
 #include <TH1D.h>
 #include <TFile.h>
-#include <TLine.h>
+#include <TLatex.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <THStack.h>
@@ -22,14 +21,12 @@ void stcmZHmu(){
   file[4] = TFile::Open("outputmZHmu/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_mZHmu.root");
   file[5] = TFile::Open("outputmZHmu/crab_SingleMuon-Run2015C-PromptReco-v1_mZHmu.root");
 
-  // i=4 is ttbar                                                                                                                                                                                           
-
+  // i=4 is ttbar 
   TH1D*    h_eventWeight[5];
   Int_t    nEvent[5]  = {0};
   Double_t scale[5]   = {0};
-  Double_t dataLumi   = 8.1;  //mu //pb-1                                                                                                                                                                   
-  Double_t signalLumi = 1.0;  //pb-1
-  Double_t crossSection[5] = {139.4,42.75,5.497,2.21,831.76};  //pb                                                                                                                                         
+  Double_t dataLumi   = 8.1;  //mu //pb-1                                                                              
+  Double_t crossSection[5] = {139.4,42.75,5.497,2.21,831.76};  //pb 
 
   for(Int_t i = 0; i < 5 ; i++){
 
@@ -40,6 +37,9 @@ void stcmZHmu(){
   }
 
   gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);                                                                  
+  gStyle->SetFrameLineWidth(2);                                                          
+  gStyle->SetLineWidth(1);
 
   TCanvas c("c","",0,0,1000,800);
 
@@ -58,7 +58,6 @@ void stcmZHmu(){
 	   ((TH1D*)(file[3]->Get(h_name[i].data()))),
 	   ((TH1D*)(file[4]->Get(h_name[i].data()))),
 	   ((TH1D*)(file[5]->Get(h_name[i].data()))),
-	   ((TH1D*)(file[6]->Get(h_name[i].data()))),
 	   scale);
 
     c.Draw();
@@ -92,6 +91,7 @@ void myPlot(TH1D* h_DY100, TH1D* h_DY200, TH1D* h_DY400,
   h_TTbar->SetLineColor(kBlack);
 
   THStack *h_stack = new THStack("h_stack", "");
+
   h_stack->Add(h_DY);
   h_stack->Add(h_TTbar);
 
@@ -100,15 +100,28 @@ void myPlot(TH1D* h_DY100, TH1D* h_DY200, TH1D* h_DY400,
   h_data->SetMarkerSize(0.6);
   h_stack->Draw("histe");
   h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+  h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
   h_data->Draw("e1same");
 
-  TLegend *leg = new TLegend(0.4, 0.75, 0.85, 0.85);
+  TLegend *leg = new TLegend(0.72, 0.72, 0.87, 0.87);
 
-  leg->SetFillStyle(0);
-  leg->SetBorderSize(1);
-  leg->AddEntry(h_DY, "DYJetsToLL_M-50_HT-100toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "lpf");
-  leg->AddEntry(h_TTbar, "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830", "lpf");
-  leg->AddEntry(h_data, "crab_SingleMuon-Run2015C-PromptReco-v1", "lp");
+  leg->SetBorderSize(0);                                                     
+  leg->SetLineColor(1);                                                                  
+  leg->SetLineStyle(1);                                                                 
+  leg->SetLineWidth(1);                                                               
+  leg->SetFillColor(0);                                                               
+  leg->SetFillStyle(0);                                                                   
+  leg->SetTextSize(0.04);
+  leg->AddEntry(h_DY, "DY+Jets", "lpf"); 
+  leg->AddEntry(h_TTbar, "t#bar{t}", "lpf");
+  leg->AddEntry(h_data, "Data", "lp");
   leg->Draw();
+
+  TLatex *lar = new TLatex(0.48, 0.92, "CMS,  #sqrt{s} = 13 TeV, L = 8.6 pb^{-1}");
+
+  lar->SetNDC(kTRUE); 
+  lar->SetTextSize(0.04);
+  lar->SetLineWidth(5);
+  lar->Draw();
 
 }

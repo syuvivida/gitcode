@@ -27,26 +27,23 @@ void stcmZHmuSignal(){
   file[16] = TFile::Open("outputmZHmu/signal/ZprimeToZhToZlephbb_narrow_M-4000_13TeV-madgraph_mZHmuSignal.root");
   file[17] = TFile::Open("outputmZHmu/signal/ZprimeToZhToZlephbb_narrow_M-4500_13TeV-madgraph_mZHmuSignal.root");
 
-  // i=4 is ttbar                                                                                                                                                                                           
-
-  TH1D*    h_eventWeight[5];
-  Int_t    nEvent[5]  = {0};
-  Double_t scale[5]   = {0};
-  Double_t signalLumi = 1.0;  //pb-1
-  Double_t crossSection[5] = {139.4,42.75,5.497,2.21,831.76};  //pb                                                                                                                                         
-
-  for(Int_t i = 0; i < 5 ; i++){
+  // i=4 is ttbar  
+                                                                                     
+  TH1D* h_mZprime[18];
+  TH1D* h_eventWeight[18];
+  Int_t nEvent[18] = {0};
+  Double_t scale[18] = {0};
+  Double_t signalLumi = 1000.0;  //pb-1
+  Double_t crossSection[18] = {139.4,42.75,5.497,2.21,831.76};  //pb           
+                    
+  for(Int_t i = 0; i < 18 ; i++){
 
     h_eventWeight[i] = (TH1D*)(file[i]->Get("eventWeight"));
     nEvent[i] = h_eventWeight[i]->Integral();
     scale[i] = signalLumi/(nEvent[i]/crossSection[i]);
+    h_mZprime[i] = (TH1D*)(file[i]->Get("mZprime"));
 
   }
-
-  TH1D* h_mZprime[18];
-
-  for(Int_t i = 0; i < 18; i++)
-    h_mZprime[i] = (TH1D*)(file[i]->Get("mZprime"));
 
   TH1D* h_mZprimeDY = (TH1D*)h_mZprime[0]->Clone("h_mZprimeDY");
 

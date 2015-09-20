@@ -4,6 +4,7 @@
 #include <TH1D.h>
 #include <TFile.h>
 #include <TLine.h>
+#include <TLatex.h>
 #include <TStyle.h>
 #include <TCanvas.h>
 #include <THStack.h>
@@ -38,6 +39,9 @@ void stcZmumuVariable(){
 	    << "\n" << std::endl;    
   
   gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);                                                                  
+  gStyle->SetFrameLineWidth(2);                                                          
+  gStyle->SetLineWidth(1);
   gStyle->SetPadGridY(kTRUE);
   gStyle->SetPadGridX(kTRUE);
 
@@ -116,14 +120,26 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
   h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
   h_data->Draw("e1same");
 
-  TLegend *leg = new TLegend(0.5, 0.8, 0.9, 0.9);
+  TLegend *leg = new TLegend(0.72, 0.72, 0.87, 0.87);
 
-  leg->SetFillStyle(0);
-  leg->SetBorderSize(1);
-  leg->AddEntry(h_DY, "DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns", "lpf"); 
-  leg->AddEntry(h_ttbar, "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830", "lpf");
-  leg->AddEntry(h_data, "crab_SingleMuon-Run2015C-PromptReco-v1", "lp");
+  leg->SetBorderSize(0);                                                     
+  leg->SetLineColor(1);                                                                  
+  leg->SetLineStyle(1);                                                                 
+  leg->SetLineWidth(1);                                                               
+  leg->SetFillColor(0);                                                               
+  leg->SetFillStyle(0);                                                                   
+  leg->SetTextSize(0.04);
+  leg->AddEntry(h_DY, "DY+Jets", "lpf"); 
+  leg->AddEntry(h_ttbar, "t#bar{t}", "lpf");
+  leg->AddEntry(h_data, "Data", "lp");
   leg->Draw();
+
+  TLatex *lar = new TLatex(0.55, 0.92, "CMS,  #sqrt{s} = 13 TeV, L = 8.6 pb^{-1}");
+
+  lar->SetNDC(kTRUE); 
+  lar->SetTextSize(0.04);
+  lar->SetLineWidth(5);
+  lar->Draw();
 
 }
 

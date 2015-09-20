@@ -29,38 +29,37 @@ void mZHmu(std::string inputFile, int num){
 			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
 			       "crab_SingleMuon-Run2015C-PromptReco-v1"};
 			  
-    TSystemDirectory *base = new TSystemDirectory("root","root");
-    base->SetDirectory(inputFile.data());
-    TList *listOfFiles = base->GetListOfFiles();
-    TIter fileIt(listOfFiles);
-    TFile *fileH = new TFile();
-    Long64_t nfiles = 0;
+  TSystemDirectory *base = new TSystemDirectory("root","root");
+  base->SetDirectory(inputFile.data());
+  TList *listOfFiles = base->GetListOfFiles();
+  TIter fileIt(listOfFiles);
+  TFile *fileH = new TFile();
+  Long64_t nfiles = 0;
 
-    while( (fileH = (TFile*)fileIt()) ){
+  while( (fileH = (TFile*)fileIt()) ){
     
-      std::string fileN = fileH->GetName();
-      std::string baseString = "NCUGlobal";
+    std::string fileN = fileH->GetName();
+    std::string baseString = "NCUGlobal";
 
-      if( fileN.find("fail") != std::string::npos ) continue;
+    if( fileN.find("fail") != std::string::npos ) continue;
 
-      if( fileH->IsFolder() ){
+    if( fileH->IsFolder() ){
     
-	std::string newDir = inputFile+fileN;
-	base->SetDirectory(newDir.data());
-	TList *listOfFiles2 = base->GetListOfFiles();
-	TIter fileIt2(listOfFiles2);
-	TFile *fileH2 = new TFile(); 
+      std::string newDir = inputFile+fileN;
+      base->SetDirectory(newDir.data());
+      TList *listOfFiles2 = base->GetListOfFiles();
+      TIter fileIt2(listOfFiles2);
+      TFile *fileH2 = new TFile(); 
       
-	while( (fileH2 = (TFile*)fileIt2()) ){
+      while( (fileH2 = (TFile*)fileIt2()) ){
 
-	  std::string fileN2 = fileH2->GetName();
-	  if( fileH2->IsFolder() ) continue;
-	  if( fileN2.find("fail") != std::string::npos ) continue;
-	  if( fileN2.find(baseString) == std::string::npos ) continue;
-	  infiles.push_back(Form("%s/%s",newDir.data(),fileN2.data()));
-	  nfiles++;
+	std::string fileN2 = fileH2->GetName();
+	if( fileH2->IsFolder() ) continue;
+	if( fileN2.find("fail") != std::string::npos ) continue;
+	if( fileN2.find(baseString) == std::string::npos ) continue;
+	infiles.push_back(Form("%s/%s",newDir.data(),fileN2.data()));
+	nfiles++;
 
-	}
       }
     }
   }

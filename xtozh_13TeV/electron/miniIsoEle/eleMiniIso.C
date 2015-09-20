@@ -181,8 +181,8 @@ void eleMiniIso(std::string inputFile, int num){
       if( fabs(eleScEta[ie]) > 2.5 ) continue;
       if( eleScEt[ie] <= 35 ) continue;
       if( !eleEcalDrivenSeed[ie] ) continue;
-      //if( !eleIsPassHEEPNoIso[ie] ) continue;
-      if( !eleIsPassLoose[ie]) continue;
+      if( !eleIsPassHEEPNoIso[ie] ) continue;
+      //if( !eleIsPassLoose[ie]) continue;
 
       h_deltaR       ->Fill(deltaR,eventWeight);
       h_eleRho       ->Fill(eleRho,eventWeight);
@@ -213,7 +213,7 @@ void eleMiniIso(std::string inputFile, int num){
   h_EffHEEPMini->SetTitle("passMiniIso dv passHEEPIso");
   h_EffHEEPCorr->SetTitle("passCorrIso dv passHEEPIso");
 
-  TFile* outFile = new TFile(Form("%s_eleMiniIsoLoose.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_eleMiniIso.root",outputFile[num].c_str()), "recreate");
   
   p_miniIsonVtx  ->Write("miniIsonVtx");
   p_corrIsonVtx  ->Write("corrIsonVtx");
