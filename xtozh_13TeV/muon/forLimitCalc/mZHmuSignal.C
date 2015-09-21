@@ -28,6 +28,7 @@ root -q -b mZHmuSignal.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/Zpri
 root -q -b mZHmuSignal.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-3500_13TeV-madgraph.root\"\,15\);
 root -q -b mZHmuSignal.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-4000_13TeV-madgraph.root\"\,16\);
 root -q -b mZHmuSignal.C++\(\"/data7/syu/13TeV_signalMC/ZprimeToZhToZlephbb/ZprimeToZhToZlephbb_narrow_M-4500_13TeV-madgraph.root\"\,17\);
+root -q -b mZHmuSignal.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,18\);
 */
 
 void mZHmuSignal(std::string inputFile, int num){
@@ -36,7 +37,7 @@ void mZHmuSignal(std::string inputFile, int num){
 
   std::vector<string> infiles;
 
-  std::string outputFile[18] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+  std::string outputFile[19] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 				"DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 				"DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 				"DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
@@ -53,7 +54,8 @@ void mZHmuSignal(std::string inputFile, int num){
 				"ZprimeToZhToZlephbb_narrow_M-3000_13TeV-madgraph",
 				"ZprimeToZhToZlephbb_narrow_M-3500_13TeV-madgraph",
 				"ZprimeToZhToZlephbb_narrow_M-4000_13TeV-madgraph",
-				"ZprimeToZhToZlephbb_narrow_M-4500_13TeV-madgraph"};
+				"ZprimeToZhToZlephbb_narrow_M-4500_13TeV-madgraph",
+				"crab_SingleMuon-Run2015C-PromptReco-v1"};
 
   if( inputFile.find(".root") != std::string::npos ){ 
     

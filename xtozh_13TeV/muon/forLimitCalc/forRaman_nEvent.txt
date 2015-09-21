@@ -1,4 +1,4 @@
-mZprime_DYHT-100toInf  38.1291
+mZprime_DYHT-100toInf  34.1291
 mZprime_TTbar  2.3566
 mZprime_signalM-800  3905
 mZprime_signalM-1000  6075
@@ -11,3 +11,4 @@ mZprime_signalM-2500  7666
 mZprime_signalM-3000  7204
 mZprime_signalM-3500  6717
 mZprime_signalM-4000  6167
+mZprime_Data  0

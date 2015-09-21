@@ -6,7 +6,7 @@
 
 void stcmZHmuSignal(){
 
-  TFile *file[16];
+  TFile *file[17];
 
   file[0] = TFile::Open("outputmZHmu/signal/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHmuSignal.root");
   file[1] = TFile::Open("outputmZHmu/signal/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHmuSignal.root");
@@ -24,6 +24,7 @@ void stcmZHmuSignal(){
   file[13] = TFile::Open("outputmZHmu/signal/ZprimeToZhToZlephbb_narrow_M-3000_13TeV-madgraph_mZHmuSignal.root");
   file[14] = TFile::Open("outputmZHmu/signal/ZprimeToZhToZlephbb_narrow_M-3500_13TeV-madgraph_mZHmuSignal.root");
   file[15] = TFile::Open("outputmZHmu/signal/ZprimeToZhToZlephbb_narrow_M-4000_13TeV-madgraph_mZHmuSignal.root");
+  file[16] = TFile::Open("outputmZHmu/signal/crab_SingleMuon-Run2015C-PromptReco-v1_mZHmuSignal.root");
 
   // i=4 is ttbar  
                                                                                      
@@ -59,6 +60,7 @@ void stcmZHmuSignal(){
   }
 
   TH1D* h_mZprimeDY = (TH1D*)h_mZprime[0]->Clone("h_mZprimeDY");
+  h_mZprimeDY->Reset();
 
   for(Int_t i = 0; i < 4 ; i++)
     h_mZprimeDY->Add(h_mZprime[i],scale[i]);
@@ -67,7 +69,7 @@ void stcmZHmuSignal(){
 
   TFile* outFile = new TFile("forRaman_mZHmuSignal.root","recreate");
 
-  std::string name[16] = {"","","",
+  std::string name[17] = {"","","",
 			  "mZprime_DYHT-100toInf",
 			  "mZprime_TTbar",
 			  "mZprime_signalM-800",
@@ -80,12 +82,16 @@ void stcmZHmuSignal(){
 			  "mZprime_signalM-2500",
 			  "mZprime_signalM-3000",
 			  "mZprime_signalM-3500",
-			  "mZprime_signalM-4000"};
+			  "mZprime_signalM-4000",
+			  "mZprime_Data"};
 			 
   h_mZprimeDY->Write(name[3].data());
 
   for(Int_t i = 4; i < 16; i++)
     h_mZprime[i]->Write(name[i].data());
+
+  TH1D* h_mZprimeData = (TH1D*)(file[16]->Get("mZprime"));
+  h_mZprimeData->Write(name[16].data());
 
   outFile->Write();
 
@@ -96,5 +102,7 @@ void stcmZHmuSignal(){
 
   for(Int_t i = 4; i < 16; i++)
     ftext << name[i] << "  " << h_mZprime[i]->Integral() << "\n";
+
+  ftext << name[16] << "  " << h_mZprimeData->Integral() << "\n";
 
 }
