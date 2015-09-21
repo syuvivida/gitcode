@@ -13,7 +13,7 @@
 // DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
 // DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
 // DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
-// ttbar:  root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,4\);
+// ttbar:  root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
 // data:   root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,5\); 
 
 void mZHmu(std::string inputFile, int num){
@@ -200,9 +200,11 @@ void mZHmu(std::string inputFile, int num){
 	Float_t pt2   = thatMu->Pt();
 	Float_t ptMax = TMath::Max(pt1,pt2);
 	Float_t mll   = (*thisMu+*thatMu).M();
+	Float_t ptll  = (*thisMu+*thatMu).Pt();
 
 	if( muCharge[im]*muCharge[jm] > 0 ) continue;
 	if( mll < 60 || mll > 120 ) continue;
+	if( ptll < 120 ) continue;
 	if( ptMax < 50 ) continue;
 	if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
 	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
@@ -224,14 +226,14 @@ void mZHmu(std::string inputFile, int num){
     h_ptZ->Fill(ptll,eventWeight);
 
     // select good FATjet
-
+    
     Int_t goodFATJetID = -1;
     TLorentzVector* thisJet = NULL;
 
     for(Int_t ij = 0; ij < FATnJet; ij++){
 
       thisJet = (TLorentzVector*)FATjetP4->At(ij);
-
+      /*
       if( thisJet->Pt() < 200 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
@@ -241,15 +243,15 @@ void mZHmu(std::string inputFile, int num){
 
       for(Int_t is = 0; is < FATnSubSDJet[ij]; is++)
 	if( FATsubjetSDCSV[ij][is] < 0.605 ) continue;
-
+      */
       goodFATJetID = ij;
       break;
 
     }
 
-    if( goodFATJetID < 0 ) continue;
+    if( goodFATJetID < 0 ) continue; 
     nPass[3]++;
-
+    
     h_FATjetPt        ->Fill(thisJet->Pt(),eventWeight);
     h_FATjetSDmass    ->Fill(FATjetSDmass[goodFATJetID],eventWeight);
     h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID],eventWeight);
