@@ -25,7 +25,7 @@ void stcmZHmu(){
   TH1D*    h_eventWeight[5];
   Int_t    nEvent[5]  = {0};
   Double_t scale[5]   = {0};
-  Double_t dataLumi   = 8.1;  //mu //pb-1                                                                              
+  Double_t dataLumi   = 8.6;  //mu //pb-1                                                                              
   Double_t crossSection[5] = {139.4,42.75,5.497,2.21,831.76};  //pb 
 
   for(Int_t i = 0; i < 5 ; i++){
@@ -79,6 +79,7 @@ void myPlot(TH1D* h_DY100, TH1D* h_DY200, TH1D* h_DY400,
 
   TH1D* h_DY = (TH1D*)h_DY100->Clone("h_DY");
 
+  h_DY->Reset(); 
   h_DY->Add(h_DY100,scale[0]);
   h_DY->Add(h_DY200,scale[1]);
   h_DY->Add(h_DY400,scale[2]);

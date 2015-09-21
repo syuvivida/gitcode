@@ -28,7 +28,7 @@ void stcjetmumuVariable(){
   Int_t nEventTTbar   = h_eventWeightTTbar->Integral();
   Double_t xSecDY     = 6025.2; //pb
   Double_t xSecTTbar  = 831.76; //pb
-  Double_t dataLumi   = 8.1;    //mu //pb-1
+  Double_t dataLumi   = 8.6;    //mu //pb-1
   Double_t scaleDY    = dataLumi/(nEventDY/xSecDY);
   Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
 
