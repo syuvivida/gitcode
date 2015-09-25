@@ -9,14 +9,14 @@
 #include <TSystemDirectory.h>
 #include "untuplizer.h"
 
-// DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
-// DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
-// DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
-// DYHT: root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
-// ttbar:  root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
-// data:   root -q -b mZHmu.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,5\); 
+// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
+// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
+// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
+// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
+// ttbar:  root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
+// data:   root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,5\); 
 
-void mZHmu(std::string inputFile, int num){
+void mZHele(std::string inputFile, int num){
 
   // read the ntuples (in pcncu)
 
@@ -27,7 +27,7 @@ void mZHmu(std::string inputFile, int num){
 			       "DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 			       "DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
-			       "crab_SingleMuon-Run2015C-PromptReco-v1"};
+			       "DoubleEG_Run2015C-PromptReco-v1"};
 			  
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -108,24 +108,26 @@ void mZHmu(std::string inputFile, int num){
 
     data.GetEntry(ev);
 
-    Int_t          nVtx                = data.GetInt("nVtx");
-    Int_t          nMu                 = data.GetInt("nMu");
-    Int_t*         muCharge            = data.GetPtrInt("muCharge");
-    Float_t        mcWeight            = data.GetFloat("mcWeight");    
-    Float_t*       muMiniIso           = data.GetPtrFloat("muMiniIso");
-    TClonesArray*  muP4                = (TClonesArray*) data.GetPtrTObject("muP4");
-    vector<bool>&  isHighPtMuon        = *((vector<bool>*) data.GetPtr("isHighPtMuon"));
-    vector<bool>&  isCustomTrackerMuon = *((vector<bool>*) data.GetPtr("isCustomTrackerMuon"));
-    Int_t          FATnJet             = data.GetInt("FATnJet");    
-    Int_t*         FATnSubSDJet        = data.GetPtrInt("FATnSubSDJet");
-    Float_t*       FATjetCISVV2        = data.GetPtrFloat("FATjetCISVV2");
-    Float_t*       FATjetSDmass        = data.GetPtrFloat("FATjetSDmass");
-    Float_t*       FATjetPRmass        = data.GetPtrFloat("FATjetPRmass");
-    Float_t*       FATjetTau1          = data.GetPtrFloat("FATjetTau1");
-    Float_t*       FATjetTau2          = data.GetPtrFloat("FATjetTau2");
-    TClonesArray*  FATjetP4            = (TClonesArray*) data.GetPtrTObject("FATjetP4");
-    vector<bool>&  FATjetPassIDLoose   = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
-    vector<float>* FATsubjetSDCSV      = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
+    Int_t          nVtx               = data.GetInt("nVtx");
+    Int_t          nEle               = data.GetInt("nEle");
+    Int_t*         eleCharge          = data.GetPtrInt("eleCharge");
+    Float_t        mcWeight           = data.GetFloat("mcWeight");
+    Float_t*       eleScEt            = data.GetPtrFloat("eleScEt");
+    Float_t*       eleScEta           = data.GetPtrFloat("eleScEta");    
+    Float_t*       eleMiniIso         = data.GetPtrFloat("eleMiniIso");
+    TClonesArray*  eleP4              = (TClonesArray*) data.GetPtrTObject("eleP4");
+    vector<bool>&  eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
+    vector<bool>&  eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
+    Int_t          FATnJet            = data.GetInt("FATnJet");    
+    Int_t*         FATnSubSDJet       = data.GetPtrInt("FATnSubSDJet");
+    Float_t*       FATjetCISVV2       = data.GetPtrFloat("FATjetCISVV2");
+    Float_t*       FATjetSDmass       = data.GetPtrFloat("FATjetSDmass");
+    Float_t*       FATjetPRmass       = data.GetPtrFloat("FATjetPRmass");
+    Float_t*       FATjetTau1         = data.GetPtrFloat("FATjetTau1");
+    Float_t*       FATjetTau2         = data.GetPtrFloat("FATjetTau2");
+    TClonesArray*  FATjetP4           = (TClonesArray*) data.GetPtrTObject("FATjetP4");
+    vector<bool>&  FATjetPassIDLoose  = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
+    vector<float>* FATsubjetSDCSV     = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
     nPass[0]++;
@@ -152,7 +154,7 @@ void mZHmu(std::string inputFile, int num){
       std::string thisTrig = trigName[it];
       bool results = trigResult[it];
       
-      if( thisTrig.find("HLT_Mu45") != std::string::npos && results==1 ){
+      if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results==1 ){
 	passTrigger = true;
 	break;
       }
@@ -162,65 +164,67 @@ void mZHmu(std::string inputFile, int num){
     if( !passTrigger ) continue;
     nPass[1]++;
 
-    // select good muons
+    // select good electrons
       
-    std::vector<Int_t> goodMuons;
+    std::vector<Int_t> goodElectrons;
   
-    for(Int_t im = 0; im < nMu; im++){
+    for(Int_t ie = 0; ie < nEle; ie++){
       
-      TLorentzVector* myMu = (TLorentzVector*)muP4->At(im);
+      TLorentzVector* myEle = (TLorentzVector*)eleP4->At(ie);
 
-      if( fabs(myMu->Eta()) > 2.1 ) continue;
-      if( myMu->Pt() < 20 ) continue;
-      if( muMiniIso[im] >= 0.1 ) continue;
-      if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
+      if( !(fabs(eleScEta[ie]) < 1.442 || fabs(eleScEta[ie]) > 1.566) ) continue;
+      if( fabs(eleScEta[ie]) > 2.5 ) continue;
+      if( eleScEt[ie] <= 35 ) continue;
+      if( myEle->Pt() < 10 ) continue;
+      if( !eleEcalDrivenSeed[ie] ) continue;
+      if( !eleIsPassHEEPNoIso[ie] ) continue;
+      if( eleMiniIso[ie] >= 0.1 ) continue;
 
-      goodMuons.push_back(im);
+      goodElectrons.push_back(ie);
 
     }
 
     // select good Z boson
 
-    bool findMPair = false;
+    bool findEPair = false;
     TLorentzVector l4_Z(0,0,0,0);
-    TLorentzVector* thisMu = NULL;
-    TLorentzVector* thatMu = NULL;
+    TLorentzVector* thisEle = NULL;
+    TLorentzVector* thatEle = NULL;
 
-    for(unsigned int i = 0; i < goodMuons.size(); i++){
+    for(unsigned int i = 0; i < goodElectrons.size(); i++){
 
-      Int_t im = goodMuons[i];
-      thisMu = (TLorentzVector*)muP4->At(im);
+      Int_t ie = goodElectrons[i];
+      thisEle = (TLorentzVector*)eleP4->At(ie);
 
       for(unsigned int j = 0; j < i; j++){
 
-	Int_t jm = goodMuons[j];
-	thatMu = (TLorentzVector*)muP4->At(jm);
+	Int_t je = goodElectrons[j];
+	thatEle = (TLorentzVector*)eleP4->At(je);
 
-	Float_t pt1   = thisMu->Pt();
-	Float_t pt2   = thatMu->Pt();
+	Float_t pt1   = thisEle->Pt();
+	Float_t pt2   = thatEle->Pt();
 	Float_t ptMax = TMath::Max(pt1,pt2);
-	Float_t mll   = (*thisMu+*thatMu).M();
-	Float_t ptll  = (*thisMu+*thatMu).Pt();
+	Float_t mll   = (*thisEle+*thatEle).M();
+	Float_t ptll  = (*thisEle+*thatEle).Pt();
 
-	if( muCharge[im]*muCharge[jm] > 0 ) continue;
+	if( eleCharge[ie]*eleCharge[je] > 0 ) continue;
 	if( mll < 60 || mll > 120 ) continue;
 	if( ptll < 120 ) continue;
-	if( ptMax < 50 ) continue;
-	if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
-	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
+	if( ptMax < 110 ) continue;
+	if( !findEPair ) l4_Z = (*thisEle+*thatEle);
 
-	findMPair = true;
+	findEPair = true;
 	break;
 
       }
     }
 
-    if( !findMPair ) continue;
+    if( !findEPair ) continue;
 
     nPass[2]++;
  
-    Float_t mll  = (*thisMu+*thatMu).M();
-    Float_t ptll = (*thisMu+*thatMu).Pt();
+    Float_t mll  = (*thisEle+*thatEle).M();
+    Float_t ptll = (*thisEle+*thatEle).Pt();
 
     h_mZ ->Fill(mll,eventWeight);
     h_ptZ->Fill(ptll,eventWeight);
@@ -233,7 +237,7 @@ void mZHmu(std::string inputFile, int num){
     for(Int_t ij = 0; ij < FATnJet; ij++){
 
       thisJet = (TLorentzVector*)FATjetP4->At(ij);
-      /*
+      
       if( thisJet->Pt() < 200 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
@@ -243,7 +247,7 @@ void mZHmu(std::string inputFile, int num){
 
       for(Int_t is = 0; is < FATnSubSDJet[ij]; is++)
 	if( FATsubjetSDCSV[ij][is] < 0.605 ) continue;
-      */
+      
       goodFATJetID = ij;
       break;
 
@@ -257,7 +261,7 @@ void mZHmu(std::string inputFile, int num){
     h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID],eventWeight);
     h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID],eventWeight);
 
-    Float_t mZll = (*thisMu+*thatMu+*thisJet).M();
+    Float_t mZll = (*thisEle+*thatEle+*thisJet).M();
 
     h_mZprime->Fill(mZll,eventWeight);
 
@@ -265,7 +269,7 @@ void mZHmu(std::string inputFile, int num){
 
   fprintf(stderr, "Processed all events\n");
 
-  std::string cutName[4] = {"TotalEvents","Vertex","MuPair","FATjet"};
+  std::string cutName[4] = {"TotalEvents","Vertex","ElePair","FATjet"};
 
   for(Int_t i = 1; i <= 4; i++){
 
@@ -278,7 +282,7 @@ void mZHmu(std::string inputFile, int num){
   std::string h_name[9] = {"mZprime","mZ","ptZ","FATjetPt","FATjetSDmass",
 			   "FATjetPRmass","FATjetTau2dvTau1","cutFlow","eventWeight"};
 
-  TFile* outFile = new TFile(Form("%s_mZHmu.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_mZHele.root",outputFile[num].c_str()), "recreate");
 
   h_mZprime         ->Write(h_name[0].data());
   h_mZ              ->Write(h_name[1].data());
