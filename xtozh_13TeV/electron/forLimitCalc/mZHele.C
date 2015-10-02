@@ -8,6 +8,7 @@
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
 #include "../untuplizer.h"
+#include "../isPassZee.h"
 
 // DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
 // DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
@@ -109,15 +110,8 @@ void mZHele(std::string inputFile, int num){
     data.GetEntry(ev);
 
     Int_t          nVtx               = data.GetInt("nVtx");
-    Int_t          nEle               = data.GetInt("nEle");
-    Int_t*         eleCharge          = data.GetPtrInt("eleCharge");
     Float_t        mcWeight           = data.GetFloat("mcWeight");
-    Float_t*       eleScEt            = data.GetPtrFloat("eleScEt");
-    Float_t*       eleScEta           = data.GetPtrFloat("eleScEta");    
-    Float_t*       eleMiniIso         = data.GetPtrFloat("eleMiniIso");
     TClonesArray*  eleP4              = (TClonesArray*) data.GetPtrTObject("eleP4");
-    vector<bool>&  eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
-    vector<bool>&  eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
     Int_t          FATnJet            = data.GetInt("FATnJet");    
     Int_t*         FATnSubSDJet       = data.GetPtrInt("FATnSubSDJet");
     Float_t*       FATjetCISVV2       = data.GetPtrFloat("FATjetCISVV2");
@@ -142,7 +136,7 @@ void mZHele(std::string inputFile, int num){
     
     h_eventWeight->Fill(0.,eventWeight);
     
-    // data trigger cut (muon channel)
+    // data trigger cut (electron channel)
 
     std::string* trigName = data.GetPtrString("hlt_trigName");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
@@ -165,64 +159,14 @@ void mZHele(std::string inputFile, int num){
     nPass[1]++;
 
     // select good electrons
-      
-    std::vector<Int_t> goodElectrons;
-  
-    for(Int_t ie = 0; ie < nEle; ie++){
-      
-      TLorentzVector* myEle = (TLorentzVector*)eleP4->At(ie);
 
-      if( !(fabs(eleScEta[ie]) < 1.4442 || fabs(eleScEta[ie]) > 1.566) ) continue;
-      if( fabs(eleScEta[ie]) > 2.5 ) continue;
-      if( eleScEt[ie] <= 35 ) continue;
-      if( myEle->Pt() < 10 ) continue;
-      if( !eleEcalDrivenSeed[ie] ) continue;
-      if( !eleIsPassHEEPNoIso[ie] ) continue;
-      if( eleMiniIso[ie] >= 0.1 ) continue;
-
-      goodElectrons.push_back(ie);
-
-    }
-
-    // select good Z boson
-
-    bool findEPair = false;
-    TLorentzVector l4_Z(0,0,0,0);
-    TLorentzVector* thisEle = NULL;
-    TLorentzVector* thatEle = NULL;
-
-    for(unsigned int i = 0; i < goodElectrons.size(); i++){
-
-      Int_t ie = goodElectrons[i];
-      thisEle = (TLorentzVector*)eleP4->At(ie);
-
-      for(unsigned int j = 0; j < i; j++){
-
-	Int_t je = goodElectrons[j];
-	thatEle = (TLorentzVector*)eleP4->At(je);
-
-	Float_t pt1   = thisEle->Pt();
-	Float_t pt2   = thatEle->Pt();
-	Float_t ptMax = TMath::Max(pt1,pt2);
-	Float_t mll   = (*thisEle+*thatEle).M();
-	Float_t ptll  = (*thisEle+*thatEle).Pt();
-
-	if( eleCharge[ie]*eleCharge[je] > 0 ) continue;
-	if( mll < 60 || mll > 120 ) continue;
-	if( ptll < 120 ) continue;
-	if( ptMax < 110 ) continue;
-	if( !findEPair ) l4_Z = (*thisEle+*thatEle);
-
-	findEPair = true;
-	break;
-
-      }
-    }
-
-    if( !findEPair ) continue;
-
+    vector<Int_t> goodEleID;
+    if( !isPassZee(data, goodEleID) ) continue;
     nPass[2]++;
- 
+
+    TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(goodEleID[0]);
+    TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(goodEleID[1]);
+
     Float_t mll  = (*thisEle+*thatEle).M();
     Float_t ptll = (*thisEle+*thatEle).Pt();
 
