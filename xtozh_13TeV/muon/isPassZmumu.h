@@ -6,7 +6,7 @@
 #include <TLorentzVector.h>
 #include "untuplizer.h"
 
-bool isPassZmumu(TreeReader &data, vector<Int_t>* ZmumuId){
+bool isPassZmumu(TreeReader &data, vector<Int_t>& goodMuID){
 
   Int_t    nMu       = data.GetInt("nMu");
   Int_t*   muCharge  = data.GetPtrInt("muCharge");
@@ -23,7 +23,7 @@ bool isPassZmumu(TreeReader &data, vector<Int_t>* ZmumuId){
       
     TLorentzVector* myMu = (TLorentzVector*)muP4->At(im);
 
-    if( fabs(myMu->Eta()) > 2.1 ) continue;
+    if( fabs(myMu->Eta()) > 2.4 ) continue;
     if( myMu->Pt() < 20 ) continue;
     if( muMiniIso[im] >= 0.1 ) continue;
     if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
@@ -48,16 +48,29 @@ bool isPassZmumu(TreeReader &data, vector<Int_t>* ZmumuId){
       Int_t jm = goodMuons[j];
       thatMu = (TLorentzVector*)muP4->At(jm);
 
-      Float_t pt1   = thisMu->Pt();
-      Float_t pt2   = thatMu->Pt();
-      Float_t ptMax = TMath::Max(pt1,pt2);
-      Float_t mll   = (*thisMu+*thatMu).M();
+      Float_t pt1  = thisMu->Pt();
+      Float_t pt2  = thatMu->Pt();
+      Float_t mll  = (*thisMu+*thatMu).M();
+      Float_t ptll = (*thisMu+*thatMu).Pt();
 
       if( muCharge[im]*muCharge[jm] > 0 ) continue;
+      if( TMath::Max(pt1,pt2) < 50 ) continue;
       if( mll < 60 || mll > 120 ) continue;
-      if( ptMax < 50 ) continue;
+      if( ptll < 200 ) continue;
       if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
-      if( !findMPair ) ZmumuId->push_back( (pt1 > pt2) ? im : jm );
+      if( pt1 > pt2 ){ 
+	if( fabs(thisMu->Eta()) > 2.1 ) continue;
+      }
+      if( pt2 > pt1 ){
+	if( fabs(thatMu->Eta()) > 2.1 ) continue;
+      }
+
+      if( !findMPair ){
+
+	goodMuID.push_back( (pt1 > pt2) ? im : jm );
+	goodMuID.push_back( (pt1 > pt2) ? jm : im );
+
+      }
 
       findMPair = true;
       break;

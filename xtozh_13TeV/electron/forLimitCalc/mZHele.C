@@ -7,7 +7,7 @@
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include "untuplizer.h"
+#include "../untuplizer.h"
 
 // DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
 // DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
@@ -172,7 +172,7 @@ void mZHele(std::string inputFile, int num){
       
       TLorentzVector* myEle = (TLorentzVector*)eleP4->At(ie);
 
-      if( !(fabs(eleScEta[ie]) < 1.442 || fabs(eleScEta[ie]) > 1.566) ) continue;
+      if( !(fabs(eleScEta[ie]) < 1.4442 || fabs(eleScEta[ie]) > 1.566) ) continue;
       if( fabs(eleScEta[ie]) > 2.5 ) continue;
       if( eleScEt[ie] <= 35 ) continue;
       if( myEle->Pt() < 10 ) continue;

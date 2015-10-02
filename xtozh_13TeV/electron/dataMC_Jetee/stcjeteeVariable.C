@@ -10,33 +10,34 @@
 #include <THStack.h>
 #include <TLegend.h>
 
-void myPlot(TH1D*, TH1D*, TH1D*, Double_t, Double_t);
-void myRatio(TH1D*, TH1D*, TH1D*, Double_t, Double_t);
+void myPlot(TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, Double_t*);
+void myRatio(TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, Double_t*);
 
 void stcjeteeVariable(){
 
-  TFile *file[3];
+  TFile *file[6];
 
-  file[0] = TFile::Open("outputJetee/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns_jeteeVariable.root");
-  file[1] = TFile::Open("outputJetee/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_jeteeVariable.root");
-  file[2] = TFile::Open("outputJetee/DoubleEG_Run2015C-PromptReco-v1_jeteeVariable.root");
+  file[0] = TFile::Open("outputJetee/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_jeteeVariable.root");
+  file[1] = TFile::Open("outputJetee/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_jeteeVariable.root");
+  file[2] = TFile::Open("outputJetee/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_jeteeVariable.root");
+  file[3] = TFile::Open("outputJetee/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_jeteeVariable.root");
+  file[4] = TFile::Open("outputJetee/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_jeteeVariable.root");
+  file[5] = TFile::Open("outputJetee/DoubleEG_Run2015C-PromptReco-v1_jeteeVariable.root");
 
-  TH1D* h_eventWeightDY    = (TH1D*)(file[0]->Get("eventWeight"));
-  TH1D* h_eventWeightTTbar = (TH1D*)(file[1]->Get("eventWeight"));  
+  // i=4 is ttbar 
+  TH1D*    h_eventWeight[5];
+  Int_t    nEvent[5]  = {0};
+  Double_t scale[5]   = {0};
+  Double_t dataLumi   = 8.6;  //mu //pb-1                                                                              
+  Double_t crossSection[5] = {139.4,42.75,5.497,2.21,831.76};  //pb 
 
-  Int_t nEventDY      = h_eventWeightDY->Integral();
-  Int_t nEventTTbar   = h_eventWeightTTbar->Integral();
-  Double_t xSecDY     = 6025.2; //pb
-  Double_t xSecTTbar  = 831.76; //pb
-  Double_t dataLumi   = 8.6;    //ele //pb-1
-  Double_t scaleDY    = dataLumi/(nEventDY/xSecDY);
-  Double_t scaleTTbar = dataLumi/(nEventTTbar/xSecTTbar);
+  for(Int_t i = 0; i < 5 ; i++){
 
-  std::cout << "\nnEventDY: " << nEventDY
-	    << "\nnEventTTbar: " << nEventTTbar
-	    << "\nscaleDY: " << scaleDY
-	    << "\nscaleTTbar: " << scaleTTbar
-	    << "\n" << std::endl;    
+    h_eventWeight[i] = (TH1D*)(file[i]->Get("eventWeight"));
+    nEvent[i] = h_eventWeight[i]->Integral();
+    scale[i] = dataLumi/(nEvent[i]/crossSection[i]);
+
+  }
   
   gStyle->SetOptStat(0);
   gStyle->SetOptTitle(0);                                                                  
@@ -69,18 +70,25 @@ void stcjeteeVariable(){
 
     c_up->cd()->SetLogy(0);
     
-    myPlot(((TH1D*)(file[0]->Get(h_name[i].data()))), 
-	   ((TH1D*)(file[1]->Get(h_name[i].data()))), 
+    myPlot(((TH1D*)(file[0]->Get(h_name[i].data()))),
+	   ((TH1D*)(file[1]->Get(h_name[i].data()))),
 	   ((TH1D*)(file[2]->Get(h_name[i].data()))),
-	   scaleDY, scaleTTbar);
+	   ((TH1D*)(file[3]->Get(h_name[i].data()))),
+	   ((TH1D*)(file[4]->Get(h_name[i].data()))),
+	   ((TH1D*)(file[5]->Get(h_name[i].data()))),
+	   scale);
 
     c_up->RedrawAxis();
     
     c_dw->cd();
-    myRatio(((TH1D*)(file[0]->Get(h_name[i].data()))), 
+
+    myRatio(((TH1D*)(file[0]->Get(h_name[i].data()))),
 	    ((TH1D*)(file[1]->Get(h_name[i].data()))),
 	    ((TH1D*)(file[2]->Get(h_name[i].data()))),
-	    scaleDY, scaleTTbar);
+	    ((TH1D*)(file[3]->Get(h_name[i].data()))),
+	    ((TH1D*)(file[4]->Get(h_name[i].data()))),
+	    ((TH1D*)(file[5]->Get(h_name[i].data()))),
+	    scale);
 
     c.Draw();
     
@@ -93,21 +101,30 @@ void stcjeteeVariable(){
 }
 
 
-void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t scaleTTbar){
+void myPlot(TH1D* h_DY100, TH1D* h_DY200, TH1D* h_DY400,
+            TH1D* h_DY600, TH1D* h_TTbar, TH1D* h_data,
+	    Double_t* scale){
 
   h_data->Sumw2();
 
-  h_DY->Scale(scaleDY);
+  TH1D* h_DY = (TH1D*)h_DY100->Clone("h_DY");
+
+  h_DY->Reset(); 
+  h_DY->Add(h_DY100,scale[0]);
+  h_DY->Add(h_DY200,scale[1]);
+  h_DY->Add(h_DY400,scale[2]);
+  h_DY->Add(h_DY600,scale[3]);
   h_DY->SetFillColor(kOrange-3);
   h_DY->SetLineColor(kBlack);
-  
-  h_ttbar->Scale(scaleTTbar);
-  h_ttbar->SetFillColor(kGreen);
-  h_ttbar->SetLineColor(kBlack);
+
+  h_TTbar->Scale(scale[4]);
+  h_TTbar->SetFillColor(kGreen);
+  h_TTbar->SetLineColor(kBlack);
    
   THStack *h_stack = new THStack("h_stack", "");
+
   h_stack->Add(h_DY);
-  h_stack->Add(h_ttbar);
+  h_stack->Add(h_TTbar);
 
   h_data->SetLineColor(kBlue);
   h_data->SetMarkerStyle(8);
@@ -131,11 +148,11 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
   leg->SetFillStyle(0);                                                                   
   leg->SetTextSize(0.04);
   leg->AddEntry(h_DY, "DY+Jets", "lpf"); 
-  leg->AddEntry(h_ttbar, "t#bar{t}", "lpf");
+  leg->AddEntry(h_TTbar, "t#bar{t}", "lpf");
   leg->AddEntry(h_data, "Data", "lp");
   leg->Draw();
 
-  TLatex *lar = new TLatex(0.55, 0.92, "CMS,  #sqrt{s} = 13 TeV, L = 8.6 pb^{-1}");
+  TLatex *lar = new TLatex(0.55, 0.92, "CMS, #sqrt{s} = 13 TeV, L = 8.6 pb^{-1}");
 
   lar->SetNDC(kTRUE); 
   lar->SetTextSize(0.04);
@@ -145,13 +162,18 @@ void myPlot(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t 
 }
 
 
-void myRatio(TH1D* h_DY, TH1D* h_ttbar, TH1D* h_data, Double_t scaleDY, Double_t scaleTTbar){
+void myRatio(TH1D* h_DY100, TH1D* h_DY200, TH1D* h_DY400,
+	     TH1D* h_DY600, TH1D* h_TTbar, TH1D* h_data,
+	     Double_t* scale){
 
   TH1D *h_bkg = (TH1D*)h_data->Clone("h_bkg");
   h_bkg->Reset();
   h_bkg->Sumw2();
-  h_bkg->Add(h_DY, scaleDY);
-  h_bkg->Add(h_ttbar, scaleTTbar);
+  h_bkg->Add(h_DY100,scale[0]);
+  h_bkg->Add(h_DY200,scale[1]);
+  h_bkg->Add(h_DY400,scale[2]);
+  h_bkg->Add(h_DY600,scale[3]);
+  h_bkg->Add(h_TTbar,scale[4]);
 
   TH1D* h_ratio = (TH1D*)h_data->Clone("h_ratio");
   h_ratio->Reset();

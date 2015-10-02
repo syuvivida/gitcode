@@ -7,7 +7,7 @@
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include "untuplizer.h"
+#include "../untuplizer.h"
 
 // 25ns data: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\);
 // 25ns DY: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
@@ -148,7 +148,7 @@ void ZeeVariable(std::string inputFile, int num){
 
     for(Int_t ie = 0; ie < nEle; ie++){
 
-      if( !(fabs(eleScEta[ie]) < 1.442 || fabs(eleScEta[ie]) > 1.566) ) continue;
+      if( !(fabs(eleScEta[ie]) < 1.4442 || fabs(eleScEta[ie]) > 1.566) ) continue;
       if( fabs(eleScEta[ie]) > 2.5 ) continue;
       if( eleScEt[ie] <= 35 ) continue;
       if( !eleEcalDrivenSeed[ie] ) continue;

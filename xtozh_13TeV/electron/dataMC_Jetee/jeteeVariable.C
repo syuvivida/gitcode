@@ -7,11 +7,15 @@
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include "untuplizer.h"
+#include "../untuplizer.h"
+#include "../isPassZee.h"
 
-// 25ns data: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\);
-// 25ns DY: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
-// 25ns TTbar: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\);
+// DYHT: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
+// DYHT: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
+// DYHT: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
+// DYHT: root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
+// ttbar:  root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
+// data:   root -q -b jeteeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,5\);
 
 void jeteeVariable(std::string inputFile, int num){
 
@@ -19,9 +23,13 @@ void jeteeVariable(std::string inputFile, int num){
 
   std::vector<string> infiles;
 
-  std::string outputFile[3] = {"DoubleEG_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
-			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830"};
-
+  std::string outputFile[6] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
+			       "DoubleEG_Run2015C-PromptReco-v1"};
+    
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
   TList *listOfFiles = base->GetListOfFiles();
@@ -33,6 +41,7 @@ void jeteeVariable(std::string inputFile, int num){
     
     std::string fileN = fileH->GetName();
     std::string baseString = "NCUGlobal";
+
     if( fileN.find("fail") != std::string::npos ) continue;
 
     if( fileH->IsFolder() ){
@@ -110,15 +119,7 @@ void jeteeVariable(std::string inputFile, int num){
     data.GetEntry(ev);
 
     Int_t          nVtx               = data.GetInt("nVtx");
-    Int_t          nEle               = data.GetInt("nEle");
-    Int_t*         eleCharge          = data.GetPtrInt("eleCharge");
     Float_t        mcWeight           = data.GetFloat("mcWeight");
-    Float_t*       eleScEt            = data.GetPtrFloat("eleScEt");
-    Float_t*       eleScEta           = data.GetPtrFloat("eleScEta");
-    Float_t*       eleMiniIso         = data.GetPtrFloat("eleMiniIso");
-    TClonesArray*  eleP4              = (TClonesArray*) data.GetPtrTObject("eleP4");
-    vector<bool>&  eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
-    vector<bool>&  eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
     Int_t          FATnJet            = data.GetInt("FATnJet");    
     Int_t*         FATnSubSDJet       = data.GetPtrInt("FATnSubSDJet");
     Float_t*       FATjetCISVV2       = data.GetPtrFloat("FATjetCISVV2");
@@ -137,11 +138,11 @@ void jeteeVariable(std::string inputFile, int num){
     if( nVtx < 1 ) continue;
 
     Double_t eventWeight = mcWeight;
-    if( num == 1 ){
+    if( num==0 || num==1 || num==2 || num==3 ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
     }
-    else if( num == 0 || num == 2 )
+    else 
       eventWeight = 1;
     
     h_eventWeight->Fill(0.,eventWeight);
@@ -169,79 +170,27 @@ void jeteeVariable(std::string inputFile, int num){
 
     nPass[0]++;
 
-    // select good electrons
-        
-    std::vector<Int_t> goodElectrons;
+    // select good Electrons
 
-    for(Int_t ie = 0; ie < nEle; ie++){
-
-      if( !(fabs(eleScEta[ie]) < 1.442 || fabs(eleScEta[ie]) > 1.566) ) continue;
-      if( fabs(eleScEta[ie]) > 2.5 ) continue;
-      if( eleScEt[ie] <= 35 ) continue;
-      if( !eleEcalDrivenSeed[ie] ) continue;
-      if( !eleIsPassHEEPNoIso[ie] ) continue;
-      if( eleMiniIso[ie] >= 0.1 ) continue;
-
-      goodElectrons.push_back(ie);
-
-    } // end of ele loop
-
-    // select good Z boson
-
-    bool findEPair = false;
-    TLorentzVector l4_Z(0,0,0,0);
-    TLorentzVector* thisEle = NULL;
-    TLorentzVector* thatEle = NULL;
-
-    for(unsigned int i = 0; i < goodElectrons.size(); i++){
-
-      Int_t ie = goodElectrons[i];
-      thisEle = (TLorentzVector*)eleP4->At(ie);
-
-      for(unsigned int j = 0; j < i; j++){
-
-	Int_t je = goodElectrons[j];
-	thatEle = (TLorentzVector*)eleP4->At(je);
-	Float_t mll = (*thisEle+*thatEle).M();
-
-	if( eleCharge[ie]*eleCharge[je] > 0 ) continue;   
-	if( mll < 60 || mll > 120 ) continue;
-	if( !findEPair ) l4_Z = (*thisEle+*thatEle);
-
-	findEPair = true;
-	break;
-
-      }
-    }
-
-    if( !findEPair ) continue;
+    vector<Int_t> goodEleID;
+    if( !isPassZee(data, goodEleID) ) continue;
 
     nPass[1]++;
 
     // select good FATjet
 
     Int_t goodFATJetID = -1;
-    Int_t goodsubJetID[2] = {-1};
     TLorentzVector* thisJet = NULL;
 
     for(Int_t ij = 0; ij < FATnJet; ij++){
 
       thisJet = (TLorentzVector*)FATjetP4->At(ij);
 
-      if( thisJet->Pt() < 30 ) continue;
+      if( thisJet->Pt() < 200 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] < 2 ) continue;
       
-      for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
-
-	goodsubJetID[is] = is;
-
-	if( goodsubJetID[0] >= 0 && goodsubJetID[1] >= 0 ) 
-	  break;
-
-      }
-
       goodFATJetID = ij;
       break;
 
@@ -249,9 +198,6 @@ void jeteeVariable(std::string inputFile, int num){
 
     if( goodFATJetID < 0 ) continue;
     nPass[2]++;
-
-    if( goodsubJetID[0] < 0 || goodsubJetID[1] < 0 ) continue;
-    nPass[3]++;
 
     h_FATjetPt        ->Fill(thisJet->Pt(),eventWeight);
     h_FATjetEta       ->Fill(thisJet->Eta(),eventWeight);
@@ -265,22 +211,22 @@ void jeteeVariable(std::string inputFile, int num){
     TLorentzVector l4_subjet0(0,0,0,0);
     TLorentzVector l4_subjet1(0,0,0,0);
 
-    l4_subjet0.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDPy[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDPz[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDE[goodFATJetID][goodsubJetID[0]]);
+    l4_subjet0.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][0],
+			  FATsubjetSDPy[goodFATJetID][0],
+			  FATsubjetSDPz[goodFATJetID][0],
+			  FATsubjetSDE[goodFATJetID][0]);
 
-    l4_subjet1.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDPy[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDPz[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDE[goodFATJetID][goodsubJetID[1]]);
+    l4_subjet1.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][1],
+                          FATsubjetSDPy[goodFATJetID][1],
+                          FATsubjetSDPz[goodFATJetID][1],
+                          FATsubjetSDE[goodFATJetID][1]);
 
     h_FATsubjetPt   ->Fill(l4_subjet0.Pt(),eventWeight);
     h_FATsubjetPt   ->Fill(l4_subjet1.Pt(),eventWeight);
     h_FATsubjetEta  ->Fill(l4_subjet0.Eta(),eventWeight);
     h_FATsubjetEta  ->Fill(l4_subjet1.Eta(),eventWeight);
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[0]],eventWeight);
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[1]],eventWeight);
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][0],eventWeight);
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][1],eventWeight);
 
   } // end of event loop
 
@@ -289,7 +235,6 @@ void jeteeVariable(std::string inputFile, int num){
   std::cout << "\nnPass[0] = " << nPass[0] 
 	    << "\nnPass[1] = " << nPass[1] 
 	    << "\nnPass[2] = " << nPass[2] 
-	    << "\nnPass[3] = " << nPass[3]
 	    << std::endl;
 
   std::string h_name[12] = {"FATjetPt","FATjetEta","FATjetCISVV2","FATjetSDmass",

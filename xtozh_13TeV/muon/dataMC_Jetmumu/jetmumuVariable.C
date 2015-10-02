@@ -7,11 +7,14 @@
 #include <TClonesArray.h>
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
-#include "untuplizer.h"
+#include "../untuplizer.h"
+#include "../isPassZmumu.h"
 
-// 25ns data: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,0\);
-// 25ns DY: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
-// 25ns TTbar: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/\"\,2\);
+// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
+// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
+// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
+// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
+// ttbar:  root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
 
 void jetmumuVariable(std::string inputFile, int num){
 
@@ -19,9 +22,13 @@ void jetmumuVariable(std::string inputFile, int num){
 
   std::vector<string> infiles;
 
-  std::string outputFile[3] = {"crab_SingleMuon-Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
-			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830"};
-
+  std::string outputFile[6] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
+			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
+			       "crab_SingleMuon-Run2015C-PromptReco-v1"};
+    
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
   TList *listOfFiles = base->GetListOfFiles();
@@ -33,6 +40,7 @@ void jetmumuVariable(std::string inputFile, int num){
     
     std::string fileN = fileH->GetName();
     std::string baseString = "NCUGlobal";
+
     if( fileN.find("fail") != std::string::npos ) continue;
 
     if( fileH->IsFolder() ){
@@ -42,7 +50,7 @@ void jetmumuVariable(std::string inputFile, int num){
       TList *listOfFiles2 = base->GetListOfFiles();
       TIter fileIt2(listOfFiles2);
       TFile *fileH2 = new TFile(); 
-      
+
       while( (fileH2 = (TFile*)fileIt2()) ){
 
 	std::string fileN2 = fileH2->GetName();
@@ -110,13 +118,7 @@ void jetmumuVariable(std::string inputFile, int num){
     data.GetEntry(ev);
 
     Int_t          nVtx                = data.GetInt("nVtx");
-    Int_t          nMu                 = data.GetInt("nMu");
-    Int_t*         muCharge            = data.GetPtrInt("muCharge");
     Float_t        mcWeight            = data.GetFloat("mcWeight");    
-    Float_t*       muMiniIso           = data.GetPtrFloat("muMiniIso");
-    TClonesArray*  muP4                = (TClonesArray*) data.GetPtrTObject("muP4");
-    vector<bool>&  isHighPtMuon        = *((vector<bool>*) data.GetPtr("isHighPtMuon"));
-    vector<bool>&  isCustomTrackerMuon = *((vector<bool>*) data.GetPtr("isCustomTrackerMuon"));
     Int_t          FATnJet             = data.GetInt("FATnJet");    
     Int_t*         FATnSubSDJet        = data.GetPtrInt("FATnSubSDJet");
     Float_t*       FATjetCISVV2        = data.GetPtrFloat("FATjetCISVV2");
@@ -135,11 +137,11 @@ void jetmumuVariable(std::string inputFile, int num){
     if( nVtx < 1 ) continue;
 
     Double_t eventWeight = mcWeight;
-    if( num == 1 ){
+    if( num==0 || num==1 || num==2 || num==3 ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
     }
-    else if( num == 0 || num == 2 )
+    else 
       eventWeight = 1;
     
     h_eventWeight->Fill(0.,eventWeight);
@@ -169,63 +171,14 @@ void jetmumuVariable(std::string inputFile, int num){
 
     // select good muons
       
-    std::vector<Int_t> goodMuons;
-  
-    for(Int_t im = 0; im < nMu; im++){
-      
-      TLorentzVector* myMu = (TLorentzVector*)muP4->At(im);
-
-      if( fabs(myMu->Eta()) > 2.1 ) continue;
-      if( myMu->Pt() < 20 ) continue;
-      if( muMiniIso[im] >= 0.1 ) continue;
-      if( !isHighPtMuon[im] && !isCustomTrackerMuon[im] ) continue;
-
-      goodMuons.push_back(im);
-
-    }
-
-    // select good Z boson
-
-    bool findMPair = false;
-    TLorentzVector l4_Z(0,0,0,0);
-    TLorentzVector* thisMu = NULL;
-    TLorentzVector* thatMu = NULL;
-
-    for(unsigned int i = 0; i < goodMuons.size(); i++){
-
-      Int_t im = goodMuons[i];
-      thisMu = (TLorentzVector*)muP4->At(im);
-
-      for(unsigned int j = 0; j < i; j++){
-
-	Int_t jm = goodMuons[j];
-	thatMu = (TLorentzVector*)muP4->At(jm);
-
-	Float_t pt1   = thisMu->Pt();
-	Float_t pt2   = thatMu->Pt();
-	Float_t ptMax = TMath::Max(pt1,pt2);
-	Float_t mll   = (*thisMu+*thatMu).M();
-
-	if( muCharge[im]*muCharge[jm] > 0 ) continue;
-	if( mll < 60 || mll > 120 ) continue;
-	if( ptMax < 50 ) continue;
-	if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
-	if( !findMPair ) l4_Z = (*thisMu+*thatMu);
-
-	findMPair = true;
-	break;
-
-      }
-    }
-
-    if( !findMPair ) continue;
+    vector<Int_t> goodMuID;
+    if( !isPassZmumu(data, goodMuID) ) continue;
 
     nPass[1]++;
 
     // select good FATjet
 
     Int_t goodFATJetID = -1;
-    Int_t goodsubJetID[2] = {-1};
     TLorentzVector* thisJet = NULL;
 
     for(Int_t ij = 0; ij < FATnJet; ij++){
@@ -237,15 +190,6 @@ void jetmumuVariable(std::string inputFile, int num){
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] < 2 ) continue;
 
-      for(Int_t is = 0; is < FATnSubSDJet[ij]; is++){
-
-	goodsubJetID[is] = is;
-
-	if( goodsubJetID[0] >= 0 && goodsubJetID[1] >= 0 ) 
-	  break;
-
-      }
-
       goodFATJetID = ij;
       break;
 
@@ -253,9 +197,6 @@ void jetmumuVariable(std::string inputFile, int num){
 
     if( goodFATJetID < 0 ) continue;
     nPass[2]++;
-
-    if( goodsubJetID[0] < 0 || goodsubJetID[1] < 0 ) continue;
-    nPass[3]++;
 
     h_FATjetPt        ->Fill(thisJet->Pt(),eventWeight);
     h_FATjetEta       ->Fill(thisJet->Eta(),eventWeight);
@@ -269,22 +210,22 @@ void jetmumuVariable(std::string inputFile, int num){
     TLorentzVector l4_subjet0(0,0,0,0);
     TLorentzVector l4_subjet1(0,0,0,0);
 
-    l4_subjet0.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDPy[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDPz[goodFATJetID][goodsubJetID[0]],
-			  FATsubjetSDE[goodFATJetID][goodsubJetID[0]]);
+    l4_subjet0.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][0],
+			  FATsubjetSDPy[goodFATJetID][0],
+			  FATsubjetSDPz[goodFATJetID][0],
+			  FATsubjetSDE[goodFATJetID][0]);
 
-    l4_subjet1.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDPy[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDPz[goodFATJetID][goodsubJetID[1]],
-                          FATsubjetSDE[goodFATJetID][goodsubJetID[1]]);
+    l4_subjet1.SetPxPyPzE(FATsubjetSDPx[goodFATJetID][1],
+                          FATsubjetSDPy[goodFATJetID][1],
+                          FATsubjetSDPz[goodFATJetID][1],
+                          FATsubjetSDE[goodFATJetID][1]);
 
     h_FATsubjetPt   ->Fill(l4_subjet0.Pt(),eventWeight);
     h_FATsubjetPt   ->Fill(l4_subjet1.Pt(),eventWeight);
     h_FATsubjetEta  ->Fill(l4_subjet0.Eta(),eventWeight);
     h_FATsubjetEta  ->Fill(l4_subjet1.Eta(),eventWeight);
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[0]],eventWeight);
-    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][goodsubJetID[1]],eventWeight);
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][0],eventWeight);
+    h_FATsubjetSDCSV->Fill(FATsubjetSDCSV[goodFATJetID][1],eventWeight);
 
   } // end of event loop
 
@@ -293,7 +234,6 @@ void jetmumuVariable(std::string inputFile, int num){
   std::cout << "\nnPass[0] = " << nPass[0] 
 	    << "\nnPass[1] = " << nPass[1] 
 	    << "\nnPass[2] = " << nPass[2] 
-	    << "\nnPass[3] = " << nPass[3]
 	    << std::endl;
 
   std::string h_name[12] = {"FATjetPt","FATjetEta","FATjetCISVV2","FATjetSDmass",
