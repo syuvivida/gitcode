@@ -26,7 +26,6 @@ bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
 
     if( !(fabs(eleScEta[ie]) < 1.4442 || fabs(eleScEta[ie]) > 1.566) ) continue;
     if( fabs(eleScEta[ie]) > 2.5 ) continue;
-    if( eleScEt[ie] < 35 ) continue;
     if( myEle->Pt() < 35 ) continue;
     if( !eleIsPassHEEPNoIso[ie] ) continue;
     if( eleMiniIso[ie] > 0.1 ) continue;
