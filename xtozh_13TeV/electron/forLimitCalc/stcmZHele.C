@@ -96,13 +96,24 @@ void myPlot(TH1D* h_DY100, TH1D* h_DY200, TH1D* h_DY400,
   h_stack->Add(h_DY);
   h_stack->Add(h_TTbar);
 
-  h_data->SetLineColor(kBlue);
+  h_data->SetLineColor(kBlack);
   h_data->SetMarkerStyle(8);
   h_data->SetMarkerSize(0.6);
-  h_stack->Draw("histe");
-  h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
-  h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
-  h_data->Draw("e1same");
+  
+  if( h_data->GetMaximum() > h_stack->GetMaximum() ){
+    h_data->Draw();
+    h_stack->Draw("histesame");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
+    h_data->Draw("same");
+  }
+  else if( h_stack->GetMaximum() > h_data->GetMaximum() ){
+    h_stack->Draw("histe");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
+    h_data->Draw("same");
+
+  }
 
   TLegend *leg = new TLegend(0.72, 0.72, 0.87, 0.87);
 

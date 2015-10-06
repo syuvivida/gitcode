@@ -71,7 +71,7 @@ void mZHmu(std::string inputFile, int num){
      
   TH1D* h_mZprime          = new TH1D("h_mZprime", "mZprime", 10, 0, 5000);
   TH1D* h_mZ               = new TH1D("h_mZ", "mZ", 10, 50, 150);
-  TH1D* h_ptZ              = new TH1D("h_ptZ", "ptZ", 10, 0, 200);
+  TH1D* h_ptZ              = new TH1D("h_ptZ", "ptZ", 10, 0, 1000);
   TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", 10, 100, 1000);
   TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", 10, 50, 200);
   TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", 10, 50, 200);
