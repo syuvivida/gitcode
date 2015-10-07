@@ -10,22 +10,22 @@
 
 void myPlot(TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, TH1D*, Double_t*);
 
-void stcmZHele(){
+void stcmZHmu_onlyOneSubjet(){
 
   TFile *file[6];
 
-  file[0] = TFile::Open("outputmZHele/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHele.root");
-  file[1] = TFile::Open("outputmZHele/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHele.root");
-  file[2] = TFile::Open("outputmZHele/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHele.root");
-  file[3] = TFile::Open("outputmZHele/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHele.root");
-  file[4] = TFile::Open("outputmZHele/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_mZHele.root");
-  file[5] = TFile::Open("outputmZHele/DoubleEG_Run2015C-PromptReco-v1_mZHele.root");
+  file[0] = TFile::Open("outputmZHmu/onlyOneSubjet/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHmu_onlyOneSubjet.root");
+  file[1] = TFile::Open("outputmZHmu/onlyOneSubjet/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHmu_onlyOneSubjet.root");
+  file[2] = TFile::Open("outputmZHmu/onlyOneSubjet/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHmu_onlyOneSubjet.root");
+  file[3] = TFile::Open("outputmZHmu/onlyOneSubjet/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_mZHmu_onlyOneSubjet.root");
+  file[4] = TFile::Open("outputmZHmu/onlyOneSubjet/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830_mZHmu_onlyOneSubjet.root");
+  file[5] = TFile::Open("outputmZHmu/onlyOneSubjet/crab_SingleMuon-Run2015C-PromptReco-v1_mZHmu_onlyOneSubjet.root");
 
   // i=4 is ttbar 
   TH1D*    h_eventWeight[5];
   Int_t    nEvent[5]  = {0};
   Double_t scale[5]   = {0};
-  Double_t dataLumi   = 8.6;  //pb-1                                                                              
+  Double_t dataLumi   = 8.6;  //mu //pb-1                                                                              
   Double_t crossSection[5] = {139.4,42.75,5.497,2.21,831.76};  //pb 
 
   for(Int_t i = 0; i < 5 ; i++){
@@ -62,9 +62,9 @@ void stcmZHele(){
 
     c.Draw();
 
-    if( i == 0 ) c.Print("mZHele.pdf(");
-    else if( i == size-1 ) c.Print("mZHele.pdf)");
-    else c.Print("mZHele.pdf");
+    if( i == 0 ) c.Print("mZHmu_onlyOneSubjet.pdf(");
+    else if( i == size-1 ) c.Print("mZHmu_onlyOneSubjet.pdf)");
+    else c.Print("mZHmu_onlyOneSubjet.pdf");
 
   }
 

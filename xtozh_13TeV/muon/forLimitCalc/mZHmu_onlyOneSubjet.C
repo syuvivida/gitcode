@@ -8,16 +8,16 @@
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
 #include "../untuplizer.h"
-#include "../isPassZee.h"
+#include "../isPassZmumu.h"
 
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
-// ttbar:  root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
-// data:   root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,5\); 
+// DYHT: root -q -b mZHmu_onlyOneSubjet.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
+// DYHT: root -q -b mZHmu_onlyOneSubjet.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
+// DYHT: root -q -b mZHmu_onlyOneSubjet.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
+// DYHT: root -q -b mZHmu_onlyOneSubjet.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
+// ttbar:  root -q -b mZHmu_onlyOneSubjet.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
+// data:   root -q -b mZHmu_onlyOneSubjet.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,5\); 
 
-void mZHele(std::string inputFile, int num){
+void mZHmu_onlyOneSubjet(std::string inputFile, int num){
 
   // read the ntuples (in pcncu)
 
@@ -28,7 +28,7 @@ void mZHele(std::string inputFile, int num){
 			       "DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 			       "DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
 			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
-			       "DoubleEG_Run2015C-PromptReco-v1"};
+			       "crab_SingleMuon-Run2015C-PromptReco-v1"};
 			  
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -109,19 +109,19 @@ void mZHele(std::string inputFile, int num){
 
     data.GetEntry(ev);
 
-    Int_t          nVtx               = data.GetInt("nVtx");
-    Float_t        mcWeight           = data.GetFloat("mcWeight");
-    TClonesArray*  eleP4              = (TClonesArray*) data.GetPtrTObject("eleP4");
-    Int_t          FATnJet            = data.GetInt("FATnJet");    
-    Int_t*         FATnSubSDJet       = data.GetPtrInt("FATnSubSDJet");
-    Float_t*       FATjetCISVV2       = data.GetPtrFloat("FATjetCISVV2");
-    Float_t*       FATjetSDmass       = data.GetPtrFloat("FATjetSDmass");
-    Float_t*       FATjetPRmass       = data.GetPtrFloat("FATjetPRmass");
-    Float_t*       FATjetTau1         = data.GetPtrFloat("FATjetTau1");
-    Float_t*       FATjetTau2         = data.GetPtrFloat("FATjetTau2");
-    TClonesArray*  FATjetP4           = (TClonesArray*) data.GetPtrTObject("FATjetP4");
-    vector<bool>&  FATjetPassIDLoose  = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
-    vector<float>* FATsubjetSDCSV     = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
+    Int_t          nVtx                = data.GetInt("nVtx");
+    Float_t        mcWeight            = data.GetFloat("mcWeight");    
+    TClonesArray*  muP4                = (TClonesArray*) data.GetPtrTObject("muP4");
+    Int_t          FATnJet             = data.GetInt("FATnJet");    
+    Int_t*         FATnSubSDJet        = data.GetPtrInt("FATnSubSDJet");
+    Float_t*       FATjetCISVV2        = data.GetPtrFloat("FATjetCISVV2");
+    Float_t*       FATjetSDmass        = data.GetPtrFloat("FATjetSDmass");
+    Float_t*       FATjetPRmass        = data.GetPtrFloat("FATjetPRmass");
+    Float_t*       FATjetTau1          = data.GetPtrFloat("FATjetTau1");
+    Float_t*       FATjetTau2          = data.GetPtrFloat("FATjetTau2");
+    TClonesArray*  FATjetP4            = (TClonesArray*) data.GetPtrTObject("FATjetP4");
+    vector<bool>&  FATjetPassIDLoose   = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
+    vector<float>* FATsubjetSDCSV      = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
     nPass[0]++;
@@ -136,7 +136,7 @@ void mZHele(std::string inputFile, int num){
     
     h_eventWeight->Fill(0.,eventWeight);
     
-    // data trigger cut (electron channel)
+    // data trigger cut (muon channel)
 
     std::string* trigName = data.GetPtrString("hlt_trigName");
     vector<bool> &trigResult = *((vector<bool>*) data.GetPtr("hlt_trigResult"));
@@ -148,7 +148,7 @@ void mZHele(std::string inputFile, int num){
       std::string thisTrig = trigName[it];
       bool results = trigResult[it];
       
-      if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results==1 ){
+      if( thisTrig.find("HLT_Mu45") != std::string::npos && results==1 ){
 	passTrigger = true;
 	break;
       }
@@ -158,17 +158,17 @@ void mZHele(std::string inputFile, int num){
     if( !passTrigger ) continue;
     nPass[1]++;
 
-    // select good electrons
-
-    vector<Int_t> goodEleID;
-    if( !isPassZee(data, goodEleID) ) continue;
+    // select good muons
+      
+    vector<Int_t> goodMuID;
+    if( !isPassZmumu(data, goodMuID) ) continue;
     nPass[2]++;
 
-    TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(goodEleID[0]);
-    TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(goodEleID[1]);
-
-    Float_t mll  = (*thisEle+*thatEle).M();
-    Float_t ptll = (*thisEle+*thatEle).Pt();
+    TLorentzVector* thisMu = (TLorentzVector*)muP4->At(goodMuID[0]);
+    TLorentzVector* thatMu = (TLorentzVector*)muP4->At(goodMuID[1]);
+ 
+    Float_t mll  = (*thisMu+*thatMu).M();
+    Float_t ptll = (*thisMu+*thatMu).Pt();
 
     h_mZ ->Fill(mll,eventWeight);
     h_ptZ->Fill(ptll,eventWeight);
@@ -188,10 +188,12 @@ void mZHele(std::string inputFile, int num){
       if( FATjetCISVV2[ij] < 0.605 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] < 2 ) continue;
-
-      for(Int_t is = 0; is < FATnSubSDJet[ij]; is++)
-	if( FATsubjetSDCSV[ij][is] < 0.605 ) continue;
       
+      Bool_t stSubJet =  (FATsubjetSDCSV[ij][0] > 0.605) && !(FATsubjetSDCSV[ij][1] > 0.605);
+      Bool_t ndSubJet = !(FATsubjetSDCSV[ij][0] > 0.605) &&  (FATsubjetSDCSV[ij][1] > 0.605);
+      
+      if( !(stSubJet || ndSubJet) ) continue;
+
       goodFATJetID = ij;
       break;
 
@@ -205,7 +207,7 @@ void mZHele(std::string inputFile, int num){
     h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID],eventWeight);
     h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID],eventWeight);
 
-    Float_t mZll = (*thisEle+*thatEle+*thisJet).M();
+    Float_t mZll = (*thisMu+*thatMu+*thisJet).M();
 
     h_mZprime->Fill(mZll,eventWeight);
 
@@ -213,7 +215,7 @@ void mZHele(std::string inputFile, int num){
 
   fprintf(stderr, "Processed all events\n");
 
-  std::string cutName[4] = {"TotalEvents","Vertex","ElePair","FATjet"};
+  std::string cutName[4] = {"TotalEvents","Vertex","MuPair","FATjet"};
 
   for(Int_t i = 1; i <= 4; i++){
 
@@ -226,7 +228,7 @@ void mZHele(std::string inputFile, int num){
   std::string h_name[9] = {"mZprime","mZ","ptZ","FATjetPt","FATjetSDmass",
 			   "FATjetPRmass","FATjetTau2dvTau1","cutFlow","eventWeight"};
 
-  TFile* outFile = new TFile(Form("%s_mZHele.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_mZHmu_onlyOneSubjet.root",outputFile[num].c_str()), "recreate");
 
   h_mZprime         ->Write(h_name[0].data());
   h_mZ              ->Write(h_name[1].data());

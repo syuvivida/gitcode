@@ -7,7 +7,7 @@ fi
 
 git add --all
 git commit -m "$1"
-git pull --rebase upstream master
+#git pull --rebase upstream master
 git push origin master
 
 exit
