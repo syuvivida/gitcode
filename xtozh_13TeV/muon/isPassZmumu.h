@@ -56,7 +56,7 @@ bool isPassZmumu(TreeReader &data, vector<Int_t>& goodMuID){
       if( muCharge[im]*muCharge[jm] > 0 ) continue;
       if( TMath::Max(pt1,pt2) < 50 ) continue;
       if( mll < 70 || mll > 110 ) continue;
-      if( ptll < 100 ) continue;
+      if( ptll < 200 ) continue;
       if( !( (isHighPtMuon[im] && isCustomTrackerMuon[jm]) || (isHighPtMuon[jm] && isCustomTrackerMuon[im]) ) ) continue;
       if( pt1 > pt2 ){ 
 	if( fabs(thisMu->Eta()) > 2.1 ) continue;
