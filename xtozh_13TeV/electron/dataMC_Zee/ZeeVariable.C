@@ -8,20 +8,14 @@
 #include <TLorentzVector.h>
 #include <TSystemDirectory.h>
 #include "../untuplizer.h"
+#include "../isPassZee.h"
 
-// 25ns data: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,0\);
-// 25ns DY: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
-// 25ns TTbar: root -q -b ZeeVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,2\);
-
-void ZeeVariable(std::string inputFile, int num){
+void ZeeVariable(std::string inputFile, std::string outputFile){
 
   // read the ntuples (in pcncu)
 
   std::vector<string> infiles;
  
-  std::string outputFile[3] = {"DoubleEG_Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
-			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830"};
-
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
   TList *listOfFiles = base->GetListOfFiles();
@@ -99,24 +93,17 @@ void ZeeVariable(std::string inputFile, int num){
     data.GetEntry(ev);
 
     Int_t    nVtx       = data.GetInt("nVtx");
-    Int_t    nEle       = data.GetInt("nEle");
-    Int_t*   eleCharge  = data.GetPtrInt("eleCharge");
     Float_t  mcWeight   = data.GetFloat("mcWeight");
-    Float_t* eleScEt    = data.GetPtrFloat("eleScEt");
-    Float_t* eleScEta   = data.GetPtrFloat("eleScEta");
-    Float_t* eleMiniIso = data.GetPtrFloat("eleMiniIso");
     TClonesArray* eleP4 = (TClonesArray*) data.GetPtrTObject("eleP4");
-    vector<bool>& eleEcalDrivenSeed  = *((vector<bool>*) data.GetPtr("eleEcalDrivenSeed"));
-    vector<bool>& eleIsPassHEEPNoIso = *((vector<bool>*) data.GetPtr("eleIsPassHEEPNoIso"));
 
     if( nVtx < 1 ) continue;
 
     Double_t eventWeight = mcWeight;
-    if( num == 1 ){
+    if( inputFile.find("DYJets") != std::string::npos ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
     }
-    else if( num == 0 || num == 2 )
+    else
       eventWeight = 1;
     
     h_eventWeight->Fill(0.,eventWeight);
@@ -133,7 +120,7 @@ void ZeeVariable(std::string inputFile, int num){
       std::string thisTrig = trigName[it];
       bool results = trigResult[it];
       
-      if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results==1 ){
+      if( thisTrig.find("HLT_Ele105") != std::string::npos && results==1 ){
 	passTrigger = true;
 	break;
       }
@@ -143,51 +130,14 @@ void ZeeVariable(std::string inputFile, int num){
     if( !passTrigger ) continue;
 
     // select good electrons
-        
-    std::vector<Int_t> goodElectrons;
 
-    for(Int_t ie = 0; ie < nEle; ie++){
+    vector<Int_t> goodEleID;
+    if( !isPassZee(data, goodEleID) ) continue;
 
-      if( !(fabs(eleScEta[ie]) < 1.4442 || fabs(eleScEta[ie]) > 1.566) ) continue;
-      if( fabs(eleScEta[ie]) > 2.5 ) continue;
-      if( eleScEt[ie] <= 35 ) continue;
-      if( !eleEcalDrivenSeed[ie] ) continue;
-      if( !eleIsPassHEEPNoIso[ie] ) continue;
-      if( eleMiniIso[ie] >= 0.1 ) continue;
+    TLorentzVector* thisEle = (TLorentzVector*)eleP4->At(goodEleID[0]);
+    TLorentzVector* thatEle = (TLorentzVector*)eleP4->At(goodEleID[1]);
 
-      goodElectrons.push_back(ie);
-
-    } // end of ele loop
-
-    // select good Z boson
-
-    bool findEPair = false;
-    TLorentzVector l4_Z(0,0,0,0);
-    TLorentzVector* thisEle = NULL;
-    TLorentzVector* thatEle = NULL;
-
-    for(unsigned int i = 0; i < goodElectrons.size(); i++){
-
-      Int_t ie = goodElectrons[i];
-      thisEle = (TLorentzVector*)eleP4->At(ie);
-
-      for(unsigned int j = 0; j < i; j++){
-
-	Int_t je = goodElectrons[j];
-	thatEle = (TLorentzVector*)eleP4->At(je);
-	Float_t mll = (*thisEle+*thatEle).M();
-
-	if( eleCharge[ie]*eleCharge[je] > 0 ) continue;   
-	if( mll < 60 || mll > 120 ) continue;
-	if( !findEPair ) l4_Z = (*thisEle+*thatEle);
-
-	findEPair = true;
-	break;
-
-      }
-    }
-
-    if( !findEPair ) continue;
+    TLorentzVector l4_Z = (*thisEle+*thatEle);
 
     h_Zmass    ->Fill(l4_Z.M(),eventWeight);
     h_Zpt      ->Fill(l4_Z.Pt(),eventWeight);
@@ -217,7 +167,7 @@ void ZeeVariable(std::string inputFile, int num){
   std::string h_name[9] = {"Zmass","Zpt","Zeta","ZRapidity","leadElePt","leadEleEta",
 			   "subleadElePt","subleadEleEta","eventWeight"};
 
-  TFile* outFile = new TFile(Form("%s_ZeeVariable.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_ZeeVariable.root",outputFile.c_str()), "recreate");
       
   h_Zmass        ->Write(h_name[0].data());  
   h_Zpt          ->Write(h_name[1].data());  

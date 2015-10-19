@@ -10,25 +10,11 @@
 #include "../untuplizer.h"
 #include "../isPassZee.h"
 
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
-// DYHT: root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
-// ttbar:  root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
-// data:   root -q -b mZHele.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/DoubleEG_Run2015C-PromptReco-v1/\"\,5\); 
-
-void mZHele(std::string inputFile, int num){
+void mZHele(std::string inputFile, std::string outputFile){
 
   // read the ntuples (in pcncu)
 
   std::vector<string> infiles;
-
-  std::string outputFile[6] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
-			       "DoubleEG_Run2015C-PromptReco-v1"};
 			  
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -127,11 +113,11 @@ void mZHele(std::string inputFile, int num){
     nPass[0]++;
 
     Double_t eventWeight = mcWeight;
-    if( num==0 || num==1 || num==2 || num==3 ){
+    if( inputFile.find("DYJets") != std::string::npos ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
     }
-    else 
+    else
       eventWeight = 1;
     
     h_eventWeight->Fill(0.,eventWeight);
@@ -148,7 +134,7 @@ void mZHele(std::string inputFile, int num){
       std::string thisTrig = trigName[it];
       bool results = trigResult[it];
       
-      if( thisTrig.find("HLT_DoubleEle33") != std::string::npos && results==1 ){
+      if( thisTrig.find("HLT_Ele105") != std::string::npos && results==1 ){
 	passTrigger = true;
 	break;
       }
@@ -226,7 +212,7 @@ void mZHele(std::string inputFile, int num){
   std::string h_name[9] = {"mZprime","mZ","ptZ","FATjetPt","FATjetSDmass",
 			   "FATjetPRmass","FATjetTau2dvTau1","cutFlow","eventWeight"};
 
-  TFile* outFile = new TFile(Form("%s_mZHele.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_mZHele.root",outputFile.c_str()), "recreate");
 
   h_mZprime         ->Write(h_name[0].data());
   h_mZ              ->Write(h_name[1].data());
