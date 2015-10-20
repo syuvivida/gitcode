@@ -10,25 +10,11 @@
 #include "../untuplizer.h"
 #include "../isPassZmumu.h"
 
-// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162742/0000/\"\,0\);
-// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162821/0000/\"\,1\);
-// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162858/0000/\"\,2\);
-// DYHT: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsHTBins25nsSamples/DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_0803/150812_162937/0000/\"\,3\);
-// ttbar: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,4\);
-// data: root -q -b jetmumuVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,5\);
-
-void jetmumuVariable(std::string inputFile, int num){
+void jetmumuVariable(std::string inputFile, std::string outputFile){
 
   // read the ntuples (in pcncu)
 
   std::vector<string> infiles;
-
-  std::string outputFile[6] = {"DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",
-			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830",
-			       "crab_SingleMuon-Run2015C-PromptReco-v1"};
     
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -71,15 +57,15 @@ void jetmumuVariable(std::string inputFile, int num){
      
   TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", 100, 100, 1000);
   TH1D* h_FATjetEta        = new TH1D("h_FATjetEta", "FATjetEta", 100, -4, 4);
-  TH1D* h_FATjetCISVV2     = new TH1D("h_FATjetCISVV2", "FATjetCISVV2", 100, 0, 2);
-  TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", 100, 50, 200);
-  TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", 100, 50, 200);
+  TH1D* h_FATjetCISVV2     = new TH1D("h_FATjetCISVV2", "FATjetCISVV2", 100, 0, 1.2);
+  TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", 100, 0, 200);
+  TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", 100, 0, 200);
   TH1D* h_FATjetTau1       = new TH1D("h_FATjetTau1", "FATjetTau1", 100, 0, 1);
   TH1D* h_FATjetTau2       = new TH1D("h_FATjetTau2", "FATjetTau2", 100, 0, 1);
   TH1D* h_FATjetTau2dvTau1 = new TH1D("h_FATjetTau2dvTau1", "FATjetTau2dvTau1", 100, 0, 1);
-  TH1D* h_FATsubjetPt      = new TH1D("h_FATsubjetPt", "FATsubjetPt", 100, 40, 800);
+  TH1D* h_FATsubjetPt      = new TH1D("h_FATsubjetPt", "FATsubjetPt", 100, 0, 800);
   TH1D* h_FATsubjetEta     = new TH1D("h_FATsubjetEta", "FATsubjetEta", 100, -4, 4);
-  TH1D* h_FATsubjetSDCSV   = new TH1D("h_FATsubjetSDCSV", "FATsubjetSDCSV", 100, 0, 2);
+  TH1D* h_FATsubjetSDCSV   = new TH1D("h_FATsubjetSDCSV", "FATsubjetSDCSV", 100, 0, 1.2);
   TH1D* h_eventWeight      = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 
   h_FATjetPt        ->Sumw2();   
@@ -138,11 +124,11 @@ void jetmumuVariable(std::string inputFile, int num){
     if( nVtx < 1 ) continue;
 
     Double_t eventWeight = mcWeight;
-    if( num==0 || num==1 || num==2 || num==3 ){
+    if( inputFile.find("DYJets") != std::string::npos ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
     }
-    else 
+    else
       eventWeight = 1;
     
     h_eventWeight->Fill(0.,eventWeight);
@@ -241,7 +227,7 @@ void jetmumuVariable(std::string inputFile, int num){
 			    "FATjetPRmass","FATjetTau1","FATjetTau2","FATjetTau2dvTau1",
 			    "FATsubjetPt","FATsubjetEta","FATsubjetSDCSV","eventWeight"};
 
-  TFile* outFile = new TFile(Form("%s_jetmumuVariable.root",outputFile[num].c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_jetmumuVariable.root",outputFile.c_str()), "recreate");
   
   h_FATjetPt        ->Write(h_name[0].data());
   h_FATjetEta       ->Write(h_name[1].data());

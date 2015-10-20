@@ -10,18 +10,11 @@
 #include <TSystemDirectory.h>
 #include "../untuplizer.h"
 
-// 25ns data: root -q -b muVariable.C++\(\"/data7/khurana/NCUGlobalTuples/Run2015C/crab_SingleMuon-Run2015C-PromptReco-v1/150830_214159/0000/\"\,0\);
-// 25ns DY: root -q -b muVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns/crab_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_0830/150830_215828/0000/\"\,1\);
-// 25ns TTbar: root -q -b muVariable.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15/TT_TuneCUETP8M1_13TeV-powheg-pythia8/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830/150831_085116/0000/\"\,2\);
-
-void muVariable(std::string inputFile, int num){
+void muVariable(std::string inputFile, std::string outputFile){
 
   // read the ntuples (in pcncu)
 
   std::vector<string> infiles;
-
-  std::string outputFile[3] = {"crab_SingleMuon-Run2015C-PromptReco-v1","DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_25ns",
-			       "crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8_0830"};
 
   TSystemDirectory *base = new TSystemDirectory("root","root");
   base->SetDirectory(inputFile.data());
@@ -70,7 +63,7 @@ void muVariable(std::string inputFile, int num){
   TH1D* h_mudz[2];   
   TH1D* h_muMiniIso[2]; 
   TH1D* h_eventWeight[2];
-
+  /*
   TProfile* pf_muHits[2];
   TProfile* pf_muMatches[2];
   TProfile* pf_muTrkLayers[2];
@@ -79,7 +72,7 @@ void muVariable(std::string inputFile, int num){
   TProfile* pf_mudxy[2];
   TProfile* pf_mudz[2];
   TProfile* pf_muMiniIso[2];
-
+  */
   for(Int_t i = 0; i < 2; i++){
     
     h_muHits[i]      = new TH1D(Form("h_muHits%d",i), "muHits", 60, -0.5, 59.5);
@@ -110,7 +103,7 @@ void muVariable(std::string inputFile, int num){
     h_mudz[i]       ->GetXaxis()->SetTitle("mudz");
     h_muMiniIso[i]  ->GetXaxis()->SetTitle("muMiniIso");
     h_eventWeight[i]->GetXaxis()->SetTitle("eventWeight");
-
+    /*
     pf_muHits[i]      = new TProfile(Form("pf_muHits%d",i), "muHits profile", 25, 0.5, 25.5);
     pf_muMatches[i]   = new TProfile(Form("pf_muMatches%d",i), "muMatches profile", 25, 0.5, 25.5);
     pf_muTrkLayers[i] = new TProfile(Form("pf_muTrkLayers%d",i), "muTrkLayers profile", 25, 0.5, 25.5);
@@ -128,12 +121,10 @@ void muVariable(std::string inputFile, int num){
     pf_mudxy[i]      ->GetXaxis()->SetTitle("mudxy");
     pf_mudz[i]       ->GetXaxis()->SetTitle("mudz");
     pf_muMiniIso[i]  ->GetXaxis()->SetTitle("muMiniIso");
-
+    */
   }
 
   // begin of event loop
-
-  Int_t nPass = 0;
 
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
@@ -161,11 +152,11 @@ void muVariable(std::string inputFile, int num){
     if( nVtx < 1 ) continue;
 
     Double_t eventWeight = mcWeight;
-    if( num == 1 ){
+    if( inputFile.find("DYJets") != std::string::npos ){
       if( eventWeight > 0 ) eventWeight = 1;
       else if( eventWeight < 0 ) eventWeight = -1;
     }
-    else if( num == 0 || num == 2 )
+    else
       eventWeight = 1;
     
     h_eventWeight[0]->Fill(0.,eventWeight);
@@ -227,8 +218,6 @@ void muVariable(std::string inputFile, int num){
 
     if(	muId[0] < 0 || muId[1] < 0 ) continue;
     
-    nPass++;
-
     // muon selections and cuts
 
     for(Int_t ie = 0; ie < 2; ie++){
@@ -250,42 +239,42 @@ void muVariable(std::string inputFile, int num){
 
 	  case 0: 
 	    h_muHits[0] ->Fill(muHits[muId[ie]],eventWeight);
-	    pf_muHits[0]->Fill(nVtx,muHits[muId[ie]],eventWeight);
+	    //pf_muHits[0]->Fill(nVtx,muHits[muId[ie]],eventWeight);
 	    break;
 
 	  case 1:
 	    h_muMatches[0] ->Fill(muMatches[muId[ie]],eventWeight); 
-	    pf_muMatches[0]->Fill(nVtx,muMatches[muId[ie]],eventWeight);
+	    //pf_muMatches[0]->Fill(nVtx,muMatches[muId[ie]],eventWeight);
 	    break;
 
 	  case 2: 
 	    h_muTrkLayers[0] ->Fill(muTrkLayers[muId[ie]],eventWeight);
-	    pf_muTrkLayers[0]->Fill(nVtx,muTrkLayers[muId[ie]],eventWeight);
+	    //pf_muTrkLayers[0]->Fill(nVtx,muTrkLayers[muId[ie]],eventWeight);
 	    break;
 
 	  case 3:
 	    h_muPixelHits[0] ->Fill(muPixelHits[muId[ie]],eventWeight);
-	    pf_muPixelHits[0]->Fill(nVtx,muPixelHits[muId[ie]],eventWeight);
+	    //pf_muPixelHits[0]->Fill(nVtx,muPixelHits[muId[ie]],eventWeight);
 	    break;
 
 	  case 4: 
 	    h_muTrkPtErrdvTrkPt[0] ->Fill(muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight); 
-	    pf_muTrkPtErrdvTrkPt[0]->Fill(nVtx,muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
+	    //pf_muTrkPtErrdvTrkPt[0]->Fill(nVtx,muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
 	    break;
 
 	  case 5: 
 	    h_mudxy[0] ->Fill(mudxy[muId[ie]],eventWeight);   
-	    pf_mudxy[0]->Fill(nVtx,mudxy[muId[ie]],eventWeight);
+	    //pf_mudxy[0]->Fill(nVtx,mudxy[muId[ie]],eventWeight);
 	    break;	 
 
 	  case 6: 
 	    h_mudz[0] ->Fill(mudz[muId[ie]],eventWeight);
-	    pf_mudz[0]->Fill(nVtx,mudz[muId[ie]],eventWeight);
+	    //pf_mudz[0]->Fill(nVtx,mudz[muId[ie]],eventWeight);
 	    break;
 
 	  case 7: 
 	    h_muMiniIso[0] ->Fill(muMiniIso[muId[ie]],eventWeight); 
-	    pf_muMiniIso[0]->Fill(nVtx,muMiniIso[muId[ie]],eventWeight);
+	    //pf_muMiniIso[0]->Fill(nVtx,muMiniIso[muId[ie]],eventWeight);
 	    break;
 	    
 	  } // end of switch
@@ -311,42 +300,42 @@ void muVariable(std::string inputFile, int num){
 
 	  case 0:
             h_muMatches[1] ->Fill(muMatches[muId[ie]],eventWeight);
-            pf_muMatches[1]->Fill(nVtx,muMatches[muId[ie]],eventWeight);
+            //pf_muMatches[1]->Fill(nVtx,muMatches[muId[ie]],eventWeight);
             break;
 
           case 1:
             h_muTrkLayers[1] ->Fill(muTrkLayers[muId[ie]],eventWeight);
-            pf_muTrkLayers[1]->Fill(nVtx,muTrkLayers[muId[ie]],eventWeight);
+            //pf_muTrkLayers[1]->Fill(nVtx,muTrkLayers[muId[ie]],eventWeight);
             break;
 
           case 2:
             h_muPixelHits[1] ->Fill(muPixelHits[muId[ie]],eventWeight);
-            pf_muPixelHits[1]->Fill(nVtx,muPixelHits[muId[ie]],eventWeight);
+            //pf_muPixelHits[1]->Fill(nVtx,muPixelHits[muId[ie]],eventWeight);
             break;
 
           case 3:
             h_muTrkPtErrdvTrkPt[1] ->Fill(muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
-            pf_muTrkPtErrdvTrkPt[1]->Fill(nVtx,muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
+            //pf_muTrkPtErrdvTrkPt[1]->Fill(nVtx,muTrkPtErr[muId[ie]]/muTrkPt[muId[ie]],eventWeight);
             break;
 
           case 4:
             h_mudxy[1] ->Fill(mudxy[muId[ie]],eventWeight);
-            pf_mudxy[1]->Fill(nVtx,mudxy[muId[ie]],eventWeight);
+            //pf_mudxy[1]->Fill(nVtx,mudxy[muId[ie]],eventWeight);
             break;
 
           case 5:
             h_mudz[1] ->Fill(mudz[muId[ie]],eventWeight);
-            pf_mudz[1]->Fill(nVtx,mudz[muId[ie]],eventWeight);
+            //pf_mudz[1]->Fill(nVtx,mudz[muId[ie]],eventWeight);
             break;
 
           case 6:
             h_muMiniIso[1] ->Fill(muMiniIso[muId[ie]],eventWeight);
-            pf_muMiniIso[1]->Fill(nVtx,muMiniIso[muId[ie]],eventWeight);
+            //pf_muMiniIso[1]->Fill(nVtx,muMiniIso[muId[ie]],eventWeight);
             break;
 
 	  case 7:
             h_muHits[1] ->Fill(muHits[muId[ie]],eventWeight);
-            pf_muHits[1]->Fill(nVtx,muHits[muId[ie]],eventWeight);
+            //pf_muHits[1]->Fill(nVtx,muHits[muId[ie]],eventWeight);
             break;
     
 	  } // end of switch
@@ -361,21 +350,19 @@ void muVariable(std::string inputFile, int num){
 
   fprintf(stderr, "Processed all events\n");
     
-  std::cout << "pass events: " << nPass << std::endl;
-
   TFile* outFile[2];
   
   std::string h_name[9] = {"muMatches","muTrkLayers","muPixelHits","muTrkPtErrdvTrkPt",
 			   "mudxy","mudz","muMiniIso","muHits","eventWeight"};
-
+  /*
   std::string pf_name[8] = {"pf_muMatches","pf_muTrkLayers","pf_muPixelHits","pf_muTrkPtErrdvTrkPt",
 			    "pf_mudxy","pf_mudz","pf_muMiniIso","pf_muHits"};
-
+  */
   std::string region[2] = {"highptMuon","customizeTrackerMuon"};
 
   for(Int_t i = 0; i < 2; i++){
 
-    outFile[i] = new TFile(Form("%s_%s.root",outputFile[num].c_str(),region[i].c_str()), "recreate");
+    outFile[i] = new TFile(Form("%s_%s.root",outputFile.c_str(),region[i].c_str()), "recreate");
       
     h_muMatches[i]        ->Write(h_name[0].data());
     h_muTrkLayers[i]      ->Write(h_name[1].data());
@@ -386,7 +373,7 @@ void muVariable(std::string inputFile, int num){
     h_muMiniIso[i]        ->Write(h_name[6].data());
     h_muHits[i]           ->Write(h_name[7].data());
     h_eventWeight[i]      ->Write(h_name[8].data());
-
+    /*
     pf_muMatches[i]        ->Write(pf_name[0].data());
     pf_muTrkLayers[i]      ->Write(pf_name[1].data());
     pf_muPixelHits[i]      ->Write(pf_name[2].data());
@@ -395,7 +382,7 @@ void muVariable(std::string inputFile, int num){
     pf_mudz[i]             ->Write(pf_name[5].data());
     pf_muMiniIso[i]        ->Write(pf_name[6].data());
     pf_muHits[i]           ->Write(pf_name[7].data());
-
+    */
     outFile[i]->Write();
 
   }
