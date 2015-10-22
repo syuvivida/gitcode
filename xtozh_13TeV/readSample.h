@@ -10,7 +10,7 @@ void readSample(std::string inputFile, std::vector<string>& infiles){
 
   string inputTextFile = "inputdir.txt";
   gSystem->Exec(Form("rm -rf %s",inputTextFile.data()));
-  gSystem->Exec(Form("ls -R %s | grep -a \"%s\" >> %s",inputFile.data(),"data7", inputTextFile.data()));
+  gSystem->Exec(Form("ls -R %s | grep -a \"%s\" >> %s", inputFile.data(),"data7", inputTextFile.data()));
   TSystemDirectory *base = new TSystemDirectory("root","root"); 
   int nfile = 0;
   string tempdir;
@@ -19,6 +19,11 @@ void readSample(std::string inputFile, std::vector<string>& infiles){
   fin >> tempdir;
   TString realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));
   while(!fin.eof()){
+    if(realDirName.Contains("fail")){
+      fin >> tempdir;
+      realDirName = gSystem->GetFromPipe(Form("a=%s; echo ${a%%:*}",tempdir.data()));      
+      continue;
+    }
     base->SetDirectory(realDirName.Data());
     TList *listOfFiles = base->GetListOfFiles();
     TIter fileIt(listOfFiles);
