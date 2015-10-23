@@ -12,6 +12,7 @@
 #include <TTree.h>
 #include <TKey.h>
 #include <TSystemDirectory.h>
+#include "setNCUStyle.h"
 
 void myPlot(TH1D* h_DY100,
             TH1D* h_DY200,
@@ -73,51 +74,47 @@ void myPlot(TH1D* h_DY100,
   h_stack->Add(h_ZZ);
 
   h_data->SetLineColor(kBlack);
-  h_data->SetMarkerStyle(8);
-  h_data->SetMarkerSize(0.6);
   h_data->GetXaxis()->SetTitle("");
   h_data->GetXaxis()->SetLabelOffset(999);
   h_data->GetXaxis()->SetLabelSize(0);
-  
+
   if( h_data->GetMaximum() < h_stack->GetMaximum() ){
   
     h_stack->Draw("histe");
     h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetYaxis()->SetTitleSize(h_data->GetYaxis()->GetTitleSize());
+    h_stack->GetHistogram()->GetYaxis()->SetLabelSize(h_data->GetYaxis()->GetLabelSize());
     h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
     h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
-    h_data->Draw("e1same");
+    h_data->Draw("elsame");
   
   }
     
   else{
-  
-    h_data->Draw("e1");
+
+    h_data->GetYaxis()->SetTitle("Event Numbers");
+    h_data->Draw("el");
     h_stack->Draw("histesame");
-    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
-    h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
-    h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
-    h_data->Draw("e1same");
+    h_data->Draw("elsame");
 
   }
   
-  TLegend *leg = new TLegend(0.65, 0.62, 0.89, 0.87);
-
+  TLegend *leg = new TLegend(0.73, 0.60, 0.90, 0.87);
+  
   leg->SetBorderSize(0);
-  leg->SetLineColor(1);
-  leg->SetLineStyle(1);
-  leg->SetLineWidth(1);
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
   leg->SetTextSize(0.04);
-  leg->AddEntry(h_DY, "DY+Jets", "lpf");
-  leg->AddEntry(h_TTbar, "t#bar{t}", "lpf");
-  leg->AddEntry(h_WW, "WW", "lpf");
-  leg->AddEntry(h_WZ, "WZ", "lpf");
-  leg->AddEntry(h_ZZ, "ZZ", "lpf");
+    
+  leg->AddEntry(h_DY, "DY+Jets", "pf");
+  leg->AddEntry(h_TTbar, "t#bar{t}", "pf");
+  leg->AddEntry(h_WW, "WW", "pf");
+  leg->AddEntry(h_WZ, "WZ", "pf");
+  leg->AddEntry(h_ZZ, "ZZ", "pf");
   leg->AddEntry(h_data, "Data", "lp");
   leg->Draw();
 
-  TLatex *lar = new TLatex(0.55, 0.92, "CMS,  #sqrt{s} = 13 TeV, L = 831.7 pb^{-1}");
+  TLatex *lar = new TLatex(0.60, 0.94, "CMS,  #sqrt{s} = 13 TeV, L = 831.7 pb^{-1}");
 
   lar->SetNDC(kTRUE);
   lar->SetTextSize(0.04);
@@ -193,18 +190,14 @@ void myRatio(TH1D* h_DY100,
 
   }
 
-  Double_t font_size_dw = 0.1;
-
-  h_ratio->SetMarkerStyle(8);
-  h_ratio->SetMarkerSize(0.6);
   h_ratio->SetLineColor(kBlack);
   h_ratio->SetTitle("");
   h_ratio->GetYaxis()->SetTitle("data/MC");
   h_ratio->GetYaxis()->SetTitleOffset(0.3);
-  h_ratio->GetXaxis()->SetLabelSize(font_size_dw);
-  h_ratio->GetXaxis()->SetTitleSize(font_size_dw);
-  h_ratio->GetYaxis()->SetLabelSize(font_size_dw);
-  h_ratio->GetYaxis()->SetTitleSize(font_size_dw);
+  h_ratio->GetXaxis()->SetLabelSize(0.1);
+  h_ratio->GetXaxis()->SetTitleSize(0.125);
+  h_ratio->GetYaxis()->SetLabelSize(0.1);
+  h_ratio->GetYaxis()->SetTitleSize(0.1);
   h_ratio->GetYaxis()->SetNdivisions(505);
   h_ratio->GetYaxis()->SetRangeUser(0,2);
   h_ratio->Draw();
@@ -361,15 +354,10 @@ void dataMCplots(std::string outputFolder, std::string pdfName){
 
   }
 
-  gStyle->SetOptStat(0);
-  gStyle->SetOptTitle(0);                                                                  
-  gStyle->SetFrameLineWidth(2);                                                          
-  gStyle->SetLineWidth(1);
-  gStyle->SetPadGridY(kTRUE);
-  gStyle->SetPadGridX(kTRUE);
-
+  setNCUStyle(true);
+  
   Double_t up_height     = 0.8;
-  Double_t dw_correction = 1.35;
+  Double_t dw_correction = 1.455;
   Double_t dw_height     = (1-up_height)*dw_correction;
 
   TCanvas c("c","",0,0,1000,800);

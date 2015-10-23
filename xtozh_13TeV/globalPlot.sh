@@ -10,13 +10,13 @@ if [ $1 -eq 1 ]; then
     root -q -b -l dataMCplots.C++\(\"electron/dataMC_Ele/outputEle/endcap\"\,\"endcapEleVariables\"\)
     root -q -b -l dataMCplots.C++\(\"electron/dataMC_Zee/outputZee\"\,\"ZeeVariables\"\)
     root -q -b -l dataMCplots.C++\(\"electron/dataMC_Jetee/outputJetee\"\,\"JeteeVariables\"\)
-    root -q -b -l mZHlepplots.C++\(\"electron/forLimitCalc/outputmZHele\"\,\"mZHeleVariables\"\)
+    root -q -b -l dataMCplots.C++\(\"electron/forLimitCalc/outputmZHele\"\,\"mZHeleVariables\"\)
 elif [ $1 -eq 2 ]; then
     root -q -b -l dataMCplots.C++\(\"muon/dataMC_Mu/outputMu/highpt\"\,\"highPtMuVariables\"\)
     root -q -b -l dataMCplots.C++\(\"muon/dataMC_Mu/outputMu/tracker\"\,\"trackerMuVariables\"\)
     root -q -b -l dataMCplots.C++\(\"muon/dataMC_Zmumu/outputZmumu\"\,\"ZmumuVariables\"\)
     root -q -b -l dataMCplots.C++\(\"muon/dataMC_Jetmumu/outputJetmumu\"\,\"JetmumuVariables\"\)
-    root -q -b -l mZHlepplots.C++\(\"muon/forLimitCalc/outputmZHmu\"\,\"mZHmuVariables\"\)
+    root -q -b -l dataMCplots.C++\(\"muon/forLimitCalc/outputmZHmu\"\,\"mZHmuVariables\"\)
 else
     exit 1
 fi
