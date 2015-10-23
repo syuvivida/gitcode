@@ -21,15 +21,17 @@ void eleZVariable(std::string inputFile, std::string outputFile){
   TreeReader data(infiles);
   
   // Declare the histogram
+
+  Int_t nBin = 20;
      
-  TH1D* h_Zmass         = new TH1D("h_Zmass", "Zmass", 100, 50, 150);
-  TH1D* h_Zpt           = new TH1D("h_Zpt", "Zpt", 100, 0, 1000);
-  TH1D* h_Zeta          = new TH1D("h_Zeta", "Zeta", 100, -10, 10);
-  TH1D* h_ZRapidity     = new TH1D("h_ZRapidity", "ZRapidity", 100, -10, 10);
-  TH1D* h_leadElePt     = new TH1D("h_leadElePt", "leadElePt", 100, 0, 1000);
-  TH1D* h_leadEleEta    = new TH1D("h_leadEleEta", "leadEleEta", 100, -5, 5);
-  TH1D* h_subleadElePt  = new TH1D("h_subleadElePt", "subleadElePt", 100, 0, 1000);
-  TH1D* h_subleadEleEta = new TH1D("h_subleadEleEta", "subleadEleEta", 100, -5, 5);
+  TH1D* h_Zmass         = new TH1D("h_Zmass", "Zmass", nBin, 60, 120);
+  TH1D* h_Zpt           = new TH1D("h_Zpt", "Zpt", nBin, 0, 1000);
+  TH1D* h_Zeta          = new TH1D("h_Zeta", "Zeta", nBin, -4, 4);
+  TH1D* h_ZRapidity     = new TH1D("h_ZRapidity", "ZRapidity", nBin, -4, 4);
+  TH1D* h_leadElePt     = new TH1D("h_leadElePt", "leadElePt", nBin, 0, 800);
+  TH1D* h_leadEleEta    = new TH1D("h_leadEleEta", "leadEleEta", nBin, -4, 4);
+  TH1D* h_subleadElePt  = new TH1D("h_subleadElePt", "subleadElePt", nBin, 0, 500);
+  TH1D* h_subleadEleEta = new TH1D("h_subleadEleEta", "subleadEleEta", nBin, -4, 4);
   TH1D* h_eventWeight   = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 
   h_Zmass        ->Sumw2();

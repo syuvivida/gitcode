@@ -70,12 +70,29 @@ void myPlot(TH1D* h_DY100,
   h_stack->Add(h_WZ);
   h_stack->Add(h_ZZ);
 
-  h_data->SetLineColor(kBlue);
+  h_data->SetLineColor(kBlack);
+  h_data->SetTitle("");
   h_data->SetMarkerStyle(8);
   h_data->SetMarkerSize(0.6);
-  h_stack->Draw("histe");
-  h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
-  h_data->Draw("e1same");
+
+  if( h_data->GetMaximum() < h_stack->GetMaximum() ){
+
+    h_stack->Draw("histe");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
+    h_data->Draw("e1same");
+  
+  }
+  
+  else{
+
+    h_data->Draw("e1");
+    h_stack->Draw("histesame");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
+    h_data->Draw("e1same");
+
+  }
 
   TLegend *leg = new TLegend(0.65, 0.62, 0.89, 0.87);
 
@@ -94,7 +111,7 @@ void myPlot(TH1D* h_DY100,
   leg->AddEntry(h_data, "Data", "lp");
   leg->Draw();
 
-  TLatex *lar = new TLatex(0.52, 0.89, "CMS,  #sqrt{s} = 13 TeV, L = 831.7 pb^{-1}");
+  TLatex *lar = new TLatex(0.48, 0.92, "CMS,  #sqrt{s} = 13 TeV, L = 831.7 pb^{-1}");
 
   lar->SetNDC(kTRUE);
   lar->SetTextSize(0.04);
@@ -231,16 +248,15 @@ void mZHlepplots(std::string outputFolder, std::string pdfName){
 
     }
 
-    else if( infiles[i].find("V32015") != std::string::npos )
+    else if( infiles[i].find("V3_2015") != std::string::npos )
       f_data0 = TFile::Open(infiles[i].data());
 
-    else if( infiles[i].find("V42015") != std::string::npos )
+    else if( infiles[i].find("V4_2015") != std::string::npos )
       f_data1 = TFile::Open(infiles[i].data());
 
   }
 
   gStyle->SetOptStat(0);
-  gStyle->SetOptTitle(0);                                                                  
   gStyle->SetFrameLineWidth(2);                                                          
   gStyle->SetLineWidth(1);
   

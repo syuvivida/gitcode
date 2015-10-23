@@ -33,16 +33,18 @@ void muVariable(std::string inputFile, std::string outputFile){
   TH1D* h_eventWeight[2];
 
   for(Int_t i = 0; i < 2; i++){
+
+    Int_t nBin = 20;
     
     h_muHits[i]      = new TH1D(Form("h_muHits%d",i), "muHits", 60, -0.5, 59.5);
     h_muMatches[i]   = new TH1D(Form("h_muMatches%d",i), "muMatches", 7, -0.5, 6.5);
     h_muTrkLayers[i] = new TH1D(Form("h_muTrkLayers%d",i), "muTrkLayers", 18, -0.5, 17.5);
     h_muPixelHits[i] = new TH1D(Form("h_muPixelHits%d",i), "muPixelHits", 8, -0.5, 7.5);
-    h_muTrkPtErrdvTrkPt[i] = new TH1D(Form("h_muTrkPtErrdvTrkPt%d",i), "muTrkPtErrdvTrkPt", 100, 0, 0.4);
-    h_mudxy[i]       = new TH1D(Form("h_mudxy%d",i), "mudxy", 100, -0.02, 0.02);
-    h_mudz[i]        = new TH1D(Form("h_mudz%d",i), "mudz", 100, -0.05, 0.05);  
-    h_muMiniIso[i]   = new TH1D(Form("h_muMiniIso%d",i), "muMiniIso", 100, 0, 0.15);
-    h_eventWeight[i] = new TH1D(Form("h_eventWeight%d",i), "eventWeight", 20, -1, 1);
+    h_muTrkPtErrdvTrkPt[i] = new TH1D(Form("h_muTrkPtErrdvTrkPt%d",i), "muTrkPtErrdvTrkPt", nBin, 0, 0.15);
+    h_mudxy[i]       = new TH1D(Form("h_mudxy%d",i), "mudxy", nBin, -0.01, 0.01);
+    h_mudz[i]        = new TH1D(Form("h_mudz%d",i), "mudz", nBin, -0.05, 0.05);  
+    h_muMiniIso[i]   = new TH1D(Form("h_muMiniIso%d",i), "muMiniIso", nBin, 0, 0.15);
+    h_eventWeight[i] = new TH1D(Form("h_eventWeight%d",i), "eventWeight", 100, -1, 1);
 
     h_muHits[i]     ->Sumw2();
     h_muMatches[i]  ->Sumw2();

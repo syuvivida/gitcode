@@ -32,28 +32,20 @@ void eleVariable(std::string inputFile, std::string outputFile){
   TH1D* h_eleD0[2];   
   TH1D* h_eleMiniIso[2]; 
   TH1D* h_eventWeight[2];
-  /*
-  TProfile* pf_eleEtaseedAtVtx[2];
-  TProfile* pf_eledPhiAtVtx[2];
-  TProfile* pf_eleHoverE[2];
-  TProfile* pf_eleSigmaIEtaIEtaFull5x5[2];
-  TProfile* pf_eleFull5x5E2x5dvE5x5[2];
-  TProfile* pf_eleFull5x5E1x5dvE5x5[2];
-  TProfile* pf_eleMissHits[2];
-  TProfile* pf_eleD0[2];
-  TProfile* pf_eleMiniIso[2];
-  */
+
   for(Int_t i = 0; i < 2; i++){
-    
-    h_eleEtaseedAtVtx[i]         = new TH1D(Form("h_eleEtaseedAtVtx%d",i), "eleEtaseedAtVtx", 100, -0.02, 0.02);
-    h_eledPhiAtVtx[i]            = new TH1D(Form("h_eledPhiAtVtx%d",i), "eledPhiAtVtx", 100, -0.03, 0.03);
-    h_eleHoverE[i]               = new TH1D(Form("h_eleHoverE%d",i), "eleHoverE", 100, 0, 0.05);
-    h_eleSigmaIEtaIEtaFull5x5[i] = new TH1D(Form("h_eleSigmaIEtaIEtaFull5x5%d",i), "eleSigmaIEtaIEtaFull5x5", 100, 0, 0.05);
-    h_eleFull5x5E2x5dvE5x5[i]    = new TH1D(Form("h_eleFull5x5E2x5dvE5x5%d",i), "eleFull5x5E2x5dvE5x5", 100, 0, 1.5);
-    h_eleFull5x5E1x5dvE5x5[i]    = new TH1D(Form("h_eleFull5x5E1x5dvE5x5%d",i), "eleFull5x5E1x5dvE5x5", 100, 0, 1.5);
+
+    Int_t nBin = 20;    
+
+    h_eleEtaseedAtVtx[i]         = new TH1D(Form("h_eleEtaseedAtVtx%d",i), "eleEtaseedAtVtx", nBin, -0.01, 0.01);
+    h_eledPhiAtVtx[i]            = new TH1D(Form("h_eledPhiAtVtx%d",i), "eledPhiAtVtx", nBin, -0.03, 0.03);
+    h_eleHoverE[i]               = new TH1D(Form("h_eleHoverE%d",i), "eleHoverE", nBin, 0, 0.05);
+    h_eleSigmaIEtaIEtaFull5x5[i] = new TH1D(Form("h_eleSigmaIEtaIEtaFull5x5%d",i), "eleSigmaIEtaIEtaFull5x5", nBin, 0, 0.015);
+    h_eleFull5x5E2x5dvE5x5[i]    = new TH1D(Form("h_eleFull5x5E2x5dvE5x5%d",i), "eleFull5x5E2x5dvE5x5", nBin, 0.8, 1.2);
+    h_eleFull5x5E1x5dvE5x5[i]    = new TH1D(Form("h_eleFull5x5E1x5dvE5x5%d",i), "eleFull5x5E1x5dvE5x5", nBin, 0, 1);
     h_eleMissHits[i]             = new TH1D(Form("h_eleMissHits%d",i), "eleMissHits", 6, -0.5, 5.5);
-    h_eleD0[i]                   = new TH1D(Form("h_eleD0%d",i), "eleD0", 100, -0.015, 0.015);  
-    h_eleMiniIso[i]              = new TH1D(Form("h_eleMiniIso%d",i), "eleMiniIso", 100, 0, 0.15);
+    h_eleD0[i]                   = new TH1D(Form("h_eleD0%d",i), "eleD0", nBin, -0.015, 0.015);  
+    h_eleMiniIso[i]              = new TH1D(Form("h_eleMiniIso%d",i), "eleMiniIso", nBin, 0, 0.12);
     h_eventWeight[i]             = new TH1D(Form("h_eventWeight%d",i), "eventWeight", 100, -1, 1);
 
     h_eleEtaseedAtVtx[i]        ->Sumw2();
@@ -76,27 +68,7 @@ void eleVariable(std::string inputFile, std::string outputFile){
     h_eleD0[i]                  ->GetXaxis()->SetTitle("eleD0");      
     h_eleMiniIso[i]             ->GetXaxis()->SetTitle("eleMiniIso"); 
     h_eventWeight[i]            ->GetXaxis()->SetTitle("eventWeight");
-    /*
-    pf_eleEtaseedAtVtx[i]         = new TProfile(Form("pf_eleEtaseedAtVtx%d",i), "eleEtaseedAtVtx profile", 10, 0.5, 20.5);
-    pf_eledPhiAtVtx[i]            = new TProfile(Form("pf_eledPhiAtVtx%d",i), "eledPhiAtVtx profile", 10, 0.5, 20.5);
-    pf_eleHoverE[i]               = new TProfile(Form("pf_eleHoverE%d",i), "eleHoverE profile", 10, 0.5, 20.5);
-    pf_eleSigmaIEtaIEtaFull5x5[i] = new TProfile(Form("pf_eleSigmaIEtaIEtaFull5x5%d",i), "eleSigmaIEtaIEtaFull5x5 profile", 10, 0.5, 20.5);
-    pf_eleFull5x5E2x5dvE5x5[i]    = new TProfile(Form("pf_eleFull5x5E2x5dvE5x5%d",i), "eleFull5x5E2x5dvE5x5 profile", 10, 0.5, 20.5);
-    pf_eleFull5x5E1x5dvE5x5[i]    = new TProfile(Form("pf_eleFull5x5E1x5dvE5x5%d",i), "eleFull5x5E1x5dvE5x5 profile", 10, 0.5, 20.5);
-    pf_eleMissHits[i]             = new TProfile(Form("pf_eleMissHits%d",i), "eleMissHits profile", 10, 0.5, 20.5);
-    pf_eleD0[i]                   = new TProfile(Form("pf_eleD0%d",i), "eleD0 profile", 10, 0.5, 20.5);
-    pf_eleMiniIso[i]              = new TProfile(Form("pf_eleMiniIso%d",i), "eleMiniIso profile", 10, 0.5, 20.5);
 
-    pf_eleEtaseedAtVtx[i]        ->GetXaxis()->SetTitle("eleEtaseedAtVtx");
-    pf_eledPhiAtVtx[i]           ->GetXaxis()->SetTitle("eledPhiAtVtx");
-    pf_eleHoverE[i]              ->GetXaxis()->SetTitle("eleHoverE");
-    pf_eleSigmaIEtaIEtaFull5x5[i]->GetXaxis()->SetTitle("eleSigmaIEtaIEtaFull5x5");
-    pf_eleFull5x5E2x5dvE5x5[i]   ->GetXaxis()->SetTitle("eleFull5x5E2x5dvE5x5");
-    pf_eleFull5x5E1x5dvE5x5[i]   ->GetXaxis()->SetTitle("eleFull5x5E1x5dvE5x5");
-    pf_eleMissHits[i]            ->GetXaxis()->SetTitle("eleMissHits");
-    pf_eleD0[i]                  ->GetXaxis()->SetTitle("eleD0");
-    pf_eleMiniIso[i]             ->GetXaxis()->SetTitle("eleMiniIso");
-    */
   }
 
   // begin of event loop
@@ -227,44 +199,35 @@ void eleVariable(std::string inputFile, std::string outputFile){
 
 	  case 0: 
 	    h_eleEtaseedAtVtx[0] ->Fill(eleEtaseedAtVtx[eleId[ie]],eventWeight);
-	    //pf_eleEtaseedAtVtx[0]->Fill(nVtx,eleEtaseedAtVtx[eleId[ie]],eventWeight);
 	    break;
 
 	  case 1:
 	    h_eledPhiAtVtx[0] ->Fill(eledPhiAtVtx[eleId[ie]],eventWeight);
-	    //pf_eledPhiAtVtx[0]->Fill(nVtx,eledPhiAtVtx[eleId[ie]],eventWeight);
 	    break;
 
 	  case 2:
 	    h_eleHoverE[0] ->Fill(eleHoverE[eleId[ie]],eventWeight); 
-	    //pf_eleHoverE[0]->Fill(nVtx,eleHoverE[eleId[ie]],eventWeight);
 	    break;
 
 	  case 3:
 	    h_eleMissHits[0] ->Fill(eleMissHits[eleId[ie]],eventWeight);   
-	    //pf_eleMissHits[0]->Fill(nVtx,eleMissHits[eleId[ie]],eventWeight);
 	    break;
 
 	  case 4:
 	    h_eleD0[0] ->Fill(eleD0[eleId[ie]],eventWeight);           
-	    //pf_eleD0[0]->Fill(nVtx,eleD0[eleId[ie]],eventWeight);
 	    break;
 
 	  case 5:
 	    h_eleMiniIso[0] ->Fill(eleMiniIso[eleId[ie]],eventWeight);      
-	    //pf_eleMiniIso[0]->Fill(nVtx,eleMiniIso[eleId[ie]],eventWeight);
 	    break;	 
 
 	  case 6:
 	    h_eleFull5x5E2x5dvE5x5[0] ->Fill(eleE2x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
 	    h_eleFull5x5E1x5dvE5x5[0] ->Fill(eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
-	    //pf_eleFull5x5E2x5dvE5x5[0]->Fill(nVtx,eleE2x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
-            //pf_eleFull5x5E1x5dvE5x5[0]->Fill(nVtx,eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
 	    break;
 
 	  case 7: 
 	    h_eleSigmaIEtaIEtaFull5x5[0] ->Fill(eleSigmaIEtaIEtaFull5x5[eleId[ie]],eventWeight); 
-	    //pf_eleSigmaIEtaIEtaFull5x5[0]->Fill(nVtx,eleSigmaIEtaIEtaFull5x5[eleId[ie]],eventWeight);
 	    break;
 	    
 	  } // end of switch
@@ -290,44 +253,35 @@ void eleVariable(std::string inputFile, std::string outputFile){
 
 	  case 0:
 	    h_eleEtaseedAtVtx[1] ->Fill(eleEtaseedAtVtx[eleId[ie]],eventWeight); 
-	    //pf_eleEtaseedAtVtx[1]->Fill(nVtx,eleEtaseedAtVtx[eleId[ie]],eventWeight);
 	    break;
 
 	  case 1:
 	    h_eledPhiAtVtx[1] ->Fill(eledPhiAtVtx[eleId[ie]],eventWeight);  
-	    //pf_eledPhiAtVtx[1]->Fill(nVtx,eledPhiAtVtx[eleId[ie]],eventWeight);
 	    break;
 
 	  case 2:
 	    h_eleHoverE[1] ->Fill(eleHoverE[eleId[ie]],eventWeight);  
-	    //pf_eleHoverE[1]->Fill(nVtx,eleHoverE[eleId[ie]],eventWeight);
 	    break;
 
 	  case 3:
 	    h_eleSigmaIEtaIEtaFull5x5[1] ->Fill(eleSigmaIEtaIEtaFull5x5[eleId[ie]],eventWeight);
-	    //pf_eleSigmaIEtaIEtaFull5x5[1]->Fill(nVtx,eleSigmaIEtaIEtaFull5x5[eleId[ie]],eventWeight);
 	    break;
 
 	  case 4:
 	    h_eleMissHits[1] ->Fill(eleMissHits[eleId[ie]],eventWeight);
-	    //pf_eleMissHits[1]->Fill(nVtx,eleMissHits[eleId[ie]],eventWeight);
 	    break;
 
 	  case 5:
 	    h_eleD0[1] ->Fill(eleD0[eleId[ie]],eventWeight);    
-	    //pf_eleD0[1]->Fill(nVtx,eleD0[eleId[ie]],eventWeight);
 	    break;
 
 	  case 6:
 	    h_eleMiniIso[1] ->Fill(eleMiniIso[eleId[ie]],eventWeight);
-	    //pf_eleMiniIso[1]->Fill(nVtx,eleMiniIso[eleId[ie]],eventWeight);
 	    break;	  
 
 	  case 7:
 	    h_eleFull5x5E2x5dvE5x5[1] ->Fill(eleE2x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
 	    h_eleFull5x5E1x5dvE5x5[1] ->Fill(eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
-	    //pf_eleFull5x5E2x5dvE5x5[1]->Fill(nVtx,eleE2x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
-            //pf_eleFull5x5E1x5dvE5x5[1]->Fill(nVtx,eleE1x5Full5x5[eleId[ie]]/eleE5x5Full5x5[eleId[ie]],eventWeight);
 	    break;
 		    
 	  } // end of switch
@@ -347,11 +301,7 @@ void eleVariable(std::string inputFile, std::string outputFile){
   std::string h_name[10] = {"eleEtaseedAtVtx","eledPhiAtVtx","eleHoverE","eleSigmaIEtaIEtaFull5x5",
 			    "eleFull5x5E2x5dvE5x5","eleFull5x5E1x5dvE5x5","eleMissHits","eleD0",
 			    "eleMiniIso","eventWeight"};
-  /*
-  std::string pf_name[9] = {"pf_eleEtaseedAtVtx","pf_eledPhiAtVtx","pf_eleHoverE","pf_eleSigmaIEtaIEtaFull5x5",
-                            "pf_eleFull5x5E2x5dvE5x5","pf_eleFull5x5E1x5dvE5x5","pf_eleMissHits","pf_eleD0",
-                            "pf_eleMiniIso"};
-  */
+
   std::string region[2] = {"barrel","endcap"};
 
   for(Int_t i = 0; i < 2; i++){
@@ -368,17 +318,7 @@ void eleVariable(std::string inputFile, std::string outputFile){
     h_eleD0[i]                  ->Write(h_name[7].data());      
     h_eleMiniIso[i]             ->Write(h_name[8].data());
     h_eventWeight[i]            ->Write(h_name[9].data());
-    /*
-    pf_eleEtaseedAtVtx[i]        ->Write(pf_name[0].data());
-    pf_eledPhiAtVtx[i]           ->Write(pf_name[1].data());
-    pf_eleHoverE[i]              ->Write(pf_name[2].data());
-    pf_eleSigmaIEtaIEtaFull5x5[i]->Write(pf_name[3].data());
-    pf_eleFull5x5E2x5dvE5x5[i]   ->Write(pf_name[4].data());
-    pf_eleFull5x5E1x5dvE5x5[i]   ->Write(pf_name[5].data());
-    pf_eleMissHits[i]            ->Write(pf_name[6].data());
-    pf_eleD0[i]                  ->Write(pf_name[7].data());
-    pf_eleMiniIso[i]             ->Write(pf_name[8].data());
-    */
+
     outFile[i]->Write();
 
   }

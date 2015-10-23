@@ -21,14 +21,16 @@ void mZHmu(std::string inputFile, std::string outputFile){
   TreeReader data(infiles);
   
   // Declare the histogram
+
+  Int_t nBin = 20;
      
-  TH1D* h_mZprime          = new TH1D("h_mZprime", "mZprime", 10, 0, 5000);
-  TH1D* h_mZ               = new TH1D("h_mZ", "mZ", 10, 50, 150);
-  TH1D* h_ptZ              = new TH1D("h_ptZ", "ptZ", 10, 0, 1000);
-  TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", 10, 100, 1000);
-  TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", 10, 50, 200);
-  TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", 10, 50, 200);
-  TH1D* h_FATjetTau2dvTau1 = new TH1D("h_FATjetTau2dvTau1", "FATjetTau2dvTau1", 10, 0, 1);
+  TH1D* h_mZprime          = new TH1D("h_mZprime", "mZprime", nBin, 0, 5000);
+  TH1D* h_mZ               = new TH1D("h_mZ", "mZ", nBin, 50, 150);
+  TH1D* h_ptZ              = new TH1D("h_ptZ", "ptZ", nBin, 0, 1000);
+  TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", nBin, 100, 1000);
+  TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", nBin, 50, 200);
+  TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", nBin, 50, 200);
+  TH1D* h_FATjetTau2dvTau1 = new TH1D("h_FATjetTau2dvTau1", "FATjetTau2dvTau1", nBin, 0, 1);
   TH1D* h_cutFlow          = new TH1D("h_cutFlow", "cutFlow", 4, 0, 4);
   TH1D* h_eventWeight      = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 

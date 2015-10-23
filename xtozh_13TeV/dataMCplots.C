@@ -72,18 +72,34 @@ void myPlot(TH1D* h_DY100,
   h_stack->Add(h_WZ);
   h_stack->Add(h_ZZ);
 
-  h_data->SetLineColor(kBlue);
+  h_data->SetLineColor(kBlack);
   h_data->SetMarkerStyle(8);
   h_data->SetMarkerSize(0.6);
   h_data->GetXaxis()->SetTitle("");
   h_data->GetXaxis()->SetLabelOffset(999);
   h_data->GetXaxis()->SetLabelSize(0);
-  h_stack->Draw("histe");
-  h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
-  h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
-  h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
-  h_data->Draw("e1same");
+  
+  if( h_data->GetMaximum() < h_stack->GetMaximum() ){
+  
+    h_stack->Draw("histe");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
+    h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
+    h_data->Draw("e1same");
+  
+  }
+    
+  else{
+  
+    h_data->Draw("e1");
+    h_stack->Draw("histesame");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTickLength(0);
+    h_stack->GetHistogram()->GetXaxis()->SetLabelOffset(999);
+    h_data->Draw("e1same");
 
+  }
+  
   TLegend *leg = new TLegend(0.65, 0.62, 0.89, 0.87);
 
   leg->SetBorderSize(0);
@@ -181,6 +197,7 @@ void myRatio(TH1D* h_DY100,
 
   h_ratio->SetMarkerStyle(8);
   h_ratio->SetMarkerSize(0.6);
+  h_ratio->SetLineColor(kBlack);
   h_ratio->SetTitle("");
   h_ratio->GetYaxis()->SetTitle("data/MC");
   h_ratio->GetYaxis()->SetTitleOffset(0.3);
@@ -335,11 +352,12 @@ void dataMCplots(std::string outputFolder, std::string pdfName){
 
     }
 
-    else if( infiles[i].find("V32015") != std::string::npos )
+    else if( infiles[i].find("V3_2015") != std::string::npos )
       f_data0 = TFile::Open(infiles[i].data());
 
-    else if( infiles[i].find("V42015") != std::string::npos )
+    else if( infiles[i].find("V4_2015") != std::string::npos )
       f_data1 = TFile::Open(infiles[i].data());
+
 
   }
 

@@ -21,18 +21,20 @@ void muJetVariable(std::string inputFile, std::string outputFile){
   TreeReader data(infiles);
   
   // Declare the histogram
+
+  Int_t nBin = 20;
      
-  TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", 100, 100, 1000);
-  TH1D* h_FATjetEta        = new TH1D("h_FATjetEta", "FATjetEta", 100, -4, 4);
-  TH1D* h_FATjetCISVV2     = new TH1D("h_FATjetCISVV2", "FATjetCISVV2", 100, 0, 1.2);
-  TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", 100, 0, 200);
-  TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", 100, 0, 200);
-  TH1D* h_FATjetTau1       = new TH1D("h_FATjetTau1", "FATjetTau1", 100, 0, 1);
-  TH1D* h_FATjetTau2       = new TH1D("h_FATjetTau2", "FATjetTau2", 100, 0, 1);
-  TH1D* h_FATjetTau2dvTau1 = new TH1D("h_FATjetTau2dvTau1", "FATjetTau2dvTau1", 100, 0, 1);
-  TH1D* h_FATsubjetPt      = new TH1D("h_FATsubjetPt", "FATsubjetPt", 100, 0, 800);
-  TH1D* h_FATsubjetEta     = new TH1D("h_FATsubjetEta", "FATsubjetEta", 100, -4, 4);
-  TH1D* h_FATsubjetSDCSV   = new TH1D("h_FATsubjetSDCSV", "FATsubjetSDCSV", 100, 0, 1.2);
+  TH1D* h_FATjetPt         = new TH1D("h_FATjetPt", "FATjetPt", nBin, 100, 1000);
+  TH1D* h_FATjetEta        = new TH1D("h_FATjetEta", "FATjetEta", nBin, -4, 4);
+  TH1D* h_FATjetCISVV2     = new TH1D("h_FATjetCISVV2", "FATjetCISVV2", nBin, 0, 1.2);
+  TH1D* h_FATjetSDmass     = new TH1D("h_FATjetSDmass", "FATjetSDmass", nBin, 0, 200);
+  TH1D* h_FATjetPRmass     = new TH1D("h_FATjetPRmass", "FATjetPRmass", nBin, 0, 200);
+  TH1D* h_FATjetTau1       = new TH1D("h_FATjetTau1", "FATjetTau1", nBin, 0, 1);
+  TH1D* h_FATjetTau2       = new TH1D("h_FATjetTau2", "FATjetTau2", nBin, 0, 1);
+  TH1D* h_FATjetTau2dvTau1 = new TH1D("h_FATjetTau2dvTau1", "FATjetTau2dvTau1", nBin, 0, 1);
+  TH1D* h_FATsubjetPt      = new TH1D("h_FATsubjetPt", "FATsubjetPt", nBin, 0, 800);
+  TH1D* h_FATsubjetEta     = new TH1D("h_FATsubjetEta", "FATsubjetEta", nBin, -4, 4);
+  TH1D* h_FATsubjetSDCSV   = new TH1D("h_FATsubjetSDCSV", "FATsubjetSDCSV", nBin, 0, 1.2);
   TH1D* h_eventWeight      = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
 
   h_FATjetPt        ->Sumw2();   
