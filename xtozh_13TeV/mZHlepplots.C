@@ -1,0 +1,318 @@
+#include <string>
+#include <iostream>
+#include <TH1D.h>
+#include <TFile.h>
+#include <TLatex.h>
+#include <TStyle.h>
+#include <TCanvas.h>
+#include <THStack.h>
+#include <TLegend.h>
+#include <TTree.h>
+#include <TKey.h>
+#include <TSystemDirectory.h>
+
+void myPlot(TH1D* h_DY100,
+            TH1D* h_DY200,
+            TH1D* h_DY400,
+            TH1D* h_DY600,
+            TH1D* h_TTbar,
+            TH1D* h_WW,
+            TH1D* h_WZ,
+            TH1D* h_ZZ,
+            TH1D* h_data0,
+	    TH1D* h_data1,
+            Double_t scaleDY100,
+            Double_t scaleDY200,
+            Double_t scaleDY400,
+            Double_t scaleDY600,
+            Double_t scaleTTbar,
+            Double_t scaleWW,
+            Double_t scaleWZ,
+            Double_t scaleZZ){
+
+  TH1D* h_data = (TH1D*)h_data0->Clone("h_data");
+
+  h_data->Reset();
+  h_data->Add(h_data0);
+  h_data->Add(h_data1);
+
+  TH1D* h_DY = (TH1D*)h_DY100->Clone("h_DY");
+
+  h_DY->Reset();
+  h_DY->Add(h_DY100, scaleDY100);
+  h_DY->Add(h_DY200, scaleDY200);
+  h_DY->Add(h_DY400, scaleDY400);
+  h_DY->Add(h_DY600, scaleDY600);
+  h_DY->SetFillColor(kOrange-3);
+  h_DY->SetLineColor(kBlack);
+
+  h_TTbar->Scale(scaleTTbar);
+  h_TTbar->SetFillColor(kGreen);
+  h_TTbar->SetLineColor(kBlack);
+
+  h_WW->Scale(scaleWW);
+  h_WW->SetFillColor(kYellow);
+  h_WW->SetLineColor(kBlack);
+
+  h_WZ->Scale(scaleWZ);
+  h_WZ->SetFillColor(kCyan);
+  h_WZ->SetLineColor(kBlack);
+
+  h_ZZ->Scale(scaleZZ);
+  h_ZZ->SetFillColor(kPink);
+  h_ZZ->SetLineColor(kBlack);
+
+  THStack *h_stack = new THStack("h_stack", "");
+
+  h_stack->Add(h_DY);
+  h_stack->Add(h_TTbar);
+  h_stack->Add(h_WW);
+  h_stack->Add(h_WZ);
+  h_stack->Add(h_ZZ);
+
+  h_data->SetLineColor(kBlack);
+  h_data->SetTitle("");
+  h_data->SetMarkerStyle(8);
+  h_data->SetMarkerSize(0.6);
+
+  if( h_data->GetMaximum() < h_stack->GetMaximum() ){
+
+    h_stack->Draw("histe");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
+    h_data->Draw("e1same");
+  
+  }
+  
+  else{
+
+    h_data->Draw("e1");
+    h_stack->Draw("histesame");
+    h_stack->GetHistogram()->GetYaxis()->SetTitle("Event Numbers");
+    h_stack->GetHistogram()->GetXaxis()->SetTitle(h_data->GetXaxis()->GetTitle());
+    h_data->Draw("e1same");
+
+  }
+
+  TLegend *leg = new TLegend(0.65, 0.62, 0.89, 0.87);
+
+  leg->SetBorderSize(0);
+  leg->SetLineColor(1);
+  leg->SetLineStyle(1);
+  leg->SetLineWidth(1);
+  leg->SetFillColor(0);
+  leg->SetFillStyle(0);
+  leg->SetTextSize(0.04);
+  leg->AddEntry(h_DY, "DY+Jets", "lpf");
+  leg->AddEntry(h_TTbar, "t#bar{t}", "lpf");
+  leg->AddEntry(h_WW, "WW", "lpf");
+  leg->AddEntry(h_WZ, "WZ", "lpf");
+  leg->AddEntry(h_ZZ, "ZZ", "lpf");
+  leg->AddEntry(h_data, "Data", "lp");
+  leg->Draw();
+
+  TLatex *lar = new TLatex(0.48, 0.92, "CMS,  #sqrt{s} = 13 TeV, L = 831.7 pb^{-1}");
+
+  lar->SetNDC(kTRUE);
+  lar->SetTextSize(0.04);
+  lar->SetLineWidth(5);
+  lar->Draw();
+
+}
+
+void mZHlepplots(std::string outputFolder, std::string pdfName){
+
+  std::vector<string> infiles;
+ 
+  TSystemDirectory *base = new TSystemDirectory("root","root");
+  base->SetDirectory(outputFolder.data());
+  TList *listOfFiles = base->GetListOfFiles();
+  TIter fileIt(listOfFiles);
+  TFile *fileH = new TFile();
+  Long64_t nfiles = 0;
+
+  while( (fileH = (TFile*)fileIt()) ){
+    
+    std::string fileN = fileH->GetName();
+    std::string baseString = "root";
+    if( fileN.find(baseString) == std::string::npos ) continue;
+    infiles.push_back(Form("%s/%s",outputFolder.data(),fileN.data()));
+    nfiles++;
+    
+  }
+
+  TFile *f_DY100 = NULL;
+  TFile *f_DY200 = NULL;
+  TFile *f_DY400 = NULL;
+  TFile *f_DY600 = NULL;
+  TFile *f_TTbar = NULL;
+  TFile *f_WW    = NULL;
+  TFile *f_WZ    = NULL;
+  TFile *f_ZZ    = NULL;
+  TFile *f_data0 = NULL;
+  TFile *f_data1 = NULL;
+
+  Double_t scaleDY100 = 0;
+  Double_t scaleDY200 = 0;
+  Double_t scaleDY400 = 0;
+  Double_t scaleDY600 = 0;
+  Double_t scaleTTbar = 0;
+  Double_t scaleWW    = 0;
+  Double_t scaleWZ    = 0;
+  Double_t scaleZZ    = 0;
+
+  Double_t crossSectionDY100 = 139.4*1.23;
+  Double_t crossSectionDY200 = 42.75*1.23;
+  Double_t crossSectionDY400 = 5.497*1.23;
+  Double_t crossSectionDY600 = 2.21*1.23;
+  Double_t crossSectionTTbar = 831.76;
+  Double_t crossSectionWW    = 118.7;
+  Double_t crossSectionWZ    = 47.13;
+  Double_t crossSectionZZ    = 16.523;
+
+  Double_t dataLumi = 831.7; //pb-1
+
+  for(unsigned int i = 0; i < infiles.size(); i++){
+
+    cout << "Input file: " << infiles[i] << endl;
+
+    if( infiles[i].find("HT-100") != std::string::npos ){
+
+      f_DY100 = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_DY100->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleDY100 = dataLumi/(nEvent/crossSectionDY100);
+
+    }
+
+    else if( infiles[i].find("HT-200") != std::string::npos ){
+
+      f_DY200 = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_DY200->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleDY200 = dataLumi/(nEvent/crossSectionDY200);
+
+    }
+
+    else if( infiles[i].find("HT-400") != std::string::npos ){
+
+      f_DY400 = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_DY400->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleDY400 = dataLumi/(nEvent/crossSectionDY400);
+
+    }
+
+    else if( infiles[i].find("HT-600") != std::string::npos ){
+
+      f_DY600 = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_DY600->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleDY600 = dataLumi/(nEvent/crossSectionDY600);
+
+    }
+
+    else if( infiles[i].find("TT_") != std::string::npos ){
+      
+      f_TTbar = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_TTbar->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleTTbar = dataLumi/(nEvent/crossSectionTTbar);
+
+    }
+
+    else if( infiles[i].find("WW_") != std::string::npos ){
+      
+      f_WW = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_WW->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleWW = dataLumi/(nEvent/crossSectionWW);
+
+    }
+
+    else if( infiles[i].find("WZ_") != std::string::npos ){
+
+      f_WZ = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_WZ->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleWZ = dataLumi/(nEvent/crossSectionWZ);
+
+    }
+
+    else if( infiles[i].find("ZZ_") != std::string::npos ){
+
+      f_ZZ = TFile::Open(infiles[i].data());
+      TH1D* h_ = (TH1D*)(f_ZZ->Get("eventWeight"));
+      Int_t nEvent = h_->Integral();
+      scaleZZ = dataLumi/(nEvent/crossSectionZZ);
+
+    }
+
+    else if( infiles[i].find("V3_2015") != std::string::npos )
+      f_data0 = TFile::Open(infiles[i].data());
+
+    else if( infiles[i].find("V4_2015") != std::string::npos )
+      f_data1 = TFile::Open(infiles[i].data());
+
+  }
+
+  gStyle->SetOptStat(0);
+  gStyle->SetFrameLineWidth(2);                                                          
+  gStyle->SetLineWidth(1);
+  
+  TCanvas c("c","",0,0,1000,800);
+  
+  // To get the name of histograms
+  
+  TFile *f_ = TFile::Open(infiles[0].data());
+  f_->cd();
+  
+  TDirectory *current_sourcedir = gDirectory;
+  TIter nextkey( current_sourcedir->GetListOfKeys() );
+  TKey *key;
+
+  vector<std::string> h_name;
+
+  while ( (key = (TKey*)nextkey()) ) {
+
+    TObject *obj = key->ReadObj();
+
+    if ( obj->IsA()->InheritsFrom("TH1") ) 
+      h_name.push_back(obj->GetTitle());
+
+  }
+
+  // Draw and output
+  
+  for(unsigned int i = 0; i < h_name.size()-1; i++){
+
+    c.cd();
+    
+    myPlot(((TH1D*)(f_DY100->Get(h_name[i].data()))),
+	   ((TH1D*)(f_DY200->Get(h_name[i].data()))),
+	   ((TH1D*)(f_DY400->Get(h_name[i].data()))),
+	   ((TH1D*)(f_DY600->Get(h_name[i].data()))),
+	   ((TH1D*)(f_TTbar->Get(h_name[i].data()))),
+	   ((TH1D*)(f_WW->Get(h_name[i].data()))),
+	   ((TH1D*)(f_WZ->Get(h_name[i].data()))),
+	   ((TH1D*)(f_ZZ->Get(h_name[i].data()))),
+	   ((TH1D*)(f_data0->Get(h_name[i].data()))),
+	   ((TH1D*)(f_data1->Get(h_name[i].data()))),
+	   scaleDY100,
+	   scaleDY200,
+	   scaleDY400,
+	   scaleDY600,
+	   scaleTTbar,
+	   scaleWW,
+	   scaleWZ,
+	   scaleZZ);
+
+    c.Draw();
+    
+    if( i == 0 ) c.Print(Form("%s.pdf(", pdfName.data()), "pdf");
+    else if( i == h_name.size()-2 ) c.Print(Form("%s.pdf)", pdfName.data()), "pdf");
+    else c.Print(Form("%s.pdf", pdfName.data()), "pdf");
+    
+  }
+
+}
