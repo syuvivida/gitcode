@@ -1,0 +1,28 @@
+*** Steps to do limit setting ***
+
+1. Prepare the DRsubjet.txt (Save event numbers which scale to luminosity)
+
+2. Change the MakeDataCards.py 
+   2.1 change template card (bin/process/rate/CMS_XX)
+   2.2 change nameinnumber and signalnameinnumber
+
+3. run: python MakeDataCards.py DRsubjet.txt .
+   3.1 This will produce a lot of text files according to mass points.
+
+4. cd /afs/cern.ch/work/h/htong/CMSSW_7_1_5/src/HiggsAnalysis/CombinedLimit/src
+
+5. cmsenv
+
+6. run: combine -M Asymptotic /afs/cern.ch/work/h/htong/xtozh_13TeV/makeDataCard/DataCard_MxxxxGeV_13TeV.txt
+   6.1 This will produce one root file, rename it before run the next text file.
+   6.2 Example of name: higgsCombinecounting_1000.Asymptotic.mH120.root
+   6.3 Move those root files to /afs/cern.ch/work/h/htong/xtozh_13TeV/makeDataCard
+
+7. Use the plot_Asymptotic.C
+   7.1 Create a text file to save the cross section of each mass point. (xsec_Zhllbb.txt)
+   7.2 Change something in the plot_Asymptotic.C
+       7.2.1 define nXm -> which is the number of mass points
+       7.2.2 int Xmass[nXm] = {1000,...} 
+       7.2.3 also can change the name of output plots, x-/y-range of the plot...
+   7.3 run: root -q -b -l plot_Asymptotic.C++\(\"counting\"\)
+   7.4 This will produce the limits plot (normal and log-scale)
