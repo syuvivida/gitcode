@@ -17,7 +17,7 @@
 #include <TPaveText.h>
 
 const double intLumi = 831.7;
-
+//void plot_Asymptotic(string outputname);
 void setFPStyle();
 
 void scaleGraph(TGraphAsymmErrors* g, double factor){
@@ -79,74 +79,62 @@ double linear_interp(double s2, double s1, double mass, double m2, double m1){
 
 void plot_Asymptotic(string outputname){
 
-  setFPStyle();
+  bool useNewStyle = true;
+  if (useNewStyle)  setFPStyle();
 
   ifstream xsect_file("CSZH.txt", ios::in);
+
+  if( !xsect_file.is_open() )
+    cout << "Failed to open file with xsections: " << xsect_file_th << endl;
 
   float mH, CS;
   vector<int> v_mhxs;
   vector<float> v_xs, v_toterrh, v_toterrl;
 
-  if( xsect_file.is_open() ){
+  while (xsect_file.good()) {
 
-    while( !xsect_file.eof()/*xsect_file.good()*/ ){
+    xsect_file >> mH >> CS;
+    v_mhxs.push_back(mH);
+    v_xs.push_back(CS);
 
-      xsect_file >> mH >> CS;
-      v_mhxs.push_back(mH);
-      v_xs.push_back(CS);
+    // unavailable theory errors for graviton
 
-      // unavailable theory errors for graviton
+    float tot_err_p = 0.0;
+    float tot_err_m = 0.0;
 
-      float tot_err_p = 0.0;
-      float tot_err_m = 0.0;
-
-      v_toterrh.push_back(1.0+(tot_err_p));
-      v_toterrl.push_back(1.0-(tot_err_m));
-
-    }
-  
-    cout << "Size of theory xsects vector" << v_mhxs.size() << endl;
-    xsect_file.close();
+    v_toterrh.push_back(1.0 + (tot_err_p));
+    v_toterrl.push_back(1.0 - (tot_err_m));
 
   }
 
-  else{
-
-    cout << "Failed to open text file: " << xsect_file << endl;
-    return;
-
-  }
+  cout << "Size of theory xsects vector" << v_mhxs.size() << endl;
+  xsect_file.close();
 
   /// END THEORY INPUT PART ///
 
   int nXm = v_mhxs.size();
-  vector<double> v_mh, v_median, v_68l, v_68h, v_95l, v_95h, v_obs;
+
   TFile *fFREQ[nXm];
   TTree *t[nXm];
+  vector<double> v_mh, v_median, v_68l, v_68h, v_95l, v_95h, v_obs;
  
   for(int n = 0; n < nXm; n++){
 
     char limitfile[100];
-
-    if( outputname.find("Shape2d") != std::string::npos )
-      sprintf(limitfile,"higgsCombineShape_2d.Asymptotic.mZH%d.root",v_mhxs[n]);
-    else if( outputname.find("Shape1d") != std::string::npos )
-      sprintf(limitfile,"higgsCombineShape_1d.Asymptotic.mZH%d.root",v_mhxs[n]);
-    else if( outputname.find("Counting") != std::string::npos )
-      sprintf(limitfile,"higgsCombineCounting.Asymptotic.mZH%d.root",v_mhxs[n]);
-    
+    if(outputname.find("Shape2d")!= std::string::npos) sprintf(limitfile,"higgsCombineShape_2d.Asymptotic.mZH%d.root",v_mhxs[n]);
+    else if(outputname.find("Shape1d")!= std::string::npos) sprintf(limitfile,"higgsCombineShape_1d.Asymptotic.mZH%d.root",v_mhxs[n]);
+    else if(outputname.find("Counting")!= std::string::npos) sprintf(limitfile,"higgsCombineCounting.Asymptotic.mZH%d.root",v_mhxs[n]);
     fFREQ[n] = new TFile(limitfile, "READ");
     cout << " Read limit file: " << limitfile << endl;
     t[n] = (TTree*)fFREQ[n]->Get("limit");
   
     double mh, limit;
     float quant;
-    
     t[n]->SetBranchAddress("mh", &mh);
     t[n]->SetBranchAddress("limit", &limit);
     t[n]->SetBranchAddress("quantileExpected", &quant);
   
-    for(int i = 0; i < t[n]->GetEntries(); i++){
+    for (int i = 0; i < t[n]->GetEntries(); i++){
 
       t[n]->GetEntry(i);
 
@@ -154,28 +142,28 @@ void plot_Asymptotic(string outputname){
   
       /// Map: mh --> observed, 95low, 68low, expected, 68hi, 95hi, xsec
       
-      if (quant > -1.01 && quant < -0.99){
+      if (quant > -1.01 && quant < -0.99) {
         v_obs.push_back(limit);
       } 
-      else if (quant > 0.02 && quant < 0.03){
+      else if (quant > 0.02 && quant < 0.03) {
 	v_95l.push_back(limit);
       }
-      else if (quant > 0.15 && quant < 0.17){
+      else if (quant > 0.15 && quant < 0.17) {
 	v_68l.push_back(limit);
       }
-      else if (quant > 0.49 && quant < 0.51){
+      else if (quant > 0.49 && quant < 0.51) {
 	v_median.push_back(limit);
         v_mh.push_back(mh);
       }
-      else if (quant > 0.83 && quant < 0.85){
+      else if (quant > 0.83 && quant < 0.85) {
 	v_68h.push_back(limit);
       }
-      else if (quant > 0.965 && quant < 0.98){
+      else if (quant > 0.965 && quant < 0.98) {
 	v_95h.push_back(limit);
       }
-      else
+      else {
         cout << "Error! Quantile =  " << quant << endl;
-      
+      }
     }
 
   } //file loop
@@ -349,8 +337,8 @@ void setFPStyle(){
   gStyle->SetPadBottomMargin(0.12);
   gStyle->SetPadLeftMargin(0.12);
   gStyle->SetCanvasColor(kWhite);
-  gStyle->SetCanvasDefH(800); //Height of canvas
-  gStyle->SetCanvasDefW(800); //Width of canvas
+  gStyle->SetCanvasDefH(600); //Height of canvas
+  gStyle->SetCanvasDefW(600); //Width of canvas
   gStyle->SetCanvasDefX(0);   //Position on screen
   gStyle->SetCanvasDefY(0);
   gStyle->SetPadTopMargin(0.05);
