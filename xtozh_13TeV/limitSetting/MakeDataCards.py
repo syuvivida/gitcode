@@ -39,26 +39,28 @@ observation              DATARATE
 
 -------------------------------------------------------------------------------------------------
 
-bin                      MONOHBB   MONOHBB
-process                  Sig       QCD 
+bin                      MONOHBB   MONOHBB    MONOHBB 
+process                  SIGNAL    DY         TTBAR
 
 -------------------------------------------------------------------------------------------------
 
-process                  0                1       
+process             0                1              2
 
-rate                SIGNALRATE          QCDRATE   
+rate                SIGNALRATE       DYRATE         TTBARRATE  
 
 -------------------------------------------------------------------------------------------------
 
-lumi_13TeV             lnN            1.1    1.1 
+lumi_13TeV             lnN            1.1    1.1    1.1 
 
-CMS_xs_Sig             lnN            1.20   -   
-CMS_xs_QCD             lnN            -      1.10
+CMS_xs_Sig             lnN            1.20   -      -   
+CMS_xs_DYJets          lnN            -      1.10   -   
+CMS_xs_TT              lnN            -      -      1.10
 
-CMS_trigg              lnN            1.05  1.05  
-CMS_JES                lnN            1.05  1.05  
-CMS_Sig                lnN            1.10   -    
-CMS_QCD                lnN            -     1.10 
+CMS_trigg              lnN            1.05  1.05   1.05 
+CMS_JES                lnN            1.05  1.05   1.05 
+CMS_Sig                lnN            1.10   -      -   
+CMS_DYJets             lnN            -      1.10   -   
+CMS_TT                 lnN            -      -      1.10
 
 '''
 
@@ -79,14 +81,23 @@ def Normalize(n,xs,tot):
 
 ## map of placeholder used in the Template datacard.
 ## This is analysis specific.
-nameinnumber=['QCD',
+nameinnumber=['TTBAR',
+              'DY',
               'DATA']
 
 ## List of signal samples for which limit is needed. 
 ## This is analysis specific.
-signalnameinnumber=['M1000',
+signalnameinnumber=[ 'M800',
+                    'M1000',
                     'M1200',
-                    'M1400']
+                    'M1400',
+                    'M1600',
+                    'M1800',
+                    'M2000',
+                    'M2500',
+                    'M3000',
+                    'M3500',
+                    'M4000']
 
 ## create the names of place RATE holders
 placeholder = [x + "RATE" for x in nameinnumber]
@@ -136,10 +147,11 @@ print signalvaluemap
 #print scaledsig
 
 
+
 def MakeDataCard(masspoint):
     datacard = open('DataCard_MXXXGeV.txt','r')
     newdatacardname = dirtosave+'/DataCard_'+masspoint+'GeV_MonoHbb_13TeV.txt'
-    os.system('rm '+newdatacardname)
+#    os.system('rm '+newdatacardname)
     datacard600 = open(newdatacardname,'w')
     
     for line in datacard:
@@ -160,8 +172,3 @@ for imasspoint in range(len(signalnameinnumber)):
 
 
 print "datacards produced"
-
-
-
-
-

@@ -15,7 +15,8 @@
 #include <TLegend.h>
 #include <TStyle.h>
 #include <TPaveText.h>
-#define nXm 3
+
+#define nXm 10
 
 const float intLumi = 1;
 const string dirXSect = "./";
@@ -79,18 +80,17 @@ void plot_Asymptotic(string outputname){
 
   TFile *fFREQ[nXm];
   TTree *t[nXm];
-  int Xmass[nXm]={1000,1200,1400};
+  int Xmass[nXm] = {800,1000,1200,1400,1600,1800,2000,2500,3000,3500};
   vector<double> v_mh, v_median, v_68l, v_68h, v_95l, v_95h, v_obs;
  
-
-  for(int n=0;n<nXm;n++){
+  for(int n = 0; n < nXm; n++){
 
     char limitfile[100];
-    if(outputname.find("shape2d")!= std::string::npos) sprintf(limitfile,"higgsCombineshape_2d_%d.Asymptotic.mH120.root",Xmass[n]);
-    else if(outputname.find("shape1d")!= std::string::npos) sprintf(limitfile,"higgsCombineshape_1d_%d.Asymptotic.mH120.root",Xmass[n]);
-    else if(outputname.find("counting")!= std::string::npos) sprintf(limitfile,"higgsCombinecounting_%d.Asymptotic.mH120.root",Xmass[n]);
+    if(outputname.find("Shape2d")!= std::string::npos) sprintf(limitfile,"higgsCombineShape_2d.Asymptotic.mZH%d.root",Xmass[n]);
+    else if(outputname.find("Shape1d")!= std::string::npos) sprintf(limitfile,"higgsCombineShape_1d.Asymptotic.mZH%d.root",Xmass[n]);
+    else if(outputname.find("Counting")!= std::string::npos) sprintf(limitfile,"higgsCombineCounting.Asymptotic.mZH%d.root",Xmass[n]);
     fFREQ[n] = new TFile(limitfile, "READ");
-    cout<<" Read limit file: "<<limitfile<<endl;
+    cout << " Read limit file: " << limitfile << endl;
     t[n] = (TTree*)fFREQ[n]->Get("limit");
   
     double mh, limit;
@@ -131,7 +131,7 @@ void plot_Asymptotic(string outputname){
 
   }//file loop
 
-  string xsect_file_th = dirXSect + "xsec_Zhllbb.txt";
+  string xsect_file_th = dirXSect + "xSecZH.txt";
 
   ifstream xsect_file(xsect_file_th.c_str(), ios::in);
   if( !xsect_file.is_open() )
@@ -221,7 +221,7 @@ void plot_Asymptotic(string outputname){
   TGraph *grthSM10=new TGraph(nMassEff,mass,xs10);
   grthSM10->SetName("SMXSection_2nd");
 
-  double fr_left = 590.0, fr_down = 5E-5, fr_right = 2000.0, fr_up = 5;
+  double fr_left = 0.0, fr_down = 1E-5, fr_right = 4000.0, fr_up = 1;
 
   TCanvas *cMCMC = new TCanvas("c_lim_Asymptotic", "canvas with limits for Asymptotic CLs", 630, 600);
   cMCMC->cd();
@@ -290,7 +290,7 @@ void plot_Asymptotic(string outputname){
 
   //more graphics
 
-  TLegend *leg = new TLegend(.30, .65, .85, .90);
+  TLegend *leg = new TLegend(.40, .25, .90, .40);
   leg->SetFillColor(0);
   leg->SetShadowColor(0);
   leg->SetTextFont(42);
