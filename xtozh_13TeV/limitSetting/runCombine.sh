@@ -2,6 +2,8 @@
 
 python MakeDataCards.py nEventZH.txt ./dataCards
 
+rm -f DataCard_MXXXGeV.txt
+
 cd /afs/cern.ch/work/h/htong/CMSSW_7_1_5/src/HiggsAnalysis/CombinedLimit/src
 
 massPoints=(800 1000 1200 1400 1600 1800 2000 2500 3000 3500 4000)
