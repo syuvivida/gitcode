@@ -15,6 +15,7 @@
 #include <TLegend.h>
 #include <TStyle.h>
 #include <TPaveText.h>
+#include "../setNCUStyle.h"
 
 const double intLumi = 831.7;
 

@@ -161,9 +161,9 @@ void mZHele(std::string inputFile, std::string outputFile){
     h_FATjetPRmass    ->Fill(FATjetPRmass[goodFATJetID],eventWeight);
     h_FATjetTau2dvTau1->Fill(FATjetTau2[goodFATJetID]/FATjetTau1[goodFATJetID],eventWeight);
 
-    Float_t mZll = (*thisEle+*thatEle+*thisJet).M();
+    Float_t mllbb = (*thisEle+*thatEle+*thisJet).M();
 
-    h_mZprime->Fill(mZll,eventWeight);
+    h_mZprime->Fill(mllbb,eventWeight);
 
   } // end of event loop
 
