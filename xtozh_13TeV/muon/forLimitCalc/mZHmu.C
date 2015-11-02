@@ -64,19 +64,18 @@ void mZHmu(std::string inputFile, std::string outputFile){
 
     data.GetEntry(ev);
 
-    Int_t          nVtx                = data.GetInt("nVtx");
-    Float_t        mcWeight            = data.GetFloat("mcWeight");    
-    TClonesArray*  muP4                = (TClonesArray*) data.GetPtrTObject("muP4");
-    Int_t          FATnJet             = data.GetInt("FATnJet");    
-    Int_t*         FATnSubSDJet        = data.GetPtrInt("FATnSubSDJet");
-    Float_t*       FATjetCISVV2        = data.GetPtrFloat("FATjetCISVV2");
-    Float_t*       FATjetSDmass        = data.GetPtrFloat("FATjetSDmass");
-    Float_t*       FATjetPRmass        = data.GetPtrFloat("FATjetPRmass");
-    Float_t*       FATjetTau1          = data.GetPtrFloat("FATjetTau1");
-    Float_t*       FATjetTau2          = data.GetPtrFloat("FATjetTau2");
-    TClonesArray*  FATjetP4            = (TClonesArray*) data.GetPtrTObject("FATjetP4");
-    vector<bool>&  FATjetPassIDLoose   = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
-    vector<float>* FATsubjetSDCSV      = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
+    Int_t          nVtx              = data.GetInt("nVtx");
+    Float_t        mcWeight          = data.GetFloat("mcWeight");    
+    TClonesArray*  muP4              = (TClonesArray*) data.GetPtrTObject("muP4");
+    Int_t          FATnJet           = data.GetInt("FATnJet");    
+    Int_t*         FATnSubSDJet      = data.GetPtrInt("FATnSubSDJet");
+    Float_t*       FATjetSDmass      = data.GetPtrFloat("FATjetSDmass");
+    Float_t*       FATjetPRmass      = data.GetPtrFloat("FATjetPRmass");
+    Float_t*       FATjetTau1        = data.GetPtrFloat("FATjetTau1");
+    Float_t*       FATjetTau2        = data.GetPtrFloat("FATjetTau2");
+    TClonesArray*  FATjetP4          = (TClonesArray*) data.GetPtrTObject("FATjetP4");
+    vector<bool>&  FATjetPassIDLoose = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
+    vector<float>* FATsubjetSDCSV    = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
 
     if( nVtx < 1 ) continue;
     nPass[0]++;
@@ -140,13 +139,10 @@ void mZHmu(std::string inputFile, std::string outputFile){
       if( thisJet->Pt() < 200 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
-      if( FATjetCISVV2[ij] < 0.605 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
-      if( FATnSubSDJet[ij] < 2 ) continue;
+      if( FATnSubSDJet[ij] != 2 ) continue;
       if( thisJet->DeltaR(*thisMu) < 0.8 || thisJet->DeltaR(*thatMu) < 0.8 ) continue;
-
-      for(Int_t is = 0; is < FATnSubSDJet[ij]; is++)
-	if( FATsubjetSDCSV[ij][is] < 0.605 ) continue;
+      if( FATsubjetSDCSV[ij][0] < 0.605 || FATsubjetSDCSV[ij][1] < 0.605 ) continue;
       
       goodFATJetID = ij;
       break;
