@@ -19,34 +19,46 @@ void pseudoMC(std::string inputFile, std::string outputFile){
   readSample(inputFile, infiles);
   
   TreeReader data(infiles);
-  
+
   // Declare the histogram
 
   const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
   Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
      
-  TH1D* h_ZprimeSign  = new TH1D("h_ZprimeSign", "ZprimeSign", nvarBins, varBins);
-  TH1D* h_ZprimeSide  = new TH1D("h_ZprimeSide", "ZprimeSide", nvarBins, varBins);
-  TH1D* h_eventWeight = new TH1D("h_eventWeight", "eventWeight", 100, -1, 1);
+  TH1D* h_ZprimeSign_pMC  = new TH1D("h_ZprimeSign_pMC", "ZprimeSign", nvarBins, varBins);
+  TH1D* h_ZprimeSide_pMC  = new TH1D("h_ZprimeSide_pMC", "ZprimeSide", nvarBins, varBins);
+  TH1D* h_PRmassCorr_pMC  = new TH1D("h_RmassCorr_pMC", "corrPRMass", 100, 0, 200);
+  TH1D* h_eventWeight_pMC = new TH1D("h_eventWeight_pMC", "eventWeight", 100, -1, 1);
 
-  h_ZprimeSign->Sumw2();
-  h_ZprimeSide->Sumw2();
+  TH1D* h_ZprimeSign_pDA  = new TH1D("h_ZprimeSign_pDA", "ZprimeSign", nvarBins, varBins);
+  TH1D* h_ZprimeSide_pDA  = new TH1D("h_ZprimeSide_pDA", "ZprimeSide", nvarBins, varBins);
+  TH1D* h_PRmassCorr_pDA  = new TH1D("h_RmassCorr_pDA", "corrPRMass", 100, 0, 200);
+  TH1D* h_eventWeight_pDA = new TH1D("h_eventWeight_pDA", "eventWeight", 100, -1, 1);
 
-  h_ZprimeSign ->GetXaxis()->SetTitle("ZprimeSign");
-  h_ZprimeSide ->GetXaxis()->SetTitle("ZprimeSide");
-  h_eventWeight->GetXaxis()->SetTitle("eventWeight");  
-    
+  h_ZprimeSign_pMC->Sumw2();
+  h_ZprimeSide_pMC->Sumw2();
+  h_PRmassCorr_pMC->Sumw2();
+
+  h_ZprimeSign_pDA->Sumw2();
+  h_ZprimeSide_pDA->Sumw2();
+  h_PRmassCorr_pDA->Sumw2();
+
+  h_ZprimeSign_pMC ->GetXaxis()->SetTitle("ZprimeSign");
+  h_ZprimeSide_pMC ->GetXaxis()->SetTitle("ZprimeSide");
+  h_PRmassCorr_pMC ->GetXaxis()->SetTitle("corrPRMass");
+  h_eventWeight_pMC->GetXaxis()->SetTitle("eventWeight");  
+
+  h_ZprimeSign_pDA ->GetXaxis()->SetTitle("ZprimeSign");
+  h_ZprimeSide_pDA ->GetXaxis()->SetTitle("ZprimeSide");
+  h_PRmassCorr_pDA ->GetXaxis()->SetTitle("corrPRMass");
+  h_eventWeight_pDA->GetXaxis()->SetTitle("eventWeight");
+
   // begin of event loop
-
-  Int_t mode = 0;
 
   for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
     if ( ev % 1000000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
-
-    if( mode == 0 && ev % 2 == 0 ) continue; // pseudo-data mode
-    else if( mode == 1 && ev % 2 == 1 ) continue; // MC mode
 
     data.GetEntry(ev);
 
@@ -70,9 +82,7 @@ void pseudoMC(std::string inputFile, std::string outputFile){
     }
     else
       eventWeight = 1;
-    
-    h_eventWeight->Fill(0.,eventWeight);
-    
+        
     // data trigger cut (muon channel)
 
     std::string* trigName = data.GetPtrString("hlt_trigName");
@@ -113,11 +123,11 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
       if( thisJet->Pt() < 200 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
-      if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] != 2 ) continue;
       if( thisJet->DeltaR(*thisMu) < 0.8 || thisJet->DeltaR(*thatMu) < 0.8 ) continue;
-      if( FATsubjetSDCSV[ij][0] < 0.605 || FATsubjetSDCSV[ij][1] < 0.605 ) continue;
+      if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
+      //if( FATsubjetSDCSV[ij][0] < 0.605 || FATsubjetSDCSV[ij][1] < 0.605 ) continue;
 
       goodFATJetID = ij;
       break;
@@ -128,29 +138,48 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
     Float_t mllbb = (*thisMu+*thatMu+*thisJet).M();  
 
-    if( FATjetPRmassL2L3Corr[goodFATJetID] > 40 && FATjetPRmassL2L3Corr[goodFATJetID] < 105 )
-      h_ZprimeSide->Fill(mllbb,eventWeight);
+    if( ev % 2 == 0 ){
 
-    if( FATjetPRmassL2L3Corr[goodFATJetID] > 105 && FATjetPRmassL2L3Corr[goodFATJetID] < 135 )
-      h_ZprimeSign->Fill(mllbb,eventWeight);
+      h_eventWeight_pMC->Fill(0.,eventWeight);
+      h_PRmassCorr_pMC ->Fill(FATjetPRmassL2L3Corr[goodFATJetID],eventWeight);
+
+      if( FATjetPRmassL2L3Corr[goodFATJetID] > 40 && FATjetPRmassL2L3Corr[goodFATJetID] < 105 )
+	h_ZprimeSide_pMC->Fill(mllbb,eventWeight);
+
+      if( FATjetPRmassL2L3Corr[goodFATJetID] > 105 && FATjetPRmassL2L3Corr[goodFATJetID] < 135 )
+	h_ZprimeSign_pMC->Fill(mllbb,eventWeight);
   
+    }
+
+    else if( ev % 2 == 1 ){
+
+      h_eventWeight_pDA->Fill(0.,eventWeight);
+      h_PRmassCorr_pDA->Fill(FATjetPRmassL2L3Corr[goodFATJetID],eventWeight);
+
+      if( FATjetPRmassL2L3Corr[goodFATJetID] > 40 && FATjetPRmassL2L3Corr[goodFATJetID] < 105 )
+	h_ZprimeSide_pDA->Fill(mllbb,eventWeight);
+
+      if( FATjetPRmassL2L3Corr[goodFATJetID] > 105 && FATjetPRmassL2L3Corr[goodFATJetID] < 135 )
+	h_ZprimeSign_pDA->Fill(mllbb,eventWeight);
+
+    }
+
   } // end of event loop
 
   fprintf(stderr, "Processed all events\n");
 
-  std::string h_name[3] = {"ZprimeSign","ZprimeSide","eventWeight"};
-
-  std::string type;
-
-  if( mode == 0 ) type = "pseudoData";
-  else if( mode == 1 ) type = "pseudoMC";
-
-  TFile* outFile = new TFile(Form("%s_%s.root",outputFile.c_str(),type.c_str()), "recreate");
+  TFile* outFile = new TFile(Form("%s_pseudoTest.root",outputFile.c_str()), "recreate");
   
-  h_ZprimeSign ->Write(h_name[0].data());
-  h_ZprimeSide ->Write(h_name[1].data());
-  h_eventWeight->Write(h_name[2].data());
+  h_ZprimeSign_pMC ->Write("ZprimeSign_pMC");
+  h_ZprimeSide_pMC ->Write("ZprimeSide_pMC");
+  h_PRmassCorr_pMC ->Write("corrPRMass_pMC");
+  h_eventWeight_pMC->Write("eventWeight_pMC");
+
+  h_ZprimeSign_pDA ->Write("ZprimeSign_pDA");
+  h_ZprimeSide_pDA ->Write("ZprimeSide_pDA");
+  h_PRmassCorr_pDA ->Write("corrPRMass_pDA");
+  h_eventWeight_pDA->Write("eventWeight_pDA");
 
   outFile->Write();
-  
+
 }

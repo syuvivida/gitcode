@@ -4,16 +4,25 @@
 #include <TH1D.h>
 #include <TFile.h>
 #include <TCanvas.h>
+#include <TStyle.h>
 #include <TSystemDirectory.h>
 #include "../setNCUStyle.h"
 
 const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
 Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
 
-TFile* getFile(std::string infiles, Double_t crossSection, Double_t* scale){
+TFile* getFile(std::string infiles, std::string hname, 
+	       Double_t crossSection, Double_t* scale){
 
   TFile* f = TFile::Open(infiles.data());
-  TH1D* h = (TH1D*)(f->Get("eventWeight"));
+  TH1D*  h = NULL;
+
+  if( hname.find("pMC") != std::string::npos ) 
+    h = (TH1D*)(f->Get("eventWeight_pMC"));
+
+  else if( hname.find("pDA") != std::string::npos )
+    h = (TH1D*)(f->Get("eventWeight_pDA"));
+
   Double_t dataLumi = 831.7; //pb-1 
   *scale = dataLumi/(h->Integral()/crossSection);
 
@@ -35,7 +44,7 @@ TH1D* fixDiscdBin(TH1D* h){
 
 }
 
-TH1D* addSamples(std::vector<string>& infiles, std::string hname, std::string type,
+TH1D* addSamples(std::vector<string>& infiles, std::string hname,
 		 TFile* f_DY100, TFile* f_DY200, TFile* f_DY400, TFile* f_DY600, 
 		 TFile* f_TTbar, TFile* f_WW, TFile* f_WZ, TFile* f_ZZ){
 
@@ -59,33 +68,29 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname, std::string ty
 
   for(unsigned int i = 0; i < infiles.size(); i++){
 
-    if( infiles[i].find(Form("%s",type.c_str())) != std::string::npos ){
+    if( infiles[i].find("HT-100") != std::string::npos )
+      f_DY100 = getFile(infiles[i].data(), hname.data(), xSecDY100, &scaleDY100);
 
-      if( infiles[i].find("HT-100") != std::string::npos )
-        f_DY100 = getFile(infiles[i].data(), xSecDY100, &scaleDY100);
+    if( infiles[i].find("HT-200") != std::string::npos )
+      f_DY200 = getFile(infiles[i].data(), hname.data(), xSecDY200, &scaleDY200);
 
-      if( infiles[i].find("HT-200") != std::string::npos )
-        f_DY200 = getFile(infiles[i].data(), xSecDY200, &scaleDY200);
+    if( infiles[i].find("HT-400") != std::string::npos )
+      f_DY400 = getFile(infiles[i].data(), hname.data(), xSecDY400, &scaleDY400);
 
-      if( infiles[i].find("HT-400") != std::string::npos )
-        f_DY400 = getFile(infiles[i].data(), xSecDY400, &scaleDY400);
+    if( infiles[i].find("HT-600") != std::string::npos )
+      f_DY600 = getFile(infiles[i].data(), hname.data(), xSecDY600, &scaleDY600);
 
-      if( infiles[i].find("HT-600") != std::string::npos )
-        f_DY600 = getFile(infiles[i].data(), xSecDY600, &scaleDY600);
+    if( infiles[i].find("TT_") != std::string::npos )
+      f_TTbar = getFile(infiles[i].data(), hname.data(), xSecTTbar, &scaleTTbar);
 
-      if( infiles[i].find("TT_") != std::string::npos )
-        f_TTbar = getFile(infiles[i].data(), xSecTTbar, &scaleTTbar);
+    if( infiles[i].find("WW_") != std::string::npos )
+      f_WW = getFile(infiles[i].data(), hname.data(), xSecWW, &scaleWW);
 
-      if( infiles[i].find("WW_") != std::string::npos )
-        f_WW = getFile(infiles[i].data(), xSecWW, &scaleWW);
+    if( infiles[i].find("WZ_") != std::string::npos )
+      f_WZ = getFile(infiles[i].data(), hname.data(), xSecWZ, &scaleWZ);
 
-      if( infiles[i].find("WZ_") != std::string::npos )
-        f_WZ = getFile(infiles[i].data(), xSecWZ, &scaleWZ);
-
-      if( infiles[i].find("ZZ_") != std::string::npos )
-        f_ZZ = getFile(infiles[i].data(), xSecZZ, &scaleZZ);
-
-    }
+    if( infiles[i].find("ZZ_") != std::string::npos )
+      f_ZZ = getFile(infiles[i].data(), hname.data(), xSecZZ, &scaleZZ);
 
   }
 
@@ -116,7 +121,9 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname, std::string ty
 
 void alphaRplots(std::string outputFolder){
 
-  setNCUStyle();
+  //setNCUStyle();
+  gStyle->SetOptStat(0);
+  gStyle->SetMarkerSize(0);
 
   std::vector<string> infiles;
  
@@ -146,12 +153,14 @@ void alphaRplots(std::string outputFolder){
   TFile *f_WZ    = NULL;
   TFile *f_ZZ    = NULL;
 
-  TH1D* h_sideTotalBKG = addSamples(infiles,"ZprimeSide","pseudoMC",  f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_signTotalBKG = addSamples(infiles,"ZprimeSign","pseudoMC",  f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_sideDATA     = addSamples(infiles,"ZprimeSide","pseudoData",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_signDATA     = addSamples(infiles,"ZprimeSign","pseudoData",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_sideTotalBKG = addSamples(infiles,"ZprimeSide_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_signTotalBKG = addSamples(infiles,"ZprimeSign_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_sideDATA     = addSamples(infiles,"ZprimeSide_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_signDATA     = addSamples(infiles,"ZprimeSign_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_corrPRMassMC = addSamples(infiles,"corrPRMass_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_corrPRMassDA = addSamples(infiles,"corrPRMass_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
 
-  TH1D* h_alphaRatio = new TH1D("h_alphaRatio", "", nvarBins, varBins);
+  TH1D* h_alphaRatio   = new TH1D("h_alphaRatio", "", nvarBins, varBins);
 
   h_alphaRatio->Sumw2();
   h_alphaRatio->SetXTitle("ZH mass");
@@ -167,6 +176,9 @@ void alphaRplots(std::string outputFolder){
   h_numbkgDATA->SetYTitle("Event numbers");
 
   for( Int_t i = 1; i <= nvarBins; i++ ){
+
+    cout << h_sideTotalBKG->GetBinContent(i) << endl;
+    cout << h_sideDATA->GetBinContent(i) << endl;
 
     Double_t alphaRatio      = h_alphaRatio->GetBinContent(i); 
     Double_t sideDATA        = h_sideDATA->GetBinContent(i);
@@ -188,20 +200,21 @@ void alphaRplots(std::string outputFolder){
   h_numbkgDATA->Draw();
 
   TCanvas* c = new TCanvas("c","",0,0,1000,800);
-  c->Divide(2,2);
 
-  c->cd(1);
+  c->cd();
   h_alphaRatio->Draw();
-  
-  c->cd(2);
+  c->Print("alphaRatio.pdf(");  
+
+  c->cd();
   h_numbkgDATA->Draw();
-  
-  c->cd(3);
-  h_signTotalBKG->Draw();
+  c->Print("alphaRatio.pdf");  
 
-  c->cd(4);
-  h_sideTotalBKG->Draw();
+  c->cd();
+  h_corrPRMassMC->Draw();
+  c->Print("alphaRatio.pdf");
 
-  c->Print("alphaRatio.pdf", "pdf");
+  c->cd();
+  h_corrPRMassDA->Draw();
+  c->Print("alphaRatio.pdf)");
 
 }

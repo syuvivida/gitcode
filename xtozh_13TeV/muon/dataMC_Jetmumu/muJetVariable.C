@@ -147,7 +147,7 @@ void muJetVariable(std::string inputFile, std::string outputFile){
       if( thisJet->Pt() < 200 ) continue;
       if( fabs(thisJet->Eta()) > 2.5 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
-      if( FATnSubSDJet[ij] < 2 ) continue;
+      if( FATnSubSDJet[ij] != 2 ) continue;
       if( thisJet->DeltaR(*thisMu) < 0.8 || thisJet->DeltaR(*thatMu) < 0.8 ) continue;
 
       goodFATJetID = ij;
