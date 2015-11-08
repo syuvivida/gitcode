@@ -60,7 +60,7 @@ fi
 
 if [ $ttbar == true ]; then
 
-    root -q -b -l $1.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15_2015_10_12/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8MC25ns_eleIDjet_CMSSW7412_20151006/\"\,\"TT_TuneCUETP8M1_13TeV\"\)
+    root -q -b -l $1.C++\(\"/data7/khurana/NCUGlobalTuples/SPRING15_2015_10_12/crab_TT_TuneCUETP8M1_13TeV-powheg-pythia8MC25ns_eleIDjet_CMSSW7412_20151006/151007_220812/0002/\"\,\"TT_TuneCUETP8M1_13TeV\"\)
 
 else
 

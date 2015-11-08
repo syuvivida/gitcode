@@ -6,11 +6,10 @@
 #include <TCanvas.h>
 #include <TStyle.h>
 #include <TSystemDirectory.h>
-#include "../setNCUStyle.h"
+#include "../../setNCUStyle.h"
 
 const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
 Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
-
 Double_t dataLumi  = 831.7; //pb-1
 Double_t xSecDY100 = 139.4*1.23;
 Double_t xSecDY200 = 42.75*1.23;
@@ -25,12 +24,7 @@ TFile* getFile(std::string infiles, std::string hname,
 	       Double_t crossSection, Double_t* scale){
 
   TFile* f = TFile::Open(infiles.data());
-  TH1D*  h = NULL;
-
-  if( hname.find("pMC") != std::string::npos ) 
-    h = (TH1D*)(f->Get("eventWeight_pMC"));
-  else if( hname.find("pDA") != std::string::npos )
-    h = (TH1D*)(f->Get("eventWeight_pDA"));
+  TH1D*   h = (TH1D*)(f->Get("eventWeight"));
 
   *scale = dataLumi/(h->Integral()/crossSection);
 
@@ -45,7 +39,6 @@ TH1D* fixDiscdBin(TH1D* h){
     h->SetBinContent(nb+1,(h->GetBinContent(nb+1)/binRatio));
     h->SetBinError(nb+1,(h->GetBinError(nb+1)/binRatio));
   }
-
   return h;
 
 }
@@ -152,20 +145,10 @@ void alphaRplots(std::string outputFolder){
   TFile *f_WZ    = NULL;
   TFile *f_ZZ    = NULL;
 
-  TH1D* h_sideTotalBKG = addSamples(infiles,"ZprimeSide_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_signTotalBKG = addSamples(infiles,"ZprimeSign_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_sideDATA     = addSamples(infiles,"ZprimeSide_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_signDATA     = addSamples(infiles,"ZprimeSign_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_ZPrimeMassMC = addSamples(infiles,"ZprimeMass_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_ZPrimeMassDA = addSamples(infiles,"ZprimeMass_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_ZPrimeMassDA = addSamples(infiles,"FATjetPRmass",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
 
-  cout << "side MC " << h_sideTotalBKG->Integral() << endl;
-  cout << "sign MC " << h_signTotalBKG->Integral() << endl;
-  cout << "side Data " << h_sideDATA->Integral() << endl;
-  cout << "sign Data " << h_signDATA->Integral() << endl;
-  cout << "without prm cut MC " << h_ZPrimeMassMC->Integral() << endl;
   cout << "without prm cut Data " << h_ZPrimeMassDA->Integral() << endl;
-
+  /*
   TH1D* h_alphaRatio   = new TH1D("h_alphaRatio", "", nvarBins, varBins);
 
   h_alphaRatio->Sumw2();
@@ -219,5 +202,5 @@ void alphaRplots(std::string outputFolder){
   c->cd();
   h_ZPrimeMassDA->Draw();
   c->Print("alphaRatio.pdf)");
-
+  */
 }
