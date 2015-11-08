@@ -27,12 +27,12 @@ void pseudoMC(std::string inputFile, std::string outputFile){
      
   TH1D* h_ZprimeSign_pMC  = new TH1D("h_ZprimeSign_pMC", "ZprimeSign", nvarBins, varBins);
   TH1D* h_ZprimeSide_pMC  = new TH1D("h_ZprimeSide_pMC", "ZprimeSide", nvarBins, varBins);
-  TH1D* h_PRmassCorr_pMC  = new TH1D("h_RmassCorr_pMC", "corrPRMass", 100, 0, 200);
+  TH1D* h_PRmassCorr_pMC  = new TH1D("h_RmassCorr_pMC", "corrPRMass", 20, 0, 200);
   TH1D* h_eventWeight_pMC = new TH1D("h_eventWeight_pMC", "eventWeight", 100, -1, 1);
 
   TH1D* h_ZprimeSign_pDA  = new TH1D("h_ZprimeSign_pDA", "ZprimeSign", nvarBins, varBins);
   TH1D* h_ZprimeSide_pDA  = new TH1D("h_ZprimeSide_pDA", "ZprimeSide", nvarBins, varBins);
-  TH1D* h_PRmassCorr_pDA  = new TH1D("h_RmassCorr_pDA", "corrPRMass", 100, 0, 200);
+  TH1D* h_PRmassCorr_pDA  = new TH1D("h_RmassCorr_pDA", "corrPRMass", 20, 0, 200);
   TH1D* h_eventWeight_pDA = new TH1D("h_eventWeight_pDA", "eventWeight", 100, -1, 1);
 
   h_ZprimeSign_pMC->Sumw2();
@@ -55,9 +55,9 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
   // begin of event loop
 
-  for (Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
+  for(Long64_t ev = 0; ev < data.GetEntriesFast(); ev++){
 
-    if ( ev % 1000000 == 0 )
+    if( ev % 1000000 == 0 )
       fprintf(stderr, "Processing event %lli of %lli\n", ev + 1, data.GetEntriesFast());
 
     data.GetEntry(ev);
@@ -67,7 +67,6 @@ void pseudoMC(std::string inputFile, std::string outputFile){
     TClonesArray*  muP4                 = (TClonesArray*) data.GetPtrTObject("muP4");
     Int_t          FATnJet              = data.GetInt("FATnJet");    
     Int_t*         FATnSubSDJet         = data.GetPtrInt("FATnSubSDJet");
-    Float_t*       FATjetSDmass         = data.GetPtrFloat("FATjetSDmass");
     Float_t*       FATjetPRmassL2L3Corr = data.GetPtrFloat("FATjetPRmassL2L3Corr");
     TClonesArray*  FATjetP4             = (TClonesArray*) data.GetPtrTObject("FATjetP4");
     vector<bool>&  FATjetPassIDLoose    = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
@@ -82,6 +81,12 @@ void pseudoMC(std::string inputFile, std::string outputFile){
     }
     else
       eventWeight = 1;
+
+    if( ev % 2 == 0 )
+      h_eventWeight_pMC->Fill(0.,eventWeight);
+
+    else if( ev % 2 == 1 )
+      h_eventWeight_pDA->Fill(0.,eventWeight);
         
     // data trigger cut (muon channel)
 
@@ -126,8 +131,7 @@ void pseudoMC(std::string inputFile, std::string outputFile){
       if( !FATjetPassIDLoose[ij] ) continue;
       if( FATnSubSDJet[ij] != 2 ) continue;
       if( thisJet->DeltaR(*thisMu) < 0.8 || thisJet->DeltaR(*thatMu) < 0.8 ) continue;
-      if( FATjetSDmass[ij] < 95 || FATjetSDmass[ij] > 130 ) continue;
-      //if( FATsubjetSDCSV[ij][0] < 0.605 || FATsubjetSDCSV[ij][1] < 0.605 ) continue;
+      if( FATsubjetSDCSV[ij][0] < 0.605 || FATsubjetSDCSV[ij][1] < 0.605 ) continue;
 
       goodFATJetID = ij;
       break;
@@ -140,7 +144,6 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
     if( ev % 2 == 0 ){
 
-      h_eventWeight_pMC->Fill(0.,eventWeight);
       h_PRmassCorr_pMC ->Fill(FATjetPRmassL2L3Corr[goodFATJetID],eventWeight);
 
       if( FATjetPRmassL2L3Corr[goodFATJetID] > 40 && FATjetPRmassL2L3Corr[goodFATJetID] < 105 )
@@ -153,7 +156,6 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
     else if( ev % 2 == 1 ){
 
-      h_eventWeight_pDA->Fill(0.,eventWeight);
       h_PRmassCorr_pDA->Fill(FATjetPRmassL2L3Corr[goodFATJetID],eventWeight);
 
       if( FATjetPRmassL2L3Corr[goodFATJetID] > 40 && FATjetPRmassL2L3Corr[goodFATJetID] < 105 )

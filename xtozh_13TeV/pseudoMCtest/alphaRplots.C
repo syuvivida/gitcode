@@ -11,6 +11,16 @@
 const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
 Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
 
+Double_t dataLumi  = 831.7; //pb-1
+Double_t xSecDY100 = 139.4*1.23;
+Double_t xSecDY200 = 42.75*1.23;
+Double_t xSecDY400 = 5.497*1.23;
+Double_t xSecDY600 = 2.21*1.23;
+Double_t xSecTTbar = 831.76;
+Double_t xSecWW    = 118.7;
+Double_t xSecWZ    = 47.13;
+Double_t xSecZZ    = 16.523;
+
 TFile* getFile(std::string infiles, std::string hname, 
 	       Double_t crossSection, Double_t* scale){
 
@@ -19,11 +29,9 @@ TFile* getFile(std::string infiles, std::string hname,
 
   if( hname.find("pMC") != std::string::npos ) 
     h = (TH1D*)(f->Get("eventWeight_pMC"));
-
   else if( hname.find("pDA") != std::string::npos )
     h = (TH1D*)(f->Get("eventWeight_pDA"));
 
-  Double_t dataLumi = 831.7; //pb-1 
   *scale = dataLumi/(h->Integral()/crossSection);
 
   return f;
@@ -33,11 +41,9 @@ TFile* getFile(std::string infiles, std::string hname,
 TH1D* fixDiscdBin(TH1D* h){
 
   for( Int_t nb = 0; nb < nvarBins; nb++ ){
-
     Int_t binRatio = (varBins[nb+1]-varBins[nb])/(varBins[1]-varBins[0]);
     h->SetBinContent(nb+1,(h->GetBinContent(nb+1)/binRatio));
     h->SetBinError(nb+1,(h->GetBinError(nb+1)/binRatio));
-
   }
 
   return h;
@@ -47,15 +53,6 @@ TH1D* fixDiscdBin(TH1D* h){
 TH1D* addSamples(std::vector<string>& infiles, std::string hname,
 		 TFile* f_DY100, TFile* f_DY200, TFile* f_DY400, TFile* f_DY600, 
 		 TFile* f_TTbar, TFile* f_WW, TFile* f_WZ, TFile* f_ZZ){
-
-  Double_t xSecDY100 = 139.4*1.23;
-  Double_t xSecDY200 = 42.75*1.23;
-  Double_t xSecDY400 = 5.497*1.23;
-  Double_t xSecDY600 = 2.21*1.23;
-  Double_t xSecTTbar = 831.76;
-  Double_t xSecWW    = 118.7;
-  Double_t xSecWZ    = 47.13;
-  Double_t xSecZZ    = 16.523;
 
   Double_t scaleDY100 = 0;
   Double_t scaleDY200 = 0;
@@ -121,9 +118,11 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname,
 
 void alphaRplots(std::string outputFolder){
 
-  //setNCUStyle();
-  gStyle->SetOptStat(0);
+  setNCUStyle();
   gStyle->SetMarkerSize(0);
+  gStyle->SetTitleSize(0.04,"XYZ");
+  gStyle->SetLabelSize(0.03,"XYZ");
+  gStyle->SetHistLineWidth(2);
 
   std::vector<string> infiles;
  
@@ -160,6 +159,18 @@ void alphaRplots(std::string outputFolder){
   TH1D* h_corrPRMassMC = addSamples(infiles,"corrPRMass_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
   TH1D* h_corrPRMassDA = addSamples(infiles,"corrPRMass_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
 
+  h_corrPRMassMC->SetXTitle("pseudo-MC corrected pruned mass");
+  h_corrPRMassDA->SetXTitle("pseudo-data corrected pruned mass");
+
+  h_corrPRMassMC->SetYTitle("Event numbers");
+  h_corrPRMassDA->SetYTitle("Event numbers");
+
+  h_corrPRMassMC->SetLineColor(kBlack);
+  h_corrPRMassDA->SetLineColor(kBlack);
+
+  h_corrPRMassMC->SetLineWidth(2);
+  h_corrPRMassDA->SetLineWidth(2);
+
   TH1D* h_alphaRatio   = new TH1D("h_alphaRatio", "", nvarBins, varBins);
 
   h_alphaRatio->Sumw2();
@@ -173,12 +184,9 @@ void alphaRplots(std::string outputFolder){
 
   h_numbkgDATA->Reset();
   h_numbkgDATA->SetXTitle("ZH mass");
-  h_numbkgDATA->SetYTitle("Event numbers");
+  h_numbkgDATA->SetYTitle("Number of backgrounds in signal region");
 
   for( Int_t i = 1; i <= nvarBins; i++ ){
-
-    cout << h_sideTotalBKG->GetBinContent(i) << endl;
-    cout << h_sideDATA->GetBinContent(i) << endl;
 
     Double_t alphaRatio      = h_alphaRatio->GetBinContent(i); 
     Double_t sideDATA        = h_sideDATA->GetBinContent(i);
