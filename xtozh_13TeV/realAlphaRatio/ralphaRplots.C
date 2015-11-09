@@ -24,16 +24,10 @@ Double_t xSecWW    = 118.7;
 Double_t xSecWZ    = 47.13;
 Double_t xSecZZ    = 16.523;
 
-TFile* getFile(std::string infiles, std::string hname, 
-	       Double_t crossSection, Double_t* scale){
+TFile* getFile(std::string infiles, Double_t crossSection, Double_t* scale){
 
   TFile* f = TFile::Open(infiles.data());
-  TH1D*  h = NULL;
-
-  if( hname.find("pMC") != std::string::npos ) 
-    h = (TH1D*)(f->Get("eventWeight_pMC"));
-  else if( hname.find("pDA") != std::string::npos )
-    h = (TH1D*)(f->Get("eventWeight_pDA"));
+  TH1D*  h = (TH1D*)(f->Get("eventWeight"));
 
   *scale = dataLumi/(h->Integral()/crossSection);
 
@@ -69,28 +63,28 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname,
   for(unsigned int i = 0; i < infiles.size(); i++){
 
     if( infiles[i].find("HT-100") != std::string::npos )
-      f_DY100 = getFile(infiles[i].data(), hname.data(), xSecDY100, &scaleDY100);
+      f_DY100 = getFile(infiles[i].data(), xSecDY100, &scaleDY100);
 
     if( infiles[i].find("HT-200") != std::string::npos )
-      f_DY200 = getFile(infiles[i].data(), hname.data(), xSecDY200, &scaleDY200);
+      f_DY200 = getFile(infiles[i].data(), xSecDY200, &scaleDY200);
 
     if( infiles[i].find("HT-400") != std::string::npos )
-      f_DY400 = getFile(infiles[i].data(), hname.data(), xSecDY400, &scaleDY400);
+      f_DY400 = getFile(infiles[i].data(), xSecDY400, &scaleDY400);
 
     if( infiles[i].find("HT-600") != std::string::npos )
-      f_DY600 = getFile(infiles[i].data(), hname.data(), xSecDY600, &scaleDY600);
+      f_DY600 = getFile(infiles[i].data(), xSecDY600, &scaleDY600);
 
     if( infiles[i].find("TT_") != std::string::npos )
-      f_TTbar = getFile(infiles[i].data(), hname.data(), xSecTTbar, &scaleTTbar);
+      f_TTbar = getFile(infiles[i].data(), xSecTTbar, &scaleTTbar);
 
     if( infiles[i].find("WW_") != std::string::npos )
-      f_WW = getFile(infiles[i].data(), hname.data(), xSecWW, &scaleWW);
+      f_WW = getFile(infiles[i].data(), xSecWW, &scaleWW);
 
     if( infiles[i].find("WZ_") != std::string::npos )
-      f_WZ = getFile(infiles[i].data(), hname.data(), xSecWZ, &scaleWZ);
+      f_WZ = getFile(infiles[i].data(), xSecWZ, &scaleWZ);
 
     if( infiles[i].find("ZZ_") != std::string::npos )
-      f_ZZ = getFile(infiles[i].data(), hname.data(), xSecZZ, &scaleZZ);
+      f_ZZ = getFile(infiles[i].data(), xSecZZ, &scaleZZ);
 
   }
 
@@ -119,6 +113,32 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname,
 
 }
 
+TH1D* addData(std::vector<string>& infiles, std::string hname,
+	      TFile* f_data0, TFile* f_data1){
+
+  for(unsigned int i = 0; i < infiles.size(); i++){
+
+    if( infiles[i].find("V3_2015") != std::string::npos )
+      f_data0 = TFile::Open(infiles[i].data());
+
+    if( infiles[i].find("V4_2015") != std::string::npos )
+      f_data1 = TFile::Open(infiles[i].data());
+
+  }
+
+  TH1D* data0_temp = fixDiscdBin((TH1D*)(f_data0->Get(Form("%s",hname.c_str()))));
+  TH1D* data1_temp = fixDiscdBin((TH1D*)(f_data1->Get(Form("%s",hname.c_str()))));
+
+  TH1D* h_Total = (TH1D*)(f_data0->Get(Form("%s",hname.c_str())))->Clone("h_Total");
+
+  h_Total->Reset();
+  h_Total->Add(data0_temp);
+  h_Total->Add(data1_temp);
+
+  return h_Total;
+
+}
+
 Double_t fitZprime(Double_t* v, Double_t* p){
 
   Double_t x = v[0];
@@ -140,7 +160,7 @@ Double_t fitPRmass(Double_t* v, Double_t* p){
   
 }
 
-void alphaRplots(std::string outputFolder){
+void ralphaRplots(std::string outputFolder){
 
   setNCUStyle();
   gStyle->SetOptFit(0);
@@ -176,24 +196,26 @@ void alphaRplots(std::string outputFolder){
   TFile *f_WW    = NULL;
   TFile *f_WZ    = NULL;
   TFile *f_ZZ    = NULL;
+  TFile *f_data0 = NULL;
+  TFile *f_data1 = NULL;
 
   // Declare prefer histogram and add them together
 
-  TH1D* h_sideTotalBKG  = addSamples(infiles,"ZprimeSide_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_signTotalBKG  = addSamples(infiles,"ZprimeSign_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_sideDATA      = addSamples(infiles,"ZprimeSide_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_signDATA      = addSamples(infiles,"ZprimeSign_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_corrPRmass    = addSamples(infiles,"corrPRmass_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_corrPRmassAll = addSamples(infiles,"corrPRmassAll_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_sideDATA      = addData(infiles,"ZprimeSide",f_data0,f_data1);
+  TH1D* h_signDATA      = addData(infiles,"ZprimeSign",f_data0,f_data1);
+  TH1D* h_corrPRmass    = addData(infiles,"corrPRmass",f_data0,f_data1);
+  TH1D* h_corrPRmassAll = addData(infiles,"corrPRmassAll",f_data0,f_data1);
+  TH1D* h_sideTotalBKG  = addSamples(infiles,"ZprimeSide",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_signTotalBKG  = addSamples(infiles,"ZprimeSign",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
 
   h_sideTotalBKG->SetLineWidth(2);
   h_sideTotalBKG->SetLineColor(kBlack);
-  h_sideTotalBKG->SetXTitle("Side band ZH mass in pseudo-MC");
+  h_sideTotalBKG->SetXTitle("Side band ZH mass in MC");
   h_sideTotalBKG->SetYTitle("Event numbers");
 
   h_signTotalBKG->SetLineWidth(2);
   h_signTotalBKG->SetLineColor(kBlack);
-  h_signTotalBKG->SetXTitle("Signal region ZH mass in pseudo-MC");
+  h_signTotalBKG->SetXTitle("Signal region ZH mass in MC");
   h_signTotalBKG->SetYTitle("Event numbers");
 
   h_signDATA->SetLineWidth(2);
@@ -203,12 +225,12 @@ void alphaRplots(std::string outputFolder){
 
   h_corrPRmass->SetLineWidth(2);
   h_corrPRmass->SetLineColor(kBlack);
-  h_corrPRmass->SetXTitle("Side band corrected pruned mass in pseudo-data");
+  h_corrPRmass->SetXTitle("Side band corrected pruned mass in data");
   h_corrPRmass->SetYTitle("Event numbers");
 
   h_corrPRmassAll->SetLineWidth(2);
   h_corrPRmassAll->SetLineColor(kBlack);
-  h_corrPRmassAll->SetXTitle("Corrected pruned mass in pseudo-data");
+  h_corrPRmassAll->SetXTitle("Corrected pruned mass in data");
   h_corrPRmassAll->SetYTitle("Event numbers");
 
   // Calculate alpha ratio
@@ -247,13 +269,13 @@ void alphaRplots(std::string outputFolder){
   // Fitting procedure
 
   TF1* f_fitPRmass    = new TF1("f_fitPRmass", fitPRmass, 40, 240, 4);
-  TF1* f_fitPRmassAll = new TF1("f_fitPRmassAll", fitPRmass, 0, 240, 4);
+  TF1* f_fitPRmassAll = new TF1("f_fitPRmassAll", fitPRmass, 40, 240, 4);
   TF1* f_fitSideBkg   = new TF1("f_fitSideBkg", fitZprime, varBins[0], varBins[nvarBins], 3);
   TF1* f_fitSignBkg   = new TF1("f_fitSignBkg", fitZprime, varBins[0], varBins[nvarBins], 3);
   TF1* f_fitAlphaR    = new TF1("f_fitAlphaR", divFunc, varBins[0], varBins[nvarBins], 6);
 
   h_corrPRmass   ->Fit("f_fitPRmass", "", "", 40, 240);
-  h_corrPRmassAll->Fit("f_fitPRmassAll", "", "", 0, 240);
+  h_corrPRmassAll->Fit("f_fitPRmassAll", "", "", 40, 240);
 
   h_sideTotalBKG->Fit("f_fitSideBkg", "", "", varBins[0], varBins[nvarBins]);
   h_signTotalBKG->Fit("f_fitSignBkg", "", "", varBins[0], varBins[nvarBins]);
@@ -265,11 +287,10 @@ void alphaRplots(std::string outputFolder){
   f_fitAlphaR->SetParameter(4, f_fitSideBkg->GetParameter(1));
   f_fitAlphaR->SetParameter(5, f_fitSideBkg->GetParameter(2));
 
-  f_fitPRmass   ->SetLineWidth(2);
-  f_fitPRmassAll->SetLineWidth(2);
-  f_fitSideBkg  ->SetLineWidth(2);
-  f_fitSignBkg  ->SetLineWidth(2);
-  f_fitAlphaR   ->SetLineWidth(2);
+  f_fitPRmass ->SetLineWidth(2);
+  f_fitSideBkg->SetLineWidth(2);
+  f_fitSignBkg->SetLineWidth(2);
+  f_fitAlphaR ->SetLineWidth(2);
 
   Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmass->GetBinWidth(1);
   h_numbkgDATA->Scale(nBkgSig/h_numbkgDATA->Integral());
@@ -283,40 +304,40 @@ void alphaRplots(std::string outputFolder){
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
   leg->SetTextSize(0.03);
-  leg->AddEntry(h_signDATA, "signal region of pseudo-data", "le");
-  leg->AddEntry(h_numbkgDATA, "backgrounds in signal region of pseudo-data", "le");
+  leg->AddEntry(h_signDATA, "signal region of data", "le");
+  leg->AddEntry(h_numbkgDATA, "backgrounds in signal region of data", "le");
 
   TCanvas* c = new TCanvas("c","",0,0,1000,800);
   
   c->cd();
   h_corrPRmassAll->Draw();
   f_fitPRmassAll ->Draw("same");
-  c->Print("alphaRatio.pdf(");
+  c->Print("realAlphaRatio.pdf(");
 
   c->cd();
   h_corrPRmass->Draw();
   f_fitPRmass ->Draw("same");
-  c->Print("alphaRatio.pdf");
+  c->Print("realAlphaRatio.pdf");
   
   c->cd();
   h_signTotalBKG->Draw();
   f_fitSignBkg  ->Draw("same");
-  c->Print("alphaRatio.pdf");
+  c->Print("realAlphaRatio.pdf");
 
   c->cd();
   h_sideTotalBKG->Draw();
   f_fitSideBkg  ->Draw("same");
-  c->Print("alphaRatio.pdf");
+  c->Print("realAlphaRatio.pdf");
 
   c->cd();
   h_alphaRatio->Draw();
   f_fitAlphaR ->Draw("same");
-  c->Print("alphaRatio.pdf");  
+  c->Print("realAlphaRatio.pdf");  
 
   c->cd();
   h_signDATA->Draw();
   h_numbkgDATA->Draw("same");
   leg->Draw();
-  c->Print("alphaRatio.pdf)");
+  c->Print("realAlphaRatio.pdf)");
 
 }
