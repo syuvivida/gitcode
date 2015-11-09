@@ -1,7 +1,9 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include <TH1D.h>
+#include <TF1.h>
+#include <TH1.h>
+#include <TMath.h>
 #include <TFile.h>
 #include <TCanvas.h>
 #include <TStyle.h>
@@ -116,9 +118,31 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname,
 
 }
 
+Double_t fitZprime(Double_t* v, Double_t* p){
+
+  Double_t x = v[0];
+  return p[0]*TMath::Exp(p[1]*x + p[2]/x);
+
+}
+
+Double_t divFunc(Double_t* v, Double_t* p){
+
+  Double_t x = v[0];
+  return (p[0]*TMath::Exp(p[1]*x+p[2]/x))/(p[3]*TMath::Exp(p[4]*x+p[5]/x));
+
+}
+
+Double_t fitPRmass(Double_t* v, Double_t* p){
+  
+  Double_t x = v[0];
+  return p[0]*TMath::Exp(p[1]*x)*0.5*(1+TMath::Erf((x-p[2])/p[3]));
+  
+}
+
 void alphaRplots(std::string outputFolder){
 
   setNCUStyle();
+  gStyle->SetOptFit(0);
   gStyle->SetMarkerSize(0);
   gStyle->SetTitleSize(0.04,"XYZ");
   gStyle->SetLabelSize(0.03,"XYZ");
@@ -152,19 +176,29 @@ void alphaRplots(std::string outputFolder){
   TFile *f_WZ    = NULL;
   TFile *f_ZZ    = NULL;
 
+  // Declare prefer histogram and add them together
+
   TH1D* h_sideTotalBKG = addSamples(infiles,"ZprimeSide_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
   TH1D* h_signTotalBKG = addSamples(infiles,"ZprimeSign_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
   TH1D* h_sideDATA     = addSamples(infiles,"ZprimeSide_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_signDATA     = addSamples(infiles,"ZprimeSign_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_ZPrimeMassMC = addSamples(infiles,"ZprimeMass_pMC",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
-  TH1D* h_ZPrimeMassDA = addSamples(infiles,"ZprimeMass_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  TH1D* h_corrPRmass   = addSamples(infiles,"corrPRmass_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
 
-  cout << "side MC " << h_sideTotalBKG->Integral() << endl;
-  cout << "sign MC " << h_signTotalBKG->Integral() << endl;
-  cout << "side Data " << h_sideDATA->Integral() << endl;
-  cout << "sign Data " << h_signDATA->Integral() << endl;
-  cout << "without prm cut MC " << h_ZPrimeMassMC->Integral() << endl;
-  cout << "without prm cut Data " << h_ZPrimeMassDA->Integral() << endl;
+  h_sideTotalBKG->SetLineWidth(2);
+  h_sideTotalBKG->SetLineColor(kBlack);
+  h_sideTotalBKG->SetXTitle("Side band ZH mass");
+  h_sideTotalBKG->SetYTitle("Event numbers");
+
+  h_signTotalBKG->SetLineWidth(2);
+  h_signTotalBKG->SetLineColor(kBlack);
+  h_signTotalBKG->SetXTitle("Signal region ZH mass");
+  h_signTotalBKG->SetYTitle("Event numbers");
+
+  h_corrPRmass->SetLineWidth(2);
+  h_corrPRmass->SetLineColor(kBlack);
+  h_corrPRmass->SetXTitle("Corrected pruned mass");
+  h_corrPRmass->SetYTitle("Event numbers");
+
+  // Calculate alpha ratio
 
   TH1D* h_alphaRatio   = new TH1D("h_alphaRatio", "", nvarBins, varBins);
 
@@ -173,7 +207,8 @@ void alphaRplots(std::string outputFolder){
   h_alphaRatio->SetYTitle("Alpha ratio");
   h_alphaRatio->Divide(h_signTotalBKG,h_sideTotalBKG);
   h_alphaRatio->SetMinimum(0);
-  h_alphaRatio->Draw();
+
+  // Calculate number of backgrounds in signal region
 
   TH1D* h_numbkgDATA = (TH1D*)h_alphaRatio->Clone("h_numbkgDATA");
 
@@ -198,26 +233,60 @@ void alphaRplots(std::string outputFolder){
 
   }
 
-  h_numbkgDATA->Scale(h_signDATA->Integral()/h_numbkgDATA->Integral());
+  // Fitting procedure
+
+  TF1* f_fitPRmass  = new TF1("f_fitPRmass", fitPRmass, 40, 240, 4);
+  TF1* f_fitSideBkg = new TF1("f_fitSideBkg", fitZprime, varBins[0], varBins[nvarBins], 3);
+  TF1* f_fitSignBkg = new TF1("f_fitSignBkg", fitZprime, varBins[0], varBins[nvarBins], 3);
+  TF1* f_fitAlphaR  = new TF1("f_fitAlphaR", divFunc, varBins[0], varBins[nvarBins], 6);
+
+  h_corrPRmass->Fit("f_fitPRmass", "", "", 40, 240);
+
+  h_sideTotalBKG->Fit("f_fitSideBkg", "", "", varBins[0], varBins[nvarBins]);
+  h_signTotalBKG->Fit("f_fitSignBkg", "", "", varBins[0], varBins[nvarBins]);
+
+  f_fitAlphaR->SetParameter(0, f_fitSignBkg->GetParameter(0));
+  f_fitAlphaR->SetParameter(1, f_fitSignBkg->GetParameter(1));
+  f_fitAlphaR->SetParameter(2, f_fitSignBkg->GetParameter(2));
+  f_fitAlphaR->SetParameter(3, f_fitSideBkg->GetParameter(0));
+  f_fitAlphaR->SetParameter(4, f_fitSideBkg->GetParameter(1));
+  f_fitAlphaR->SetParameter(5, f_fitSideBkg->GetParameter(2));
+
+  f_fitPRmass ->SetLineWidth(2);
+  f_fitSideBkg->SetLineWidth(2);
+  f_fitSignBkg->SetLineWidth(2);
+  f_fitAlphaR ->SetLineWidth(2);
+
+  Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmass->GetBinWidth(1);
+  h_numbkgDATA->Scale(nBkgSig/h_numbkgDATA->Integral());
   h_numbkgDATA->SetMinimum(0);
-  h_numbkgDATA->Draw();
+
+  // Output results
 
   TCanvas* c = new TCanvas("c","",0,0,1000,800);
-
+  
   c->cd();
-  h_alphaRatio->Draw();
-  c->Print("alphaRatio.pdf(");  
-
+  h_corrPRmass->Draw();
+  f_fitPRmass ->Draw("same");
+  c->Print("alphaRatio.pdf(");
+  
   c->cd();
-  h_numbkgDATA->Draw();
-  c->Print("alphaRatio.pdf");  
-
-  c->cd();
-  h_ZPrimeMassMC->Draw();
+  h_signTotalBKG->Draw();
+  f_fitSignBkg  ->Draw("same");
   c->Print("alphaRatio.pdf");
 
   c->cd();
-  h_ZPrimeMassDA->Draw();
+  h_sideTotalBKG->Draw();
+  f_fitSideBkg  ->Draw("same");
+  c->Print("alphaRatio.pdf");
+
+  c->cd();
+  h_alphaRatio->Draw();
+  f_fitAlphaR ->Draw("same");
+  c->Print("alphaRatio.pdf");  
+
+  c->cd();
+  h_numbkgDATA->Draw();
   c->Print("alphaRatio.pdf)");
 
 }

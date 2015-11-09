@@ -27,30 +27,24 @@ void pseudoMC(std::string inputFile, std::string outputFile){
      
   TH1D* h_ZprimeSign_pMC  = new TH1D("h_ZprimeSign_pMC", "ZprimeSign", nvarBins, varBins);
   TH1D* h_ZprimeSide_pMC  = new TH1D("h_ZprimeSide_pMC", "ZprimeSide", nvarBins, varBins);
-  TH1D* h_ZprimeMass_pMC  = new TH1D("h_ZprimeMass_pMC", "ZprimeMass", nvarBins, varBins);
-  TH1D* h_eventWeight_pMC = new TH1D("h_eventWeight_pMC", "eventWeight", 100, -1, 1);
-
   TH1D* h_ZprimeSign_pDA  = new TH1D("h_ZprimeSign_pDA", "ZprimeSign", nvarBins, varBins);
   TH1D* h_ZprimeSide_pDA  = new TH1D("h_ZprimeSide_pDA", "ZprimeSide", nvarBins, varBins);
-  TH1D* h_ZprimeMass_pDA  = new TH1D("h_ZprimeMass_pDA", "ZprimeMass", nvarBins, varBins);
+  TH1D* h_corrPRmass_pDA  = new TH1D("h_corrPRmass_pDA", "corrPRmass", 20, 40, 240);
+  TH1D* h_eventWeight_pMC = new TH1D("h_eventWeight_pMC", "eventWeight", 100, -1, 1);
   TH1D* h_eventWeight_pDA = new TH1D("h_eventWeight_pDA", "eventWeight", 100, -1, 1);
 
   h_ZprimeSign_pMC->Sumw2();
   h_ZprimeSide_pMC->Sumw2();
-  h_ZprimeMass_pMC->Sumw2();
-
   h_ZprimeSign_pDA->Sumw2();
   h_ZprimeSide_pDA->Sumw2();
-  h_ZprimeMass_pDA->Sumw2();
+  h_corrPRmass_pDA->Sumw2();
 
   h_ZprimeSign_pMC ->GetXaxis()->SetTitle("ZprimeSign");
   h_ZprimeSide_pMC ->GetXaxis()->SetTitle("ZprimeSide");
-  h_ZprimeMass_pMC ->GetXaxis()->SetTitle("ZprimeMass");
-  h_eventWeight_pMC->GetXaxis()->SetTitle("eventWeight");  
-
   h_ZprimeSign_pDA ->GetXaxis()->SetTitle("ZprimeSign");
   h_ZprimeSide_pDA ->GetXaxis()->SetTitle("ZprimeSide");
-  h_ZprimeMass_pDA ->GetXaxis()->SetTitle("ZprimeMass");
+  h_corrPRmass_pDA ->GetXaxis()->SetTitle("corrPRmass");
+  h_eventWeight_pMC->GetXaxis()->SetTitle("eventWeight");
   h_eventWeight_pDA->GetXaxis()->SetTitle("eventWeight");
 
   // begin of event loop
@@ -62,15 +56,15 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
     data.GetEntry(ev);
 
-    Int_t          nVtx                 = data.GetInt("nVtx");
-    Float_t        mcWeight             = data.GetFloat("mcWeight");    
-    TClonesArray*  muP4                 = (TClonesArray*) data.GetPtrTObject("muP4");
-    Int_t          FATnJet              = data.GetInt("FATnJet");    
-    Int_t*         FATnSubSDJet         = data.GetPtrInt("FATnSubSDJet");
-    Float_t*       FATjetPRmassL2L3Corr = data.GetPtrFloat("FATjetPRmassL2L3Corr");
-    TClonesArray*  FATjetP4             = (TClonesArray*) data.GetPtrTObject("FATjetP4");
-    vector<bool>&  FATjetPassIDLoose    = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
-    vector<float>* FATsubjetSDCSV       = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
+    Int_t          nVtx              = data.GetInt("nVtx");
+    Float_t        mcWeight          = data.GetFloat("mcWeight");    
+    TClonesArray*  muP4              = (TClonesArray*) data.GetPtrTObject("muP4");
+    Int_t          FATnJet           = data.GetInt("FATnJet");    
+    Int_t*         FATnSubSDJet      = data.GetPtrInt("FATnSubSDJet");
+    Float_t*       corrPRmass        = data.GetPtrFloat("FATjetPRmassL2L3Corr");
+    TClonesArray*  FATjetP4          = (TClonesArray*) data.GetPtrTObject("FATjetP4");
+    vector<bool>&  FATjetPassIDLoose = *((vector<bool>*) data.GetPtr("FATjetPassIDLoose"));
+    vector<float>* FATsubjetSDCSV    = data.GetPtrVectorFloat("FATsubjetSDCSV", FATnJet);
   
     if( nVtx < 1 ) continue;
 
@@ -144,24 +138,22 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
     if( ev % 2 == 0 ){
 
-      h_ZprimeMass_pMC->Fill(mllbb,eventWeight);
-
-      if( FATjetPRmassL2L3Corr[goodFATJetID] > 40 && FATjetPRmassL2L3Corr[goodFATJetID] < 105 )
+      if( corrPRmass[goodFATJetID] > 40 && !(corrPRmass[goodFATJetID] > 65 && corrPRmass[goodFATJetID] < 150) )
 	h_ZprimeSide_pMC->Fill(mllbb,eventWeight);
 
-      if( FATjetPRmassL2L3Corr[goodFATJetID] > 105 && FATjetPRmassL2L3Corr[goodFATJetID] < 135 )
+      if( corrPRmass[goodFATJetID] > 105 && corrPRmass[goodFATJetID] < 135 )
 	h_ZprimeSign_pMC->Fill(mllbb,eventWeight);
   
     }
 
     else if( ev % 2 == 1 ){
 
-      h_ZprimeMass_pDA->Fill(mllbb,eventWeight);
+      if( corrPRmass[goodFATJetID] > 40 && !(corrPRmass[goodFATJetID] > 65 && corrPRmass[goodFATJetID] < 150) ){
+        h_ZprimeSide_pDA->Fill(mllbb,eventWeight);
+        h_corrPRmass_pDA->Fill(corrPRmass[goodFATJetID],eventWeight);
+      }
 
-      if( FATjetPRmassL2L3Corr[goodFATJetID] > 40 && FATjetPRmassL2L3Corr[goodFATJetID] < 105 )
-	h_ZprimeSide_pDA->Fill(mllbb,eventWeight);
-
-      if( FATjetPRmassL2L3Corr[goodFATJetID] > 105 && FATjetPRmassL2L3Corr[goodFATJetID] < 135 )
+      if( corrPRmass[goodFATJetID] > 105 && corrPRmass[goodFATJetID] < 135 )
 	h_ZprimeSign_pDA->Fill(mllbb,eventWeight);
 
     }
@@ -174,12 +166,10 @@ void pseudoMC(std::string inputFile, std::string outputFile){
   
   h_ZprimeSign_pMC ->Write("ZprimeSign_pMC");
   h_ZprimeSide_pMC ->Write("ZprimeSide_pMC");
-  h_ZprimeMass_pMC ->Write("ZprimeMass_pMC");
-  h_eventWeight_pMC->Write("eventWeight_pMC");
-
   h_ZprimeSign_pDA ->Write("ZprimeSign_pDA");
   h_ZprimeSide_pDA ->Write("ZprimeSide_pDA");
-  h_ZprimeMass_pDA ->Write("ZprimeMass_pDA");
+  h_corrPRmass_pDA ->Write("corrPRmass_pDA");
+  h_eventWeight_pMC->Write("eventWeight_pMC");
   h_eventWeight_pDA->Write("eventWeight_pDA");
 
   outFile->Write();
