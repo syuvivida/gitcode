@@ -12,8 +12,8 @@
 #include <TSystemDirectory.h>
 #include "../setNCUStyle.h"
 
-const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
-Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
+//const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
+//Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
 
 Double_t dataLumi  = 831.7; //pb-1
 Double_t xSecDY100 = 139.4*1.23;
@@ -43,13 +43,13 @@ TFile* getFile(std::string infiles, std::string hname,
 }
 
 TH1D* fixDiscdBin(TH1D* h){
-
+  /*
   for( Int_t nb = 0; nb < nvarBins; nb++ ){
     Int_t binRatio = (varBins[nb+1]-varBins[nb])/(varBins[1]-varBins[0]);
     h->SetBinContent(nb+1,(h->GetBinContent(nb+1)/binRatio));
     h->SetBinError(nb+1,(h->GetBinError(nb+1)/binRatio));
   }
-
+  */
   return h;
 
 }
@@ -214,7 +214,8 @@ void alphaRplots(std::string outputFolder){
 
   // Calculate alpha ratio
 
-  TH1D* h_alphaRatio   = new TH1D("h_alphaRatio", "", nvarBins, varBins);
+  //TH1D* h_alphaRatio = new TH1D("h_alphaRatio", "", nvarBins, varBins);
+  TH1D* h_alphaRatio = new TH1D("h_alphaRatio", "", 45, 500, 5000); 
 
   h_alphaRatio->Sumw2();
   h_alphaRatio->SetXTitle("ZH mass");
@@ -228,7 +229,7 @@ void alphaRplots(std::string outputFolder){
 
   h_numbkgDATA->Reset();
 
-  for( Int_t i = 1; i <= nvarBins; i++ ){
+  for( Int_t i = 1; i <= 45/*nvarBins*/; i++ ){
 
     Double_t alphaRatio      = h_alphaRatio->GetBinContent(i); 
     Double_t sideDATA        = h_sideDATA->GetBinContent(i);
@@ -249,15 +250,15 @@ void alphaRplots(std::string outputFolder){
 
   TF1* f_fitPRmass    = new TF1("f_fitPRmass", fitPRmass, 40, 240, 4);
   TF1* f_fitPRmassAll = new TF1("f_fitPRmassAll", fitPRmass, 40, 240, 4);
-  TF1* f_fitSideBkg   = new TF1("f_fitSideBkg", fitZprime, varBins[0], varBins[nvarBins], 3);
-  TF1* f_fitSignBkg   = new TF1("f_fitSignBkg", fitZprime, varBins[0], varBins[nvarBins], 3);
-  TF1* f_fitAlphaR    = new TF1("f_fitAlphaR", divFunc, varBins[0], varBins[nvarBins], 6);
+  TF1* f_fitSideBkg   = new TF1("f_fitSideBkg", fitZprime, 500, 5000,/*varBins[0], varBins[nvarBins],*/ 3);
+  TF1* f_fitSignBkg   = new TF1("f_fitSignBkg", fitZprime, 500, 5000,/* varBins[0], varBins[nvarBins],*/ 3);
+  TF1* f_fitAlphaR    = new TF1("f_fitAlphaR", divFunc, 500, 5000,/*varBins[0], varBins[nvarBins],*/ 6);
 
   h_corrPRmass   ->Fit("f_fitPRmass", "", "", 40, 240);
   h_corrPRmassAll->Fit("f_fitPRmassAll", "", "", 40, 240);
 
-  h_sideTotalBKG->Fit("f_fitSideBkg", "", "", varBins[0], varBins[nvarBins]);
-  h_signTotalBKG->Fit("f_fitSignBkg", "", "", varBins[0], varBins[nvarBins]);
+  h_sideTotalBKG->Fit("f_fitSideBkg", "", "", 500, 5000/*varBins[0], varBins[nvarBins]*/);
+  h_signTotalBKG->Fit("f_fitSignBkg", "", "", 500, 5000/*varBins[0], varBins[nvarBins]*/);
 
   f_fitAlphaR->SetParameter(0, f_fitSignBkg->GetParameter(0));
   f_fitAlphaR->SetParameter(1, f_fitSignBkg->GetParameter(1));
@@ -293,10 +294,13 @@ void alphaRplots(std::string outputFolder){
   lar->SetTextSize(0.04);
   lar->SetLineWidth(5);
 
-  TLatex *eqn = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = #frac{1}{2} p_{0} e^{p_{1}x} ( 1 + erf ( #frac{x - p_{2}}{p_{3}} ) )}}");
+  TLatex *eqn0 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = #frac{1}{2} p_{0} e^{p_{1}x} ( 1 + erf ( #frac{x - p_{2}}{p_{3}} ) )}}");
+  TLatex *eqn1 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = p_{0} e^{p_{1}x + #frac{p_{2}}{x}}}}");
 
-  eqn->SetNDC(kTRUE);
-  eqn->SetTextSize(0.04);
+  eqn0->SetNDC(kTRUE);
+  eqn0->SetTextSize(0.04);
+  eqn1->SetNDC(kTRUE);
+  eqn1->SetTextSize(0.04);
 
   TCanvas* c = new TCanvas("c","",0,0,1000,800);
   
@@ -304,26 +308,28 @@ void alphaRplots(std::string outputFolder){
   h_corrPRmassAll->Draw();
   f_fitPRmassAll ->Draw("same");
   lar->Draw();
-  eqn->Draw();
+  eqn0->Draw();
   c->Print("alphaRatio.pdf(");
 
   c->cd();
   h_corrPRmass->Draw();
   f_fitPRmass ->Draw("same");
   lar->Draw();
-  eqn->Draw();
+  eqn0->Draw();
   c->Print("alphaRatio.pdf");
   
   c->cd();
   h_signTotalBKG->Draw();
   f_fitSignBkg  ->Draw("same");
   lar->Draw();
+  eqn1->Draw();
   c->Print("alphaRatio.pdf");
 
   c->cd();
   h_sideTotalBKG->Draw();
   f_fitSideBkg  ->Draw("same");
   lar->Draw();
+  eqn1->Draw();
   c->Print("alphaRatio.pdf");
 
   c->cd();

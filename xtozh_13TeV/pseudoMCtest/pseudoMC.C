@@ -22,13 +22,13 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
   // Declare the histogram
 
-  const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
-  Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
+  //const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
+  //Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
      
-  TH1D* h_ZprimeSign_pMC    = new TH1D("h_ZprimeSign_pMC", "ZprimeSign", nvarBins, varBins);
-  TH1D* h_ZprimeSide_pMC    = new TH1D("h_ZprimeSide_pMC", "ZprimeSide", nvarBins, varBins);
-  TH1D* h_ZprimeSign_pDA    = new TH1D("h_ZprimeSign_pDA", "ZprimeSign", nvarBins, varBins);
-  TH1D* h_ZprimeSide_pDA    = new TH1D("h_ZprimeSide_pDA", "ZprimeSide", nvarBins, varBins);
+  TH1D* h_ZprimeSign_pMC    = new TH1D("h_ZprimeSign_pMC", "ZprimeSign", 45, 500, 5000);
+  TH1D* h_ZprimeSide_pMC    = new TH1D("h_ZprimeSide_pMC", "ZprimeSide", 45, 500, 5000);
+  TH1D* h_ZprimeSign_pDA    = new TH1D("h_ZprimeSign_pDA", "ZprimeSign", 45, 500, 5000);
+  TH1D* h_ZprimeSide_pDA    = new TH1D("h_ZprimeSide_pDA", "ZprimeSide", 45, 500, 5000);
   TH1D* h_corrPRmass_pDA    = new TH1D("h_corrPRmass_pDA", "corrPRmass", 70, 40, 250);
   TH1D* h_corrPRmassAll_pDA = new TH1D("h_corrPRmassAll_pDA", "corrPRmass", 80, 0, 240);
   TH1D* h_eventWeight_pMC   = new TH1D("h_eventWeight_pMC", "eventWeight", 100, -1, 1);
@@ -124,9 +124,9 @@ void pseudoMC(std::string inputFile, std::string outputFile){
       thisJet = (TLorentzVector*)FATjetP4->At(ij);
 
       if( thisJet->Pt() < 200 ) continue;
-      if( fabs(thisJet->Eta()) > 2.5 ) continue;
+      if( fabs(thisJet->Eta()) > 2.4 ) continue;
       if( !FATjetPassIDLoose[ij] ) continue;
-      if( FATnSubSDJet[ij] != 2 ) continue;
+      //if( FATnSubSDJet[ij] != 2 ) continue;
       if( thisJet->DeltaR(*thisMu) < 0.8 || thisJet->DeltaR(*thatMu) < 0.8 ) continue;
       //if( FATsubjetSDCSV[ij][0] < 0.605 || FATsubjetSDCSV[ij][1] < 0.605 ) continue;
 
@@ -138,6 +138,8 @@ void pseudoMC(std::string inputFile, std::string outputFile){
     if( goodFATJetID < 0 ) continue;
 
     Float_t mllbb = (*thisMu+*thatMu+*thisJet).M();  
+
+    if( mllbb < 400 ) continue;
 
     if( ev % 2 == 0 ){
 

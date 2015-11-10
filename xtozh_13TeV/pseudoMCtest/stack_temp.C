@@ -12,8 +12,8 @@
 #include <TSystemDirectory.h>
 #include "../setNCUStyle.h"
 
-const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
-Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
+//const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
+//Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
 
 Double_t dataLumi  = 831.7; //pb-1
 Double_t xSecDY100 = 139.4*1.23;
@@ -43,13 +43,13 @@ TFile* getFile(std::string infiles, std::string hname,
 }
 
 TH1D* fixDiscdBin(TH1D* h){
-
+  /*
   for( Int_t nb = 0; nb < nvarBins; nb++ ){
     Int_t binRatio = (varBins[nb+1]-varBins[nb])/(varBins[1]-varBins[0]);
     h->SetBinContent(nb+1,(h->GetBinContent(nb+1)/binRatio));
     h->SetBinError(nb+1,(h->GetBinError(nb+1)/binRatio));
   }
-
+  */
   return h;
 
 }
