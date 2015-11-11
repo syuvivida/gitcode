@@ -7,6 +7,8 @@
 #include "untuplizer.h"
 
 bool isPassZmumu(TreeReader &data, vector<Int_t>& goodMuID){
+  
+  goodMuID.clear();
 
   Int_t    nMu       = data.GetInt("nMu");
   Int_t*   muCharge  = data.GetPtrInt("muCharge");

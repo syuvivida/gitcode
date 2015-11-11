@@ -7,7 +7,9 @@
 #include "untuplizer.h"
 
 bool isPassZee(TreeReader &data, vector<Int_t>& goodEleID){
-  
+
+  goodEleID.clear();
+
   Int_t    nEle       = data.GetInt("nEle");
   Int_t*   eleCharge  = data.GetPtrInt("eleCharge");
   Float_t* eleScEta   = data.GetPtrFloat("eleScEta");
