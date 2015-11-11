@@ -258,17 +258,40 @@ void alphaRplots(std::string outputFolder){
 
   // Fitting procedure
 
+  TF1* f_fituncPRmass = new TF1("f_fituncPRmass", fitPRmass, 40, 240, 4);
   TF1* f_fitPRmass    = new TF1("f_fitPRmass", fitPRmass, 40, 240, 4);
   TF1* f_fitPRmassAll = new TF1("f_fitPRmassAll", fitPRmass, 40, 240, 4);
   TF1* f_fitSideBkg   = new TF1("f_fitSideBkg", fitZprime, xmin, xmax,/*varBins[0], varBins[nvarBins],*/ 3);
   TF1* f_fitSignBkg   = new TF1("f_fitSignBkg", fitZprime, xmin, xmax,/* varBins[0], varBins[nvarBins],*/ 3);
-  TF1* f_fitAlphaR    = new TF1("f_fitAlphaR", divFunc, xmin, xmax,/*varBins[0], varBins[nvarBins],*/ 6);
 
-  h_corrPRmass   ->Fit("f_fitPRmass", "", "", 40, 240);
+  f_fituncPRmass->SetParameter(0, 200);
+  f_fituncPRmass->SetParameter(1, -0.03);
+  f_fituncPRmass->SetParameter(2, -17000);
+  f_fituncPRmass->SetParameter(3, 0.0001);
+
+  f_fitPRmass->SetParameter(0, 200);
+  f_fitPRmass->SetParameter(1, -0.03);
+  f_fitPRmass->SetParameter(2, -17000);
+  f_fitPRmass->SetParameter(3, 0.0001);
+
+  f_fitPRmassAll->SetParameter(0, 200);
+  f_fitPRmassAll->SetParameter(1, -0.03);
+  f_fitPRmassAll->SetParameter(2, -17000);
+  f_fitPRmassAll->SetParameter(3, 0.0001);
+
+  f_fituncPRmass->SetLineWidth(2);
+  f_fitPRmass   ->SetLineWidth(2);
+  f_fitPRmassAll->SetLineWidth(2);
+  f_fitSideBkg  ->SetLineWidth(2);
+  f_fitSignBkg  ->SetLineWidth(2);
+
+  h_PRmassAll    ->Fit("f_fituncPRmass", "", "", 40, 240);
+  h_corrPRmass   ->Fit("f_fitPRmass",    "", "", 40, 240);
   h_corrPRmassAll->Fit("f_fitPRmassAll", "", "", 40, 240);
+  h_sideTotalBKG ->Fit("f_fitSideBkg",   "", "", xmin, xmax/*varBins[0], varBins[nvarBins]*/);
+  h_signTotalBKG ->Fit("f_fitSignBkg",   "", "", xmin, xmax/*varBins[0], varBins[nvarBins]*/);
 
-  h_sideTotalBKG->Fit("f_fitSideBkg", "", "", xmin, xmax/*varBins[0], varBins[nvarBins]*/);
-  h_signTotalBKG->Fit("f_fitSignBkg", "", "", xmin, xmax/*varBins[0], varBins[nvarBins]*/);
+  TF1* f_fitAlphaR = new TF1("f_fitAlphaR", divFunc, xmin, xmax,/*varBins[0], varBins[nvarBins],*/ 6);
 
   f_fitAlphaR->SetParameter(0, f_fitSignBkg->GetParameter(0));
   f_fitAlphaR->SetParameter(1, f_fitSignBkg->GetParameter(1));
@@ -277,13 +300,10 @@ void alphaRplots(std::string outputFolder){
   f_fitAlphaR->SetParameter(4, f_fitSideBkg->GetParameter(1));
   f_fitAlphaR->SetParameter(5, f_fitSideBkg->GetParameter(2));
 
-  f_fitPRmass   ->SetLineWidth(2);
-  f_fitPRmassAll->SetLineWidth(2);
-  f_fitSideBkg  ->SetLineWidth(2);
-  f_fitSignBkg  ->SetLineWidth(2);
   f_fitAlphaR   ->SetLineWidth(2);
 
   Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmass->GetBinWidth(1);
+
   h_numbkgDATA->Scale(nBkgSig/h_numbkgDATA->Integral());
   h_numbkgDATA->SetMinimum(0);
 
@@ -317,39 +337,36 @@ void alphaRplots(std::string outputFolder){
   c->cd();
   h_PRmassAll->Draw();
   lar->Draw();
+  eqn0->Draw();
   c->Print("alphaRatio.pdf(");
   
   c->cd();
   h_corrPRmassAll->Draw();
-  f_fitPRmassAll ->Draw("same");
   lar->Draw();
   eqn0->Draw();
   c->Print("alphaRatio.pdf");
 
   c->cd();
   h_corrPRmass->Draw();
-  f_fitPRmass ->Draw("same");
   lar->Draw();
   eqn0->Draw();
   c->Print("alphaRatio.pdf");
   
   c->cd();
   h_signTotalBKG->Draw();
-  f_fitSignBkg  ->Draw("same");
   lar->Draw();
   eqn1->Draw();
   c->Print("alphaRatio.pdf");
 
   c->cd();
   h_sideTotalBKG->Draw();
-  f_fitSideBkg  ->Draw("same");
   lar->Draw();
   eqn1->Draw();
   c->Print("alphaRatio.pdf");
 
   c->cd();
   h_alphaRatio->Draw();
-  f_fitAlphaR ->Draw("same");
+  f_fitAlphaR->Draw("same");
   lar->Draw();
   c->Print("alphaRatio.pdf");  
 
