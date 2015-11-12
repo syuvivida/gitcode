@@ -8,9 +8,12 @@
 #include <TFile.h>
 #include <TLine.h>
 #include <TLatex.h>
+#include <TStyle.h>
+#include <TMinuit.h>
 #include <TCanvas.h>
 #include <TLegend.h>
-#include <TStyle.h>
+#include <TMatrixD.h>
+#include <TFitResult.h>
 #include <TSystemDirectory.h>
 #include "../setNCUStyle.h"
 
@@ -18,7 +21,7 @@ const Double_t xmin = 500;
 const Double_t xmax = 5000;
 const Int_t nBins = (xmax-xmin)/100;
 
-Double_t dataLumi  = 831.7; //831.7; //pb-1
+Double_t dataLumi  = 3000; //831.7; //pb-1
 Double_t xSecDY100 = 139.4*1.23;
 Double_t xSecDY200 = 42.75*1.23;
 Double_t xSecDY400 = 5.497*1.23;
@@ -125,7 +128,7 @@ void myRatio(TH1D* h_numer, TH1D* h_denom){
   Double_t numer_binerror[nbin];
   Double_t denom_binerror[nbin];
 
-  for(Int_t i=1; i<=nbin; i++){
+  for( Int_t i = 1; i <= nbin; i++ ){
 
     numer_nbincontent[i] = h_numer->GetBinContent(i);
     denom_nbincontent[i] = h_denom->GetBinContent(i);
@@ -186,10 +189,78 @@ Double_t divFunc(Double_t* v, Double_t* p){
 }
 
 Double_t fitPRmass(Double_t* v, Double_t* p){
-  
+
   Double_t x = v[0];
   return p[0]*TMath::Exp(p[1]*x)*0.5*(1+TMath::Erf((x-p[2])/p[3]));
+
+}
+
+void correlaionMatrix(TF1* f, TH1D* h, Double_t nBkgSig, TF1** f_newPosFunc, TF1** f_newNegFunc){
+
+  Double_t par[4] = {0};
+
+  for( Int_t i = 0; i < 4; i++ )
+    par[i] = f->GetParameter(i);
+
+  TF1* posFit[4];
+  TF1* negFit[4];
+
+  for( Int_t i = 0; i < 4; i++ ){
+
+    Double_t partemp[4] = {par[0],par[1],par[2],par[3]};
+
+    posFit[i]  = new TF1(Form("posFit%d",i), fitPRmass, 40, 240, 4);
+    partemp[i] = par[i] + f->GetParError(i);
+    posFit[i]->SetParameters(partemp[0],partemp[1],partemp[2],partemp[3]);
+
+  }
+
+  for( Int_t i = 0; i < 4; i++ ){
+
+    Double_t partemp[4] = {par[0],par[1],par[2],par[3]};
+
+    negFit[i]  = new TF1(Form("negFit%d",i), fitPRmass, 40, 240, 4);
+    partemp[i] = par[i] - f->GetParError(i);
+    negFit[i]->SetParameters(partemp[0],partemp[1],partemp[2],partemp[3]);
+
+  }
+
+  TMatrixD posColM(4,1);
+  TMatrixD negColM(4,1);
+  TMatrixD posRowM(1,4);
+  TMatrixD negRowM(1,4);
+
+  for(Int_t i = 0; i < 4; i++){
+    
+    posColM(i,0) = fabs(nBkgSig - posFit[i]->Integral(110,140)/h->GetBinWidth(1));
+    negColM(i,0) = fabs(nBkgSig - negFit[i]->Integral(110,140)/h->GetBinWidth(1));
+    posRowM(0,i) = posColM(i,0);
+    negRowM(0,i) = negColM(i,0);
+    
+  }
+
+  gMinuit->mnmatu(1);
   
+  TFitResultPtr fitptr = h->Fit(f,"S");
+  TFitResult fitresult = (*fitptr);
+  TMatrixD corrM   = fitresult.GetCorrelationMatrix();
+  TMatrixD posTemp = posRowM*(corrM*posColM);
+  TMatrixD negTemp = negRowM*(corrM*negColM);
+  Double_t posUnc  = TMath::Sqrt(posTemp(0,0));
+  Double_t negUnc  = TMath::Sqrt(negTemp(0,0));
+  
+  *f_newPosFunc = new TF1("f_newPosFunc", fitPRmass, 40, 240, 4);
+  *f_newNegFunc = new TF1("f_newNegFunc", fitPRmass, 40, 240, 4);
+
+  *f_newPosFunc->SetParameters(par[0]+posUnc,
+			       par[1]+posUnc,
+			       par[2]+posUnc,
+			       par[3]+posUnc);
+
+  *f_newNegFunc->SetParameters(par[0]+negUnc,
+			       par[1]+negUnc,
+			       par[2]+negUnc,
+			       par[3]+negUnc);
 }
 
 void alphaRplots(std::string outputFolder){
@@ -326,15 +397,22 @@ void alphaRplots(std::string outputFolder){
   f_fitZpmass->SetLineWidth(2);
   f_fitAlphaR->SetLineWidth(2);
 
-  f_fitPRmass->SetParameters(342,-0.03,39,30);
+  Double_t parFitPRm[4] = {1224,-0.107,139.6,107.4};//{342,-0.03,39,30};
+
+  f_fitPRmass->SetParameters(parFitPRm[0],parFitPRm[1],parFitPRm[2],parFitPRm[3]);
   h_PRmassAll->Fit("f_fitPRmass", "", "", 40, 240);
 
-  f_fitPRmass->SetParameters(342,-0.03,39,30);
+  f_fitPRmass->SetParameters(parFitPRm[0],parFitPRm[1],parFitPRm[2],parFitPRm[3]);
   h_corrPRmassFixErr->Fit("f_fitPRmass", "", "", 40, 240);
 
   Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmassFixErr->GetBinWidth(1);
 
-  f_fitPRmass->SetParameters(342,-0.03,39,30);
+  TF1* f_newPosFunc = NULL;
+  TF1* f_newNegFunc = NULL;
+
+  correlaionMatrix(f_fitPRmass, h_corrPRmassFixErr, nBkgSig, &f_newPosFunc, &f_newNegFunc);
+
+  f_fitPRmass->SetParameters(parFitPRm[0],parFitPRm[1],parFitPRm[2],parFitPRm[3]);
   h_corrPRmassAll->Fit("f_fitPRmass", "", "", 40, 240);
 
   Double_t parAR[6] = {0};
@@ -363,7 +441,7 @@ void alphaRplots(std::string outputFolder){
 
   TCanvas* c = new TCanvas("c","",0,0,1000,800);
 
-  TLegend *leg = new TLegend(0.30, 0.70, 0.85, 0.80);
+  TLegend* leg = new TLegend(0.30, 0.70, 0.85, 0.80);
 
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
@@ -372,14 +450,14 @@ void alphaRplots(std::string outputFolder){
   leg->AddEntry(h_signDATA, "signal region of pseudo-data", "le");
   leg->AddEntry(h_numbkgDATA, "backgrounds in signal region of pseudo-data", "le");
 
-  TLatex *lar = new TLatex(0.50, 0.94, "CMS,  #sqrt{s} = 13 TeV, L = 3000 pb^{-1}");
+  TLatex* lar = new TLatex(0.50, 0.94, "CMS,  #sqrt{s} = 13 TeV, L = 3000 pb^{-1}");
 
   lar->SetNDC(kTRUE);
   lar->SetTextSize(0.04);
   lar->SetLineWidth(5);
 
-  TLatex *eqn0 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = #frac{1}{2} p_{0} e^{p_{1}x} ( 1 + erf ( #frac{x - p_{2}}{p_{3}} ) )}}");
-  TLatex *eqn1 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = p_{0} e^{p_{1}x + #frac{p_{2}}{x}}}}");
+  TLatex* eqn0 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = #frac{1}{2} p_{0} e^{p_{1}x} ( 1 + erf ( #frac{x - p_{2}}{p_{3}} ) )}}");
+  TLatex* eqn1 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = p_{0} e^{p_{1}x + #frac{p_{2}}{x}}}}");
 
   eqn0->SetNDC(kTRUE);
   eqn0->SetTextSize(0.04);
@@ -400,6 +478,8 @@ void alphaRplots(std::string outputFolder){
 
   c->cd();
   h_corrPRmassFixErr->Draw();
+  //f_newPosFunc->Draw("same");
+  //f_newNegFunc->Draw("same");
   lar->Draw();
   eqn0->Draw();
   c->Print("alphaRatio.pdf");
