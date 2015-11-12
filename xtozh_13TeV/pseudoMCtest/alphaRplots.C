@@ -3,8 +3,10 @@
 #include <iostream>
 #include <TF1.h>
 #include <TH1.h>
+#include <TPad.h>
 #include <TMath.h>
 #include <TFile.h>
+#include <TLine.h>
 #include <TLatex.h>
 #include <TCanvas.h>
 #include <TLegend.h>
@@ -12,14 +14,11 @@
 #include <TSystemDirectory.h>
 #include "../setNCUStyle.h"
 
-//const Double_t varBins[] = {600,800,1000,1200,1400,1600,1800,2000,2500,3000,3500,4000,4500};
-//Int_t nvarBins = sizeof(varBins)/sizeof(varBins[0])-1;
-
 const Double_t xmin = 500;
 const Double_t xmax = 5000;
-const Int_t nBins = (xmax-xmin)/500;
+const Int_t nBins = (xmax-xmin)/100;
 
-Double_t dataLumi  = 831.7; //pb-1
+Double_t dataLumi  = 831.7; //831.7; //pb-1
 Double_t xSecDY100 = 139.4*1.23;
 Double_t xSecDY200 = 42.75*1.23;
 Double_t xSecDY400 = 5.497*1.23;
@@ -43,18 +42,6 @@ TFile* getFile(std::string infiles, std::string hname,
   *scale = dataLumi/(h->Integral()/crossSection);
 
   return f;
-
-}
-
-TH1D* fixDiscdBin(TH1D* h){
-  /*
-  for( Int_t nb = 0; nb < nvarBins; nb++ ){
-    Int_t binRatio = (varBins[nb+1]-varBins[nb])/(varBins[1]-varBins[0]);
-    h->SetBinContent(nb+1,(h->GetBinContent(nb+1)/binRatio));
-    h->SetBinError(nb+1,(h->GetBinError(nb+1)/binRatio));
-  }
-  */
-  return h;
 
 }
 
@@ -99,14 +86,14 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname,
 
   }
 
-  TH1D* DY100_temp = fixDiscdBin((TH1D*)(f_DY100->Get(Form("%s",hname.c_str()))));
-  TH1D* DY200_temp = fixDiscdBin((TH1D*)(f_DY200->Get(Form("%s",hname.c_str()))));
-  TH1D* DY400_temp = fixDiscdBin((TH1D*)(f_DY400->Get(Form("%s",hname.c_str()))));
-  TH1D* DY600_temp = fixDiscdBin((TH1D*)(f_DY600->Get(Form("%s",hname.c_str()))));
-  TH1D* TTbar_temp = fixDiscdBin((TH1D*)(f_TTbar->Get(Form("%s",hname.c_str()))));
-  TH1D* WW_temp    = fixDiscdBin((TH1D*)(f_WW->Get(Form("%s",hname.c_str()))));
-  TH1D* WZ_temp    = fixDiscdBin((TH1D*)(f_WZ->Get(Form("%s",hname.c_str()))));
-  TH1D* ZZ_temp    = fixDiscdBin((TH1D*)(f_ZZ->Get(Form("%s",hname.c_str()))));
+  TH1D* DY100_temp = (TH1D*)(f_DY100->Get(Form("%s",hname.c_str())));
+  TH1D* DY200_temp = (TH1D*)(f_DY200->Get(Form("%s",hname.c_str())));
+  TH1D* DY400_temp = (TH1D*)(f_DY400->Get(Form("%s",hname.c_str())));
+  TH1D* DY600_temp = (TH1D*)(f_DY600->Get(Form("%s",hname.c_str())));
+  TH1D* TTbar_temp = (TH1D*)(f_TTbar->Get(Form("%s",hname.c_str())));
+  TH1D* WW_temp    = (TH1D*)(f_WW->Get(Form("%s",hname.c_str())));
+  TH1D* WZ_temp    = (TH1D*)(f_WZ->Get(Form("%s",hname.c_str())));
+  TH1D* ZZ_temp    = (TH1D*)(f_ZZ->Get(Form("%s",hname.c_str())));
 
   TH1D* h_Total = (TH1D*)(f_DY100->Get(Form("%s",hname.c_str())))->Clone("h_Total");
 
@@ -124,7 +111,67 @@ TH1D* addSamples(std::vector<string>& infiles, std::string hname,
 
 }
 
-Double_t fitZprime(Double_t* v, Double_t* p){
+void myRatio(TH1D* h_numer, TH1D* h_denom){
+
+  TH1D* h_ratio = (TH1D*)h_numer->Clone("h_ratio");
+
+  h_ratio->Reset();
+
+  Int_t nbin = h_ratio->GetNbinsX();
+  Double_t ratio[nbin];
+  Double_t error[nbin];
+  Double_t numer_nbincontent[nbin];
+  Double_t denom_nbincontent[nbin];
+  Double_t numer_binerror[nbin];
+  Double_t denom_binerror[nbin];
+
+  for(Int_t i=1; i<=nbin; i++){
+
+    numer_nbincontent[i] = h_numer->GetBinContent(i);
+    denom_nbincontent[i] = h_denom->GetBinContent(i);
+    numer_binerror[i] = h_numer->GetBinError(i);
+    denom_binerror[i] = h_denom->GetBinError(i);
+
+    if( denom_nbincontent[i] <= 0 || numer_nbincontent[i] <= 0 ) continue;
+    if( denom_binerror[i] <= 0 || numer_binerror[i] <= 0 ) continue;
+
+    ratio[i] = (Double_t)numer_nbincontent[i]/denom_nbincontent[i];
+    error[i] = (ratio[i])*sqrt(pow(numer_binerror[i]/numer_nbincontent[i],2)+pow(denom_binerror[i]/denom_nbincontent[i],2));
+
+    h_ratio->SetBinContent(i,ratio[i]);
+    h_ratio->SetBinError(i,error[i]);
+
+  }
+
+  h_ratio->SetLineColor(kBlack);
+  h_ratio->SetTitle("");
+  h_ratio->GetYaxis()->SetTitle("Ratio");
+  h_ratio->GetYaxis()->SetTitleOffset(0.3);
+  h_ratio->GetXaxis()->SetLabelSize(0.1);
+  h_ratio->GetXaxis()->SetTitleSize(0.125);
+  h_ratio->GetYaxis()->SetLabelSize(0.1);
+  h_ratio->GetYaxis()->SetTitleSize(0.1);
+  h_ratio->GetYaxis()->SetNdivisions(505);
+  h_ratio->GetYaxis()->SetRangeUser(0,2);
+  h_ratio->Draw();
+
+  Double_t x0 = h_denom->GetXaxis()->GetXmin();
+  Double_t x1 = h_denom->GetXaxis()->GetXmax();
+  Double_t y0 = 1.;
+  Double_t y1 = 1.;
+
+  TLine* one = new TLine(x0,y0,x1,y1);
+
+  one->SetLineColor(2);
+  one->SetLineStyle(1);
+  one->SetLineWidth(2);
+  one->Draw("same");
+
+  h_ratio->Draw("same");
+
+}
+
+Double_t fitZpmass(Double_t* v, Double_t* p){
 
   Double_t x = v[0];
   return p[0]*TMath::Exp(p[1]*x + p[2]/x);
@@ -207,11 +254,6 @@ void alphaRplots(std::string outputFolder){
   h_signDATA->SetXTitle("ZH mass");
   h_signDATA->SetYTitle("Event numbers");
 
-  h_corrPRmass->SetLineWidth(2);
-  h_corrPRmass->SetLineColor(kBlack);
-  h_corrPRmass->SetXTitle("Side band corrected pruned mass in pseudo-data");
-  h_corrPRmass->SetYTitle("Event numbers");
-
   h_PRmassAll->SetLineWidth(2);
   h_PRmassAll->SetLineColor(kBlack);
   h_PRmassAll->SetXTitle("Uncorrected pruned mass in pseudo-data");
@@ -222,9 +264,27 @@ void alphaRplots(std::string outputFolder){
   h_corrPRmassAll->SetXTitle("Corrected pruned mass in pseudo-data");
   h_corrPRmassAll->SetYTitle("Event numbers");
 
+  // Make the statistics error more like data
+
+  TH1D* h_corrPRmassFixErr = (TH1D*)h_corrPRmass->Clone("h_corrPRmassFixErr");
+
+  h_corrPRmassFixErr->Reset();
+  h_corrPRmassFixErr->SetLineWidth(2);
+  h_corrPRmassFixErr->SetLineColor(kBlack);
+  h_corrPRmassFixErr->SetXTitle("Side band corrected pruned mass (error fix) in pseudo-data");
+  h_corrPRmassFixErr->SetYTitle("Event numbers");
+
+  for( Int_t i = 1; i <= h_corrPRmass->GetNbinsX(); i++ ){
+
+    Double_t evperBin = h_corrPRmass->GetBinContent(i);
+
+    h_corrPRmassFixErr->SetBinContent(i,evperBin);
+    h_corrPRmassFixErr->SetBinError(i,TMath::Sqrt(evperBin));
+
+  }
+
   // Calculate alpha ratio
 
-  //TH1D* h_alphaRatio = new TH1D("h_alphaRatio", "", nvarBins, varBins);
   TH1D* h_alphaRatio = new TH1D("h_alphaRatio", "", nBins, xmin, xmax); 
 
   h_alphaRatio->Sumw2();
@@ -239,7 +299,7 @@ void alphaRplots(std::string outputFolder){
 
   h_numbkgDATA->Reset();
 
-  for( Int_t i = 1; i <= nBins/*nvarBins*/; i++ ){
+  for( Int_t i = 1; i <= nBins; i++ ){
 
     Double_t alphaRatio      = h_alphaRatio->GetBinContent(i); 
     Double_t sideDATA        = h_sideDATA->GetBinContent(i);
@@ -258,56 +318,50 @@ void alphaRplots(std::string outputFolder){
 
   // Fitting procedure
 
-  TF1* f_fituncPRmass = new TF1("f_fituncPRmass", fitPRmass, 40, 240, 4);
-  TF1* f_fitPRmass    = new TF1("f_fitPRmass", fitPRmass, 40, 240, 4);
-  TF1* f_fitPRmassAll = new TF1("f_fitPRmassAll", fitPRmass, 40, 240, 4);
-  TF1* f_fitSideBkg   = new TF1("f_fitSideBkg", fitZprime, xmin, xmax,/*varBins[0], varBins[nvarBins],*/ 3);
-  TF1* f_fitSignBkg   = new TF1("f_fitSignBkg", fitZprime, xmin, xmax,/* varBins[0], varBins[nvarBins],*/ 3);
+  TF1* f_fitPRmass = new TF1("f_fitPRmass", fitPRmass, 40, 240, 4);
+  TF1* f_fitZpmass = new TF1("f_fitZpmass", fitZpmass, xmin, xmax, 3);
+  TF1* f_fitAlphaR = new TF1("f_fitAlphaR", divFunc, xmin, xmax, 6);
 
-  f_fituncPRmass->SetParameter(0, 200);
-  f_fituncPRmass->SetParameter(1, -0.03);
-  f_fituncPRmass->SetParameter(2, -17000);
-  f_fituncPRmass->SetParameter(3, 0.0001);
+  f_fitPRmass->SetLineWidth(2);
+  f_fitZpmass->SetLineWidth(2);
+  f_fitAlphaR->SetLineWidth(2);
 
-  f_fitPRmass->SetParameter(0, 200);
-  f_fitPRmass->SetParameter(1, -0.03);
-  f_fitPRmass->SetParameter(2, -17000);
-  f_fitPRmass->SetParameter(3, 0.0001);
+  f_fitPRmass->SetParameters(342,-0.03,39,30);
+  h_PRmassAll->Fit("f_fitPRmass", "", "", 40, 240);
 
-  f_fitPRmassAll->SetParameter(0, 200);
-  f_fitPRmassAll->SetParameter(1, -0.03);
-  f_fitPRmassAll->SetParameter(2, -17000);
-  f_fitPRmassAll->SetParameter(3, 0.0001);
+  f_fitPRmass->SetParameters(342,-0.03,39,30);
+  h_corrPRmassFixErr->Fit("f_fitPRmass", "", "", 40, 240);
 
-  f_fituncPRmass->SetLineWidth(2);
-  f_fitPRmass   ->SetLineWidth(2);
-  f_fitPRmassAll->SetLineWidth(2);
-  f_fitSideBkg  ->SetLineWidth(2);
-  f_fitSignBkg  ->SetLineWidth(2);
+  Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmassFixErr->GetBinWidth(1);
 
-  h_PRmassAll    ->Fit("f_fituncPRmass", "", "", 40, 240);
-  h_corrPRmass   ->Fit("f_fitPRmass",    "", "", 40, 240);
-  h_corrPRmassAll->Fit("f_fitPRmassAll", "", "", 40, 240);
-  h_sideTotalBKG ->Fit("f_fitSideBkg",   "", "", xmin, xmax/*varBins[0], varBins[nvarBins]*/);
-  h_signTotalBKG ->Fit("f_fitSignBkg",   "", "", xmin, xmax/*varBins[0], varBins[nvarBins]*/);
+  f_fitPRmass->SetParameters(342,-0.03,39,30);
+  h_corrPRmassAll->Fit("f_fitPRmass", "", "", 40, 240);
 
-  TF1* f_fitAlphaR = new TF1("f_fitAlphaR", divFunc, xmin, xmax,/*varBins[0], varBins[nvarBins],*/ 6);
+  Double_t parAR[6] = {0};
 
-  f_fitAlphaR->SetParameter(0, f_fitSignBkg->GetParameter(0));
-  f_fitAlphaR->SetParameter(1, f_fitSignBkg->GetParameter(1));
-  f_fitAlphaR->SetParameter(2, f_fitSignBkg->GetParameter(2));
-  f_fitAlphaR->SetParameter(3, f_fitSideBkg->GetParameter(0));
-  f_fitAlphaR->SetParameter(4, f_fitSideBkg->GetParameter(1));
-  f_fitAlphaR->SetParameter(5, f_fitSideBkg->GetParameter(2));
+  f_fitZpmass->SetParameters(0,0,0);
+  h_signTotalBKG->Fit("f_fitZpmass", "", "", xmin, xmax);
 
-  f_fitAlphaR   ->SetLineWidth(2);
+  parAR[0] = f_fitZpmass->GetParameter(0);
+  parAR[1] = f_fitZpmass->GetParameter(1);
+  parAR[2] = f_fitZpmass->GetParameter(2);
 
-  Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmass->GetBinWidth(1);
+  f_fitZpmass->SetParameters(0,0,0);
+  h_sideTotalBKG->Fit("f_fitZpmass", "", "", xmin, xmax);
+
+  parAR[3] = f_fitZpmass->GetParameter(0);
+  parAR[4] = f_fitZpmass->GetParameter(1);
+  parAR[5] = f_fitZpmass->GetParameter(2);
+
+  f_fitAlphaR->SetParameters(parAR[0],parAR[1],parAR[2],parAR[3],parAR[4],parAR[5]);
 
   h_numbkgDATA->Scale(nBkgSig/h_numbkgDATA->Integral());
   h_numbkgDATA->SetMinimum(0);
+  h_corrPRmassFixErr->SetMinimum(0);
 
   // Output results
+
+  TCanvas* c = new TCanvas("c","",0,0,1000,800);
 
   TLegend *leg = new TLegend(0.30, 0.70, 0.85, 0.80);
 
@@ -318,7 +372,7 @@ void alphaRplots(std::string outputFolder){
   leg->AddEntry(h_signDATA, "signal region of pseudo-data", "le");
   leg->AddEntry(h_numbkgDATA, "backgrounds in signal region of pseudo-data", "le");
 
-  TLatex *lar = new TLatex(0.50, 0.94, "CMS,  #sqrt{s} = 13 TeV, L = 831.7 pb^{-1}");
+  TLatex *lar = new TLatex(0.50, 0.94, "CMS,  #sqrt{s} = 13 TeV, L = 3000 pb^{-1}");
 
   lar->SetNDC(kTRUE);
   lar->SetTextSize(0.04);
@@ -331,8 +385,6 @@ void alphaRplots(std::string outputFolder){
   eqn0->SetTextSize(0.04);
   eqn1->SetNDC(kTRUE);
   eqn1->SetTextSize(0.04);
-
-  TCanvas* c = new TCanvas("c","",0,0,1000,800);
 
   c->cd();
   h_PRmassAll->Draw();
@@ -347,7 +399,7 @@ void alphaRplots(std::string outputFolder){
   c->Print("alphaRatio.pdf");
 
   c->cd();
-  h_corrPRmass->Draw();
+  h_corrPRmassFixErr->Draw();
   lar->Draw();
   eqn0->Draw();
   c->Print("alphaRatio.pdf");
@@ -370,16 +422,27 @@ void alphaRplots(std::string outputFolder){
   lar->Draw();
   c->Print("alphaRatio.pdf");  
 
-  c->cd();
+  c->Divide(1,2);
+  TPad* c_up = (TPad*) c->GetListOfPrimitives()->FindObject("c_1");
+  TPad* c_dw = (TPad*) c->GetListOfPrimitives()->FindObject("c_2"); 
+  Double_t up_height = 0.8;
+  Double_t dw_correction = 1.455;
+  Double_t dw_height = (1-up_height)*dw_correction;
+  c_up->SetPad(0,1-up_height,1,1);
+  c_dw->SetPad(0,0,1,dw_height);
+  c_dw->SetBottomMargin(0.25);
+  c_up->cd();
+  h_signDATA->GetXaxis()->SetTitle("");
+  h_signDATA->GetXaxis()->SetLabelOffset(999);
+  h_signDATA->GetXaxis()->SetLabelSize(0);
   h_signDATA->Draw();
   h_numbkgDATA->Draw("same");
   leg->Draw();
   lar->Draw();
+  c_up->RedrawAxis();
+  c_dw->cd();
+  myRatio(h_numbkgDATA,h_signDATA);
+  c->Draw();
   c->Print("alphaRatio.pdf)");
-
-  TFile* outFile = new TFile("corrPRmassAll_pseudoTest.root", "recreate");
-  
-  h_corrPRmassAll->Write("corrPRmassAll");
-  outFile->Write();
 
 }

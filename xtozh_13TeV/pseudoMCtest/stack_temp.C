@@ -54,7 +54,7 @@ TH1D* fixDiscdBin(TH1D* h){
 
 }
 
-void stackSamples(std::vector<string>& infiles, std::string hname,
+void stackSamples(std::vector<string>& infiles, std::string hname, std::string title,
 		  TFile* f_DY100, TFile* f_DY200, TFile* f_DY400, TFile* f_DY600, 
 		  TFile* f_TTbar, TFile* f_WW, TFile* f_WZ, TFile* f_ZZ){
 
@@ -142,7 +142,7 @@ void stackSamples(std::vector<string>& infiles, std::string hname,
   h_stack->GetHistogram()->GetYaxis()->SetTitle("Event numbers");
   h_stack->GetHistogram()->GetYaxis()->SetTitleSize(h_DY100->GetYaxis()->GetTitleSize());
   h_stack->GetHistogram()->GetYaxis()->SetLabelSize(h_DY100->GetYaxis()->GetLabelSize());
-  h_stack->GetHistogram()->GetXaxis()->SetTitle("Corrected pruned mass");
+  h_stack->GetHistogram()->GetXaxis()->SetTitle(title.data());
 
   TLegend *leg = new TLegend(0.65, 0.65, 0.85, 0.85);
   
@@ -200,9 +200,12 @@ void stack_temp(std::string outputFolder){
   TCanvas* c = new TCanvas("c","",0,0,1000,800);
 
   c->cd();
+  stackSamples(infiles,"corrPRmassAll_pDA","Corrected pruned mass",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  c->Print("stackCorrPRmass.pdf(");
 
-  stackSamples(infiles,"corrPRmassAll_pDA",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  c->cd();
+  stackSamples(infiles,"PRmassAll_pDA","Uncorrected pruned mass",f_DY100,f_DY200,f_DY400,f_DY600,f_TTbar,f_WW,f_WZ,f_ZZ);
+  c->Print("stackCorrPRmass.pdf)");
 
-  c->Print("stackCorrPRmass.pdf");
 
 }

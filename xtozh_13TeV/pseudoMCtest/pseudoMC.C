@@ -28,7 +28,7 @@ void pseudoMC(std::string inputFile, std::string outputFile){
 
   const Double_t xmin = 500;
   const Double_t xmax = 5000;
-  const Int_t nBins = (xmax-xmin)/500;
+  const Int_t nBins = (xmax-xmin)/100;
      
   TH1D* h_ZprimeSign_pMC    = new TH1D("h_ZprimeSign_pMC", "ZprimeSign", nBins, xmin, xmax);
   TH1D* h_ZprimeSide_pMC    = new TH1D("h_ZprimeSide_pMC", "ZprimeSide", nBins, xmin, xmax);
