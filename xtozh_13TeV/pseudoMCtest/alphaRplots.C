@@ -15,6 +15,7 @@
 #include <TMatrixD.h>
 #include <TFitResult.h>
 #include <TSystemDirectory.h>
+#include <TGraphAsymmErrors.h>
 #include "../setNCUStyle.h"
 
 const Double_t xmin = 500;
@@ -195,7 +196,7 @@ Double_t fitPRmass(Double_t* v, Double_t* p){
 
 }
 
-void correlaionMatrix(TF1* f, TH1D* h, Double_t nBkgSig, TF1** f_newPosFunc, TF1** f_newNegFunc){
+TGraphAsymmErrors* fitUncertainty(TF1* f, TH1D* h){
 
   Double_t par[4] = {0};
 
@@ -230,37 +231,48 @@ void correlaionMatrix(TF1* f, TH1D* h, Double_t nBkgSig, TF1** f_newPosFunc, TF1
   TMatrixD posRowM(1,4);
   TMatrixD negRowM(1,4);
 
-  for(Int_t i = 0; i < 4; i++){
+  Int_t    NBINS = 40;
+  Double_t x     = 40.0;
+  Double_t width = (240-x)/NBINS;
+
+  Double_t funcX[NBINS];
+  Double_t funcY[NBINS];
+  Double_t posUnc[NBINS];
+  Double_t negUnc[NBINS];
+
+  for( Int_t n = 0; n < NBINS; n++){
+
+    for(Int_t i = 0; i < 4; i++){
     
-    posColM(i,0) = fabs(nBkgSig - posFit[i]->Integral(110,140)/h->GetBinWidth(1));
-    negColM(i,0) = fabs(nBkgSig - negFit[i]->Integral(110,140)/h->GetBinWidth(1));
-    posRowM(0,i) = posColM(i,0);
-    negRowM(0,i) = negColM(i,0);
+      posColM(i,0) = fabs(f->Eval(x) - posFit[i]->Eval(x));
+      negColM(i,0) = fabs(f->Eval(x) - negFit[i]->Eval(x));
+      posRowM(0,i) = posColM(i,0);
+      negRowM(0,i) = negColM(i,0);
     
+    }
+
+    gMinuit->mnmatu(1);
+  
+    TFitResultPtr fitptr = h->Fit(f,"S");
+    TFitResult fitresult = (*fitptr);
+    TMatrixD corrM   = fitresult.GetCorrelationMatrix();
+    TMatrixD posTemp = posRowM*(corrM*posColM);
+    TMatrixD negTemp = negRowM*(corrM*negColM);
+    
+    posUnc[n] = TMath::Sqrt(posTemp(0,0));
+    negUnc[n] = TMath::Sqrt(negTemp(0,0));
+  
+    funcX[n] = x;
+    funcY[n] = f->Eval(x);
+
+    x += width;
+
   }
 
-  gMinuit->mnmatu(1);
-  
-  TFitResultPtr fitptr = h->Fit(f,"S");
-  TFitResult fitresult = (*fitptr);
-  TMatrixD corrM   = fitresult.GetCorrelationMatrix();
-  TMatrixD posTemp = posRowM*(corrM*posColM);
-  TMatrixD negTemp = negRowM*(corrM*negColM);
-  Double_t posUnc  = TMath::Sqrt(posTemp(0,0));
-  Double_t negUnc  = TMath::Sqrt(negTemp(0,0));
-  
-  *f_newPosFunc = new TF1("f_newPosFunc", fitPRmass, 40, 240, 4);
-  *f_newNegFunc = new TF1("f_newNegFunc", fitPRmass, 40, 240, 4);
+  TGraphAsymmErrors* g = new TGraphAsymmErrors(NBINS, funcX, funcY, 0, 0, negUnc, posUnc);
 
-  *f_newPosFunc->SetParameters(par[0]+posUnc,
-			       par[1]+posUnc,
-			       par[2]+posUnc,
-			       par[3]+posUnc);
+  return g;
 
-  *f_newNegFunc->SetParameters(par[0]+negUnc,
-			       par[1]+negUnc,
-			       par[2]+negUnc,
-			       par[3]+negUnc);
 }
 
 void alphaRplots(std::string outputFolder){
@@ -407,10 +419,9 @@ void alphaRplots(std::string outputFolder){
 
   Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmassFixErr->GetBinWidth(1);
 
-  TF1* f_newPosFunc = NULL;
-  TF1* f_newNegFunc = NULL;
+  TGraphAsymmErrors* g_errorBands = fitUncertainty(f_fitPRmass, h_corrPRmassFixErr);
 
-  correlaionMatrix(f_fitPRmass, h_corrPRmassFixErr, nBkgSig, &f_newPosFunc, &f_newNegFunc);
+  g_errorBands->SetFillStyle(3005);
 
   f_fitPRmass->SetParameters(parFitPRm[0],parFitPRm[1],parFitPRm[2],parFitPRm[3]);
   h_corrPRmassAll->Fit("f_fitPRmass", "", "", 40, 240);
@@ -478,8 +489,8 @@ void alphaRplots(std::string outputFolder){
 
   c->cd();
   h_corrPRmassFixErr->Draw();
-  //f_newPosFunc->Draw("same");
-  //f_newNegFunc->Draw("same");
+  g_errorBands->Draw("4same");
+  h_corrPRmassFixErr->Draw("same");
   lar->Draw();
   eqn0->Draw();
   c->Print("alphaRatio.pdf");
