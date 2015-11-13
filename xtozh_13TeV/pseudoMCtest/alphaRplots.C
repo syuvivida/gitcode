@@ -240,6 +240,10 @@ TGraphAsymmErrors* fitUncertainty(TF1* f, TH1D* h){
   Double_t posUnc[NBINS];
   Double_t negUnc[NBINS];
 
+  TFitResultPtr fitptr = h->Fit(f,"S");
+  TFitResult fitresult = (*fitptr);
+  TMatrixD corrM   = fitresult.GetCorrelationMatrix();
+
   for( Int_t n = 0; n < NBINS; n++){
 
     for(Int_t i = 0; i < 4; i++){
@@ -253,15 +257,12 @@ TGraphAsymmErrors* fitUncertainty(TF1* f, TH1D* h){
 
     gMinuit->mnmatu(1);
   
-    TFitResultPtr fitptr = h->Fit(f,"S");
-    TFitResult fitresult = (*fitptr);
-    TMatrixD corrM   = fitresult.GetCorrelationMatrix();
     TMatrixD posTemp = posRowM*(corrM*posColM);
     TMatrixD negTemp = negRowM*(corrM*negColM);
     
     posUnc[n] = TMath::Sqrt(posTemp(0,0));
     negUnc[n] = TMath::Sqrt(negTemp(0,0));
-  
+    cout << posUnc[n] << "\t" << negUnc[n] << endl;  
     funcX[n] = x;
     funcY[n] = f->Eval(x);
 
