@@ -196,7 +196,7 @@ Double_t fitPRmass(Double_t* v, Double_t* p){
 
 }
 
-TGraphAsymmErrors* fitUncertainty(TF1* f, TH1D* h){
+TGraphAsymmErrors* fitUncertainty(TF1* f, TMatrixD corrMatrix){
 
   Double_t par[4] = {0};
 
@@ -240,10 +240,6 @@ TGraphAsymmErrors* fitUncertainty(TF1* f, TH1D* h){
   Double_t posUnc[NBINS];
   Double_t negUnc[NBINS];
 
-  TFitResultPtr fitptr = h->Fit(f,"S");
-  TFitResult fitresult = (*fitptr);
-  TMatrixD corrM   = fitresult.GetCorrelationMatrix();
-
   for( Int_t n = 0; n < NBINS; n++){
 
     for(Int_t i = 0; i < 4; i++){
@@ -257,12 +253,12 @@ TGraphAsymmErrors* fitUncertainty(TF1* f, TH1D* h){
 
     gMinuit->mnmatu(1);
   
-    TMatrixD posTemp = posRowM*(corrM*posColM);
-    TMatrixD negTemp = negRowM*(corrM*negColM);
+    TMatrixD posTemp = posRowM*(corrMatrix*posColM);
+    TMatrixD negTemp = negRowM*(corrMatrix*negColM);
     
     posUnc[n] = TMath::Sqrt(posTemp(0,0));
     negUnc[n] = TMath::Sqrt(negTemp(0,0));
-    cout << posUnc[n] << "\t" << negUnc[n] << endl;  
+
     funcX[n] = x;
     funcY[n] = f->Eval(x);
 
@@ -418,11 +414,15 @@ void alphaRplots(std::string outputFolder){
   f_fitPRmass->SetParameters(parFitPRm[0],parFitPRm[1],parFitPRm[2],parFitPRm[3]);
   h_corrPRmassFixErr->Fit("f_fitPRmass", "", "", 40, 240);
 
+  TFitResultPtr fitptr = h_corrPRmassFixErr->Fit(f_fitPRmass, "S");
+  TFitResult fitresult = (*fitptr);
+  TMatrixD corrMatrix  = fitresult.GetCorrelationMatrix();
+
   Double_t nBkgSig = f_fitPRmass->Integral(105,135)/h_corrPRmassFixErr->GetBinWidth(1);
 
-  TGraphAsymmErrors* g_errorBands = fitUncertainty(f_fitPRmass, h_corrPRmassFixErr);
+  TGraphAsymmErrors* g_errorBands = fitUncertainty(f_fitPRmass, corrMatrix);
 
-  g_errorBands->SetFillStyle(3005);
+  //g_errorBands->SetFillStyle(3005);
 
   f_fitPRmass->SetParameters(parFitPRm[0],parFitPRm[1],parFitPRm[2],parFitPRm[3]);
   h_corrPRmassAll->Fit("f_fitPRmass", "", "", 40, 240);
@@ -490,7 +490,7 @@ void alphaRplots(std::string outputFolder){
 
   c->cd();
   h_corrPRmassFixErr->Draw();
-  g_errorBands->Draw("4same");
+  g_errorBands->Draw("ae2same");
   h_corrPRmassFixErr->Draw("same");
   lar->Draw();
   eqn0->Draw();
