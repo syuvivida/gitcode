@@ -315,7 +315,7 @@ void plot_Asymptotic(string outputname){
   latex->SetNDC(kTRUE);
   latex->SetTextSize(0.035);
   latex->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
-  latex->DrawLatex(0.60, 0.94, "831.7 pb^{-1} at #sqrt{s} = 13 TeV");
+  latex->DrawLatex(0.55, 0.94, "L = 831.7 pb^{-1} at #sqrt{s} = 13 TeV");
 
   gPad->RedrawAxis("");
 

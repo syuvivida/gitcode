@@ -358,6 +358,7 @@ void alphaRplots(std::string outputFolder){
   h_corrPRmassFixErr->SetLineColor(kBlack);
   h_corrPRmassFixErr->SetXTitle("Side band corrected pruned mass in pseudo-data");
   h_corrPRmassFixErr->SetYTitle("Event numbers");
+  h_corrPRmassFixErr->SetTitleFont(62);
 
   for( Int_t i = 1; i <= h_corrPRmass->GetNbinsX(); i++ ){
 
