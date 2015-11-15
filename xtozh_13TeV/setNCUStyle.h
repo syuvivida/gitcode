@@ -9,7 +9,7 @@
 void setNCUStyle(bool gridOn=false) {
   TStyle* ncuStyle = new TStyle("ncuStyle","Style for P-NCU");
 
-// For the canvas:
+  // For the canvas:
   ncuStyle->SetCanvasBorderMode(0);
   ncuStyle->SetCanvasColor(kWhite);
   ncuStyle->SetCanvasDefH(600); //Height of canvas
@@ -17,7 +17,7 @@ void setNCUStyle(bool gridOn=false) {
   ncuStyle->SetCanvasDefX(0);   //POsition on screen
   ncuStyle->SetCanvasDefY(0);
 
-// For the Pad:
+  // For the Pad:
   ncuStyle->SetPadBorderMode(0);
   // ncuStyle->SetPadBorderSize(Width_t size = 1);
   ncuStyle->SetPadColor(kWhite);
@@ -27,7 +27,7 @@ void setNCUStyle(bool gridOn=false) {
   ncuStyle->SetGridStyle(3);
   ncuStyle->SetGridWidth(1);
 
-// For the frame:
+  // For the frame:
   ncuStyle->SetFrameBorderMode(0);
   ncuStyle->SetFrameBorderSize(1);
   ncuStyle->SetFrameFillColor(0);
@@ -36,13 +36,13 @@ void setNCUStyle(bool gridOn=false) {
   ncuStyle->SetFrameLineStyle(1);
   ncuStyle->SetFrameLineWidth(3);
 
-// For the Legend:
+  // For the Legend:
   ncuStyle->SetLegendBorderSize(0);
   ncuStyle->SetLegendFillColor(0);
   ncuStyle->SetLegendFont(42);
   //ncuStyle->SetLegendFont(62);
   
-// For the histo:
+  // For the histo:
   // ncuStyle->SetHistFillColor(1);
   // ncuStyle->SetHistFillStyle(0);
   ncuStyle->SetHistLineColor(1);
@@ -57,19 +57,19 @@ void setNCUStyle(bool gridOn=false) {
   
   ncuStyle->SetMarkerStyle(20);
   
-//For the fit/function:
+  //For the fit/function:
   ncuStyle->SetOptFit(1);
   ncuStyle->SetFitFormat("5.4g");
   ncuStyle->SetFuncColor(2);
   ncuStyle->SetFuncStyle(1);
   ncuStyle->SetFuncWidth(1);
 
-//For the date:
+  //For the date:
   ncuStyle->SetOptDate(0);
   // ncuStyle->SetDateX(Float_t x = 0.01);
   // ncuStyle->SetDateY(Float_t y = 0.01);
 
-// For the statistics box:
+  // For the statistics box:
   ncuStyle->SetOptFile(0);
   ncuStyle->SetOptStat(0); // To display the mean and RMS:   SetOptStat("mr");
   ncuStyle->SetStatColor(kWhite);
@@ -84,13 +84,13 @@ void setNCUStyle(bool gridOn=false) {
   // ncuStyle->SetStatX(Float_t x = 0);
   // ncuStyle->SetStatY(Float_t y = 0);
 
-// Margins:
+  // Margins:
   ncuStyle->SetPadTopMargin(0.08);
   ncuStyle->SetPadBottomMargin(0.13);
   ncuStyle->SetPadLeftMargin(0.13);
   ncuStyle->SetPadRightMargin(0.04);
 
-// For the Global title:
+  // For the Global title:
 
   ncuStyle->SetOptTitle(0);
   ncuStyle->SetTitleFont(62);
@@ -105,7 +105,7 @@ void setNCUStyle(bool gridOn=false) {
   // ncuStyle->SetTitleStyle(Style_t style = 1001);
   // ncuStyle->SetTitleBorderSize(2);
 
-// For the axis titles:
+  // For the axis titles:
 
   ncuStyle->SetTitleColor(1, "XYZ");
   ncuStyle->SetTitleSize(0.06, "XYZ");
@@ -116,14 +116,14 @@ void setNCUStyle(bool gridOn=false) {
   // ncuStyle->SetTitleOffset(1.5, "Y"); // Another way to set the Offset
   // ncuStyle->SetTitleFont(42, "XYZ");
 
-// For the axis labels:
+  // For the axis labels:
   ncuStyle->SetLabelColor(1, "XYZ");
   // the following command is not doing any thing
   // ncuStyle->SetLabelFont(42, "XYZ");
   ncuStyle->SetLabelOffset(0.007, "XYZ");
   ncuStyle->SetLabelSize(0.05, "XYZ");
 
-// For the axis:
+  // For the axis:
 
   ncuStyle->SetAxisColor(1, "XYZ");
   ncuStyle->SetStripDecimals(kFALSE);
@@ -132,12 +132,12 @@ void setNCUStyle(bool gridOn=false) {
   ncuStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
   ncuStyle->SetPadTickY(1);
 
-// Change for log plots:
+  // Change for log plots:
   ncuStyle->SetOptLogx(0);
   ncuStyle->SetOptLogy(0);
   ncuStyle->SetOptLogz(0);
 
-// Postscript options:
+  // Postscript options:
   ncuStyle->SetPaperSize(20.,20.);
   // ncuStyle->SetLineScalePS(Float_t scale = 3);
   // ncuStyle->SetLineStyleString(Int_t i, const char* text);

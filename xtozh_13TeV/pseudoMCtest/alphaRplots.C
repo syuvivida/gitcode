@@ -22,7 +22,7 @@ const Double_t xmin = 500;
 const Double_t xmax = 5000;
 const Int_t nBins = (xmax-xmin)/100;
 
-Double_t dataLumi  = 3000; //831.7; //pb-1
+Double_t dataLumi  = 3000; //pb-1
 Double_t xSecDY100 = 139.4*1.23;
 Double_t xSecDY200 = 42.75*1.23;
 Double_t xSecDY400 = 5.497*1.23;
@@ -323,26 +323,31 @@ void alphaRplots(std::string outputFolder){
   h_sideTotalBKG->SetLineColor(kBlack);
   h_sideTotalBKG->SetXTitle("Side band ZH mass in pseudo-MC");
   h_sideTotalBKG->SetYTitle("Event numbers");
+  h_sideTotalBKG->SetTitleFont(62);
 
   h_signTotalBKG->SetLineWidth(2);
   h_signTotalBKG->SetLineColor(kBlack);
   h_signTotalBKG->SetXTitle("Signal region ZH mass in pseudo-MC");
   h_signTotalBKG->SetYTitle("Event numbers");
+  h_signTotalBKG->SetTitleFont(62);
 
   h_signDATA->SetLineWidth(2);
   h_signDATA->SetLineColor(kBlue);
   h_signDATA->SetXTitle("ZH mass");
   h_signDATA->SetYTitle("Event numbers");
+  h_signDATA->SetTitleFont(62);
 
   h_PRmassAll->SetLineWidth(2);
   h_PRmassAll->SetLineColor(kBlack);
   h_PRmassAll->SetXTitle("Uncorrected pruned mass in pseudo-data");
   h_PRmassAll->SetYTitle("Event numbers");
+  h_PRmassAll->SetTitleFont(62);
 
   h_corrPRmassAll->SetLineWidth(2);
   h_corrPRmassAll->SetLineColor(kBlack);
   h_corrPRmassAll->SetXTitle("Corrected pruned mass in pseudo-data");
   h_corrPRmassAll->SetYTitle("Event numbers");
+  h_corrPRmassAll->SetTitleFont(62);
 
   // Make the statistics error more like data
 
@@ -351,7 +356,7 @@ void alphaRplots(std::string outputFolder){
   h_corrPRmassFixErr->Reset();
   h_corrPRmassFixErr->SetLineWidth(2);
   h_corrPRmassFixErr->SetLineColor(kBlack);
-  h_corrPRmassFixErr->SetXTitle("Side band corrected pruned mass (error fix) in pseudo-data");
+  h_corrPRmassFixErr->SetXTitle("Side band corrected pruned mass in pseudo-data");
   h_corrPRmassFixErr->SetYTitle("Event numbers");
 
   for( Int_t i = 1; i <= h_corrPRmass->GetNbinsX(); i++ ){
@@ -454,23 +459,21 @@ void alphaRplots(std::string outputFolder){
 
   TCanvas* c = new TCanvas("c","",0,0,1000,800);
 
-  TLegend* leg = new TLegend(0.30, 0.70, 0.85, 0.80);
+  TLegend* leg = new TLegend(0.35, 0.70, 0.85, 0.80);
 
   leg->SetBorderSize(0);
   leg->SetFillColor(0);
   leg->SetFillStyle(0);
-  leg->SetTextSize(0.03);
-  leg->AddEntry(h_signDATA, "signal region of pseudo-data", "le");
-  leg->AddEntry(h_numbkgDATA, "backgrounds in signal region of pseudo-data", "le");
+  leg->SetTextSize(0.04);
 
-  TLatex* lar = new TLatex(0.50, 0.94, "CMS,  #sqrt{s} = 13 TeV, L = 3 fb^{-1}");
+  TLatex* lar = new TLatex();
 
   lar->SetNDC(kTRUE);
   lar->SetTextSize(0.04);
   lar->SetLineWidth(5);
 
-  TLatex* eqn0 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = #frac{1}{2} p_{0} e^{p_{1}x} ( 1 + erf ( #frac{x - p_{2}}{p_{3}} ) )}}");
-  TLatex* eqn1 = new TLatex(0.50, 0.80, "#font[22]{#color[4]{f(x) = p_{0} e^{p_{1}x + #frac{p_{2}}{x}}}}");
+  TLatex* eqn0 = new TLatex(0.50, 0.60, "#font[22]{#color[4]{f(x) = #frac{1}{2} p_{0} e^{p_{1}x} ( 1 + erf ( #frac{x - p_{2}}{p_{3}} ) )}}");
+  TLatex* eqn1 = new TLatex(0.50, 0.70, "#font[22]{#color[4]{f(x) = p_{0} e^{p_{1}x + #frac{p_{2}}{x}}}}");
 
   eqn0->SetNDC(kTRUE);
   eqn0->SetTextSize(0.04);
@@ -479,13 +482,15 @@ void alphaRplots(std::string outputFolder){
 
   c->cd();
   h_PRmassAll->Draw();
-  lar->Draw();
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.62, 0.94, "L = 3 fb^{-1} at #sqrt{s} = 13 TeV");
   eqn0->Draw();
   c->Print("alphaRatio.pdf(");
   
   c->cd();
   h_corrPRmassAll->Draw();
-  lar->Draw();
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.62, 0.94, "L = 3 fb^{-1} at #sqrt{s} = 13 TeV");
   eqn0->Draw();
   c->Print("alphaRatio.pdf");
 
@@ -493,26 +498,34 @@ void alphaRplots(std::string outputFolder){
   h_corrPRmassFixErr->Draw();
   g_errorBands->Draw("3same");
   h_corrPRmassFixErr->Draw("same");
-  lar->Draw();
+  leg->Clear();
+  leg->AddEntry(h_corrPRmassFixErr, "Error = #sqrt{N_{per bin}}", "le");
+  leg->AddEntry(g_errorBands, "Uncertainty based on fitting errors", "f");
+  leg->Draw();
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.62, 0.94, "L = 3 fb^{-1} at #sqrt{s} = 13 TeV");
   eqn0->Draw();
   c->Print("alphaRatio.pdf");
   
   c->cd();
   h_signTotalBKG->Draw();
-  lar->Draw();
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.62, 0.94, "L = 3 fb^{-1} at #sqrt{s} = 13 TeV");
   eqn1->Draw();
   c->Print("alphaRatio.pdf");
 
   c->cd();
   h_sideTotalBKG->Draw();
-  lar->Draw();
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.62, 0.94, "L = 3 fb^{-1} at #sqrt{s} = 13 TeV");
   eqn1->Draw();
   c->Print("alphaRatio.pdf");
 
   c->cd();
   h_alphaRatio->Draw();
   f_fitAlphaR->Draw("same");
-  lar->Draw();
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.62, 0.94, "L = 3 fb^{-1} at #sqrt{s} = 13 TeV");
   c->Print("alphaRatio.pdf");  
 
   c->Divide(1,2);
@@ -530,8 +543,12 @@ void alphaRplots(std::string outputFolder){
   h_signDATA->GetXaxis()->SetLabelSize(0);
   h_signDATA->Draw();
   h_numbkgDATA->Draw("same");
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.70, 0.94, "L = 3 fb^{-1} at #sqrt{s} = 13 TeV");
+  leg->Clear();
+  leg->AddEntry(h_signDATA, "Signal region of pseudo-data", "le");
+  leg->AddEntry(h_numbkgDATA, "Backgrounds in signal region of pseudo-data", "le");
   leg->Draw();
-  lar->Draw();
   c_up->RedrawAxis();
   c_dw->cd();
   myRatio(h_numbkgDATA,h_signDATA);

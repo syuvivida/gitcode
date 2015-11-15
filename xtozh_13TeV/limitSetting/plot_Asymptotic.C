@@ -5,21 +5,16 @@
 #include <fstream>
 #include <cstdlib>
 #include <TTree.h>
-#include <TH1D.h>
+#include <TH1.h>
 #include <TFile.h>
-#include <TROOT.h>
-#include <TGraphAsymmErrors.h>
-#include <TCanvas.h>
 #include <TLine.h>
-#include <TLatex.h>
-#include <TLegend.h>
 #include <TStyle.h>
+#include <TLatex.h>
+#include <TCanvas.h>
+#include <TLegend.h>
 #include <TPaveText.h>
+#include <TGraphAsymmErrors.h>
 #include "../setNCUStyle.h"
-
-const double intLumi = 831.7;
-
-void setFPStyle();
 
 void scaleGraph(TGraphAsymmErrors* g, double factor){
 
@@ -80,7 +75,9 @@ double linear_interp(double s2, double s1, double mass, double m2, double m1){
 
 void plot_Asymptotic(string outputname){
 
-  setFPStyle();
+  setNCUStyle();  
+  gStyle->SetTitleSize(0.04,"XYZ");
+  gStyle->SetLabelSize(0.03,"XYZ");
 
   ifstream xsect_file("CSZH.txt", ios::in);
 
@@ -106,7 +103,6 @@ void plot_Asymptotic(string outputname){
 
     }
   
-    cout << "Size of theory xsects vector" << v_mhxs.size() << endl;
     xsect_file.close();
 
   }
@@ -137,7 +133,6 @@ void plot_Asymptotic(string outputname){
       sprintf(limitfile,"higgsCombineCounting.Asymptotic.mZH%d.root",v_mhxs[n]);
     
     fFREQ[n] = new TFile(limitfile, "READ");
-    cout << " Read limit file: " << limitfile << endl;
     t[n] = (TTree*)fFREQ[n]->Get("limit");
   
     double mh, limit;
@@ -151,29 +146,27 @@ void plot_Asymptotic(string outputname){
 
       t[n]->GetEntry(i);
 
-      cout << " quant : " << quant << " limit : " << limit << endl;
-  
       /// Map: mh --> observed, 95low, 68low, expected, 68hi, 95hi, xsec
       
-      if (quant > -1.01 && quant < -0.99){
+      if (quant > -1.01 && quant < -0.99)
         v_obs.push_back(limit);
-      } 
-      else if (quant > 0.02 && quant < 0.03){
+       
+      else if (quant > 0.02 && quant < 0.03)
 	v_95l.push_back(limit);
-      }
-      else if (quant > 0.15 && quant < 0.17){
+      
+      else if (quant > 0.15 && quant < 0.17)
 	v_68l.push_back(limit);
-      }
+      
       else if (quant > 0.49 && quant < 0.51){
 	v_median.push_back(limit);
         v_mh.push_back(mh);
       }
-      else if (quant > 0.83 && quant < 0.85){
+      else if (quant > 0.83 && quant < 0.85)
 	v_68h.push_back(limit);
-      }
-      else if (quant > 0.965 && quant < 0.98){
+      
+      else if (quant > 0.965 && quant < 0.98)
 	v_95h.push_back(limit);
-      }
+      
       else
         cout << "Error! Quantile =  " << quant << endl;
       
@@ -198,7 +191,7 @@ void plot_Asymptotic(string outputname){
     fl_xs = (fl_xs);
     fl_xs10 = (fl_xs10);
 
-    mass[nMassEff] = v_mhxs[im];//mZH[im];
+    mass[nMassEff] = v_mhxs[im];
 
     /// This is the part where we multiply the limits in terms of signal strength
     /// by the cross-section, in order to have limits in picobarns.
@@ -221,7 +214,6 @@ void plot_Asymptotic(string outputname){
     
   } //end loop over im (mass points)
 
-  /// The TGraphs themselves.
 
   TGraphAsymmErrors *grobslim_cls = new TGraphAsymmErrors(nMassEff, mass, obs_lim_cls);
   grobslim_cls->SetName("LimitObservedCLs");
@@ -231,14 +223,15 @@ void plot_Asymptotic(string outputname){
   gr68_cls->SetName("Limit68CLs");
   TGraphAsymmErrors *gr95_cls = new TGraphAsymmErrors(nMassEff, mass, medianD, 0, 0, down95err, up95err);
   gr95_cls->SetName("Limit95CLs");
-  TGraph *grthSM=new TGraph(nMassEff,mass,xs);
+  TGraph *grthSM = new TGraph(nMassEff,mass,xs);
   grthSM->SetName("SMXSection");
-  TGraph *grthSM10=new TGraph(nMassEff,mass,xs10);
+  TGraph *grthSM10 = new TGraph(nMassEff,mass,xs10);
   grthSM10->SetName("SMXSection_2nd");
 
   double fr_left = 0.0, fr_down = 1E-6, fr_right = 4500.0, fr_up = 1;
 
   TCanvas *cMCMC = new TCanvas("c_lim_Asymptotic", "canvas with limits for Asymptotic CLs", 630, 600);
+
   cMCMC->cd();
   cMCMC->SetGridx(1);
   cMCMC->SetGridy(1);
@@ -248,7 +241,7 @@ void plot_Asymptotic(string outputname){
   TH1F *hr = cMCMC->DrawFrame(fr_left, fr_down, fr_right, fr_up, "");
   TString VV = "ZH";
   
-  hr->SetXTitle("M_{X} [GeV]");
+  hr->SetXTitle("M_{ZH} [GeV]");
   hr->SetYTitle("#sigma_{95%} [pb]"); // #rightarrow 2l2q
   
   gr95_cls->SetFillColor(kYellow);
@@ -300,18 +293,17 @@ void plot_Asymptotic(string outputname){
 
   //draw grid on top of limits
 
-  gStyle->SetOptStat(0);
   TH1D* postGrid = new TH1D("postGrid", "", 1, fr_left, fr_right);
+
   postGrid->GetYaxis()->SetRangeUser(fr_down, fr_up);
   postGrid->Draw("AXIGSAME");
 
-  //more graphics
-
   TLegend *leg = new TLegend(.20, .20, .70, .35);
+
+  leg->SetBorderSize(0);
   leg->SetFillColor(0);
-  leg->SetShadowColor(0);
-  leg->SetTextFont(42);
-  leg->SetTextSize(0.03);
+  leg->SetFillStyle(0);
+  leg->SetTextSize(0.04);
   //leg->AddEntry(grobslim_cls, "CL_{S} Observed", "LP");
   leg->AddEntry(gr68_cls, "CL_{S}  Expected #pm 1#sigma", "LF");
   leg->AddEntry(gr95_cls, "CL_{S}  Expected #pm 2#sigma", "LF");
@@ -319,85 +311,17 @@ void plot_Asymptotic(string outputname){
   leg->Draw();
 
   TLatex * latex = new TLatex();
-  latex->SetNDC();
-  latex->SetTextSize(0.04);
-  latex->SetTextAlign(31);
-  latex->SetTextAlign(11); // align left
-  latex->DrawLatex(0.18, 0.96, "CMS preliminary 2015");
-  latex->DrawLatex(0.60, 0.96, Form("%.1f pb^{-1} at #sqrt{s} = 13 TeV", intLumi));
+
+  latex->SetNDC(kTRUE);
+  latex->SetTextSize(0.035);
+  latex->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  latex->DrawLatex(0.60, 0.94, "831.7 pb^{-1} at #sqrt{s} = 13 TeV");
 
   gPad->RedrawAxis("");
 
   cMCMC->Update();
-  char fnam[50];
-
-  //  sprintf(fnam, "XZHllbb_%s_Asymptotic.pdf", outputname.data());
-  //  cMCMC->SaveAs(fnam);
-
+  //cMCMC->Print(Form("XZHllbb_%s_Asymptotic.pdf", outputname.data()));
   gPad->SetLogy();
-
-  sprintf(fnam, "XZHllbb_%s_Asymptotic_log.pdf", outputname.data());
-  cMCMC->SaveAs(fnam);
-
-  cMCMC->Draw();
+  cMCMC->Print(Form("XZHllbb_%s_Asymptotic_log.pdf", outputname.data()));
 
 } //end of main function
-
-void setFPStyle(){
-
-  gStyle->SetPadBorderMode(0);
-  gStyle->SetFrameBorderMode(0);
-  gStyle->SetPadBottomMargin(0.12);
-  gStyle->SetPadLeftMargin(0.12);
-  gStyle->SetCanvasColor(kWhite);
-  gStyle->SetCanvasDefH(800); //Height of canvas
-  gStyle->SetCanvasDefW(800); //Width of canvas
-  gStyle->SetCanvasDefX(0);   //Position on screen
-  gStyle->SetCanvasDefY(0);
-  gStyle->SetPadTopMargin(0.05);
-  gStyle->SetPadBottomMargin(0.15);//0.13);
-  gStyle->SetPadLeftMargin(0.15);//0.16);
-  gStyle->SetPadRightMargin(0.05);//0.02);
-
-  // For the Pad:
-  gStyle->SetPadBorderMode(0);
-  gStyle->SetPadColor(kWhite);
-  gStyle->SetPadGridX(false);
-  gStyle->SetPadGridY(false);
-  gStyle->SetGridColor(0);
-  gStyle->SetGridStyle(3);
-  gStyle->SetGridWidth(1);
-
-  // For the Frame:
-  gStyle->SetFrameBorderMode(0);
-  gStyle->SetFrameBorderSize(1);
-  gStyle->SetFrameFillColor(0);
-  gStyle->SetFrameFillStyle(0);
-  gStyle->SetFrameLineColor(1);
-  gStyle->SetFrameLineStyle(1);
-  gStyle->SetFrameLineWidth(1);
-  gStyle->SetAxisColor(1, "XYZ");
-  gStyle->SetStripDecimals(kTRUE);
-  gStyle->SetTickLength(0.03, "XYZ");
-  gStyle->SetNdivisions(605, "XYZ");
-  gStyle->SetPadTickX(1);  // To get tick marks on the opposite side of the frame
-  gStyle->SetPadTickY(1);
-  gStyle->SetGridColor(0);
-  gStyle->SetGridStyle(3);
-  gStyle->SetGridWidth(1);
-  gStyle->SetTitleColor(1, "XYZ");
-  gStyle->SetTitleFont(42, "XYZ");
-  gStyle->SetTitleSize(0.05, "XYZ");
-  gStyle->SetTitleXOffset(1.15);//0.9);
-  gStyle->SetTitleYOffset(1.3); // => 1.15 if exponents
-  gStyle->SetLabelColor(1, "XYZ");
-  gStyle->SetLabelFont(42, "XYZ");
-  gStyle->SetLabelOffset(0.007, "XYZ");
-  gStyle->SetLabelSize(0.045, "XYZ");
-  gStyle->SetPadBorderMode(0);
-  gStyle->SetFrameBorderMode(0);
-  gStyle->SetTitleTextColor(1);
-  gStyle->SetTitleFillColor(10);
-  gStyle->SetTitleFontSize(0.05);
-
-}
