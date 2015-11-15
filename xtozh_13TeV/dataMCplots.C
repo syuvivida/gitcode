@@ -114,12 +114,13 @@ void myPlot(TH1D* h_DY100,
   leg->AddEntry(h_data, "Data", "lp");
   leg->Draw();
 
-  TLatex *lar = new TLatex(0.60, 0.94, "CMS,  #sqrt{s} = 13 TeV, L = 831.7 pb^{-1}");
+  TLatex *lar = new TLatex();
 
   lar->SetNDC(kTRUE);
   lar->SetTextSize(0.04);
   lar->SetLineWidth(5);
-  lar->Draw();
+  lar->DrawLatex(0.15, 0.94, "CMS preliminary 2015");
+  lar->DrawLatex(0.65, 0.94, "L = 831.7 pb^{-1} at #sqrt{s} = 13 TeV");
 
 }
 
